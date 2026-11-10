@@ -1,0 +1,20 @@
+packages:
+  - apps/*
+  - packages/*
+  - infra
+  - eval
+allowBuilds:
+  # Each ships prebuilt binaries as optional packages, so their install scripts are not needed.
+  '@parcel/watcher': false
+  '@swc/core': false
+  esbuild: false
+  # eslint-config-expo's import resolver, for the phone app's lint.
+  unrs-resolver: false
+  # Bryntum's trial runs a helper from its companion package on install; the scheduler's bundle does not need it.
+  '@bryntum/scheduler-trial': false
+  '@bryntum/scheduler-trial-lib': false
+minimumReleaseAgeExclude:
+  - '@aws-sdk/client-rds-data@3.1151.0'
+  - '@aws-sdk/client-secrets-manager@3.1151.0'
+  - '@aws-sdk/client-cognito-identity-provider@3.1151.0'
+  - '@aws-sdk/client-sqs@3.1151.0'

@@ -1,0 +1,33 @@
+{
+  "name": "hold",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.6.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @hold/web dev",
+    "test": "vitest run",
+    "test:ci": "vitest run packages/domain packages/settle packages/db/src/row-level-security.test.ts packages/mcp/src/catalogue.test.ts apps/web/src/server/shop-access.test.ts",
+    "test:e2e": "pnpm --filter @hold/web test:e2e",
+    "test:e2e:key": "pnpm --filter @hold/web test:e2e:key",
+    "lint": "pnpm -r --if-present run typegen && NODE_OPTIONS=--max-old-space-size=8192 eslint . && pnpm --filter @hold/mobile lint",
+    "typecheck": "tsc --noEmit && pnpm -r --if-present run typecheck",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:mobile",
+    "eval": "pnpm --filter @hold/eval run eval",
+    "demo:paypal": "pnpm --filter @hold/web demo:paypal",
+    "test:mobile": "pnpm --filter @hold/mobile test",
+    "mobile": "pnpm --filter @hold/mobile dev"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.19.2",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.12.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.2",
+    "vitest": "^5.0.4"
+  }
+}

@@ -1,0 +1,125 @@
+# Everything `pnpm check` runs, plus the key end-to-end flows and the container build, on every pull request and every
+# push to main: types, lint, every unit test and the phone app's tests, as parallel jobs. Deploy (deploy.yml) runs only
+# after every job here passes on main, so a change that breaks any unit test, a lint rule or the phone app is never
+# deployed. These are all quick and steady. The full end-to-end suite, every page at every width, runs beside this in
+# e2e-full.yml instead: it takes about twenty minutes, and one slow or flaky page must not hold a deploy back in the days
+# before a deadline. It needs no AWS access: the tests run against in-process fakes.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Types
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Type-checking reads every package at once and can pass Node's default heap of about 2 GB on the runner.
+      - run: pnpm typecheck
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # The lint script gives ESLint the heap it needs for the whole repository with type information.
+      - run: pnpm lint
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Every Vitest test in every package, the rules that must never break among them: money and state in the domain,
+      # settling with PayPal, one shop never reading another's rows, every route behind the one access wrapper, and no
+      # agent tool that moves money (`pnpm test:ci` is that subset, for a ten-second check at a desk).
+      - run: pnpm test
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+
+  mobile:
+    name: Phone app tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:mobile
+
+  e2e:
+    name: End to end
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install Chromium for Playwright
+        run: pnpm --filter @hold/web exec playwright install --with-deps chromium
+      # Signing in, and money from booking through the hold to a captured claim. The full suite, with every page at
+      # every width, runs locally with pnpm test:e2e (AGENTS.md section 2).
+      - run: pnpm test:e2e:key
+        # Without their keys AG Grid and AG Studio write a licence notice to the console, which fails every test of them.
+        env:
+          HOLD_AG_GRID_LICENCE_KEY: ${{ secrets.AG_GRID_LICENCE_KEY }}
+          HOLD_AG_STUDIO_LICENCE_KEY: ${{ secrets.AG_STUDIO_LICENCE_KEY }}
+      - name: Keep the report of a failed run
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            apps/web/playwright-report
+            apps/web/test-results
+          retention-days: 7
+
+  image:
+    name: Container image builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the image, without pushing it
+        run: docker build --tag hold-app:check .

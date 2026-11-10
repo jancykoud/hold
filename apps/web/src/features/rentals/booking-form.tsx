@@ -1,0 +1,85 @@
+'use client'
+
+import type { BookableType } from '@hold/db'
+import { useLocale, useTranslations } from 'next-intl'
+import { useActionState, useEffect } from 'react'
+import { BookingLines } from '@/components/booking/booking-lines'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select } from '@/components/ui/select'
+import { ActionMessage } from '@/features/shop/action-message'
+import { useRouter } from '@/i18n/navigation'
+import { routing } from '@/i18n/routing'
+import { rentalRoutes } from '@/lib/routes'
+import { bookRental } from './actions'
+
+// startsToday: the rental starts on the shop's own today, so a walk-in may approve the fee and the hold at once.
+type BookingFormProps = { types: readonly BookableType[]; currency: string; days: number; from: string; to: string; startsToday?: boolean }
+
+const LANGUAGE_NAMES: Readonly<Record<string, string>> = { en: 'English', de: 'Deutsch', es: 'Español', fr: 'Français' }
+
+// What to book and for whom. The dates come from the form above it; the booking opens once it is made.
+export function BookingForm({ types, currency, days, from, to, startsToday = false }: BookingFormProps) {
+  const t = useTranslations('shop.rentals.form')
+  const locale = useLocale()
+  const router = useRouter()
+  const [result, book, pending] = useActionState(bookRental, null)
+
+  useEffect(() => {
+    // A link the day's email allowance held is shown on the rental page instead, which says why.
+    if (result?.ok === true) router.push(result.value.sent === 'held' ? `${rentalRoutes.rental(result.value.rentalId)}?link=held` : rentalRoutes.rental(result.value.rentalId))
+  }, [result, router])
+
+  return (
+    <form action={book} className="grid gap-8">
+      <input type="hidden" name="locale" value={locale} />
+      <input type="hidden" name="startsAt" value={from} />
+      <input type="hidden" name="endsAt" value={to} />
+      <BookingLines types={types} currency={currency} days={days} />
+      <fieldset className="surface grid gap-4 p-4 md:p-6">
+        <legend className="float-left mb-1 w-full text-xl font-extrabold tracking-tight">{t('renter')}</legend>
+        <p className="max-w-prose text-pretty text-muted-foreground">{t('renterHelp')}</p>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid min-w-0 gap-1.5">
+            <Label htmlFor="contactName">{t('name')}</Label>
+            <Input id="contactName" name="contactName" maxLength={120} autoComplete="off" />
+          </div>
+          <div className="grid min-w-0 gap-1.5">
+            <Label htmlFor="contactEmail">{t('email')}</Label>
+            <Input id="contactEmail" name="contactEmail" type="email" maxLength={254} autoComplete="off" />
+          </div>
+          <div className="grid min-w-0 gap-1.5">
+            <Label htmlFor="contactPhone">{t('phone')}</Label>
+            <Input id="contactPhone" name="contactPhone" type="tel" inputMode="tel" maxLength={40} autoComplete="off" placeholder={t('phonePlaceholder')} />
+          </div>
+          <div className="grid min-w-0 gap-1.5">
+            <Label htmlFor="language">{t('language')}</Label>
+            <Select id="language" name="language" defaultValue={locale}>
+              {routing.locales.map((each) => (
+                <option key={each} value={each}>
+                  {LANGUAGE_NAMES[each] ?? each}
+                </option>
+              ))}
+            </Select>
+          </div>
+        </div>
+      </fieldset>
+      {startsToday ? (
+        <div className="flex max-w-prose items-start gap-3">
+          <input id="walkIn" name="walkIn" type="checkbox" value="on" className="mt-0.5 min-h-11 min-w-11 shrink-0 accent-primary" />
+          <Label htmlFor="walkIn" className="grid min-h-11 gap-1 font-normal">
+            <span className="font-semibold">{t('walkIn')}</span>
+            <span className="text-muted-foreground">{t('walkInHelp')}</span>
+          </Label>
+        </div>
+      ) : null}
+      <div className="grid gap-3">
+        <Button type="submit" disabled={pending} className="min-h-12 max-sm:w-full sm:justify-self-start">
+          {pending ? t('booking') : t('book')}
+        </Button>
+        <ActionMessage result={result} success={t('booked')} results="shop.rentals.results" />
+      </div>
+    </form>
+  )
+}

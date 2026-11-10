@@ -1,0 +1,363 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791961181254,
+      "tag": "0000_roles_and_scope",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791961181735,
+      "tag": "0001_spine_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791961218712,
+      "tag": "0002_grants",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791963893840,
+      "tag": "0003_shop_setup_later",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791963894988,
+      "tag": "0004_people",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791964231949,
+      "tag": "0005_renter_link_scopes_as_json",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791964394797,
+      "tag": "0006_fixed_values_as_checked_text",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791967936143,
+      "tag": "0007_staff_invitations_and_rate_limits",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791967936843,
+      "tag": "0008_invitation_and_rate_functions",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791979256687,
+      "tag": "0009_simulated_rentals",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792082035294,
+      "tag": "0010_items_and_photo_plans",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792086057306,
+      "tag": "0011_bookings_and_fees",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792089816463,
+      "tag": "0012_worker_functions",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792137013948,
+      "tag": "0013_hold_at_pickup",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792139264411,
+      "tag": "0014_hold_replacement",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1792148860245,
+      "tag": "0015_handover",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1792510351597,
+      "tag": "0016_rainy_hairball",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1792513234272,
+      "tag": "0017_gigantic_unicorn",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1792523877970,
+      "tag": "0018_evidence_versions",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1792524130500,
+      "tag": "0019_settlement_receipts",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1792525181401,
+      "tag": "0020_document_publication_guards",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1793053372750,
+      "tag": "0021_scorecard",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1793056000061,
+      "tag": "0022_operations",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1793056670949,
+      "tag": "0023_incidents",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1793056847542,
+      "tag": "0024_clean_record",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1793058130471,
+      "tag": "0025_proposal_execution",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1793060452433,
+      "tag": "0026_assistants",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1793061956098,
+      "tag": "0027_negotiations",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1793131230215,
+      "tag": "0028_demo_sessions",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1793147994147,
+      "tag": "0029_demo_webhook_routing",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1793213422374,
+      "tag": "0030_eval_cases",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1793266539080,
+      "tag": "0031_insights_dashboards",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1793292568815,
+      "tag": "0032_self_return",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1793298838601,
+      "tag": "0033_rental_extensions",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1793301953409,
+      "tag": "0034_contest_summaries",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1793306381614,
+      "tag": "0035_extension_attention",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1793312582851,
+      "tag": "0036_decision_promise",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1793317361001,
+      "tag": "0037_repairs",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1793499445369,
+      "tag": "0038_text_messages",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1793521634871,
+      "tag": "0039_phone_payer_told",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1793523886570,
+      "tag": "0040_push_devices",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1793540661994,
+      "tag": "0041_photo_source",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1793663116422,
+      "tag": "0042_eval_run_withdrawal",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1793663950844,
+      "tag": "0043_renter_erasure",
+      "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1793664500000,
+      "tag": "0044_demo_retirement",
+      "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1793665100000,
+      "tag": "0045_rate_tokens_left",
+      "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1793670000000,
+      "tag": "0046_sample_investigation",
+      "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1793675000000,
+      "tag": "0047_execution_rechecks",
+      "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1793680000000,
+      "tag": "0048_rate_token_return",
+      "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1793680500000,
+      "tag": "0049_rate_limit_pruning",
+      "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1793681000000,
+      "tag": "0050_amount_checks",
+      "breakpoints": true
+    }
+  ]
+}

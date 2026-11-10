@@ -1,0 +1,102 @@
+import { MONEY_EVENT_KINDS } from '@hold/domain'
+import { integer, jsonb, pgTable, text } from 'drizzle-orm/pg-core'
+import { shopIsolation } from './access.ts'
+import { claims } from './claims.ts'
+import { at, cents, createdAt, currency, id, nonNegative, reference } from './columns.ts'
+import { allowed, EXECUTION_ACTIONS, EXECUTION_STATES, executionAction, executionState, INVOICE_STATES, invoiceState, moneyEventKind, PROCESSING_STATES, processingState, VERIFICATION_STATES, verificationState } from './enums.ts'
+import { holds, rentals } from './rentals.ts'
+import { paypalAccounts, shopReference } from './shops.ts'
+
+// One attempt to carry out an approved action through PayPal (architecture.md section 7.6).
+export const executions = pgTable(
+  'executions',
+  {
+    id: id(),
+    shopId: shopReference(),
+    rentalId: reference()
+      .notNull()
+      .references(() => rentals.id),
+    // Every action on a hold names it. Capturing the rental fee comes before any hold.
+    holdId: reference().references(() => holds.id),
+    action: executionAction().notNull(),
+    // Sent to PayPal as PayPal-Request-Id, so a retry cannot act twice.
+    idempotencyKey: text().notNull().unique(),
+    currency: currency(),
+    amountCents: cents(),
+    paypalResourceIds: jsonb().$type<Readonly<Record<string, string>>>().notNull().default({}),
+    state: executionState().notNull().default('pending'),
+    attempts: integer().notNull().default(0),
+    lastError: text(),
+    createdAt: createdAt(),
+    updatedAt: createdAt(),
+  },
+  (table) => [allowed(table.action, EXECUTION_ACTIONS), allowed(table.state, EXECUTION_STATES), nonNegative(table.amountCents), shopIsolation(table.shopId)],
+)
+
+// Stored once PayPal says it signed the exact bytes received, before PayPal is answered, so no event is lost.
+export const paypalEvents = pgTable(
+  'paypal_events',
+  {
+    id: id(),
+    shopId: shopReference(),
+    paypalAccountId: reference()
+      .notNull()
+      .references(() => paypalAccounts.id),
+    paypalEventId: text().notNull().unique(),
+    type: text().notNull(),
+    rawBody: text().notNull(),
+    headers: jsonb().$type<Readonly<Record<string, string>>>().notNull(),
+    verification: verificationState().notNull().default('pending'),
+    processing: processingState().notNull().default('pending'),
+    rentalId: reference().references(() => rentals.id),
+    receivedAt: createdAt(),
+  },
+  (table) => [allowed(table.verification, VERIFICATION_STATES), allowed(table.processing, PROCESSING_STATES), shopIsolation(table.shopId)],
+)
+
+// The money log. Append-only, one row per PayPal reference, so applying an event twice writes nothing new.
+export const moneyEvents = pgTable(
+  'money_events',
+  {
+    id: id(),
+    shopId: shopReference(),
+    rentalId: reference()
+      .notNull()
+      .references(() => rentals.id),
+    holdId: reference().references(() => holds.id),
+    kind: moneyEventKind().notNull(),
+    currency: currency().notNull(),
+    // What moved. For a capture, PayPal's fee and the shop's net are recorded beside it.
+    amountCents: cents().notNull(),
+    paypalFeeCents: cents(),
+    netCents: cents(),
+    paypalReference: text().notNull().unique(),
+    // On money back to the renter: PayPal's id of the capture it came back from, so what is left of each capture is known.
+    returnedFrom: text(),
+    occurredAt: at().notNull(),
+    recordedAt: createdAt(),
+  },
+  (table) => [allowed(table.kind, MONEY_EVENT_KINDS), nonNegative(table.amountCents), nonNegative(table.paypalFeeCents), shopIsolation(table.shopId)],
+)
+
+export const invoices = pgTable(
+  'invoices',
+  {
+    id: id(),
+    shopId: shopReference(),
+    rentalId: reference()
+      .notNull()
+      .references(() => rentals.id),
+    claimId: reference()
+      .notNull()
+      .references(() => claims.id),
+    paypalInvoiceId: text().unique(),
+    currency: currency().notNull(),
+    amountCents: cents().notNull(),
+    state: invoiceState().notNull().default('draft'),
+    // Set by a trigger when PayPal reports the invoice sent: how long it has waited unpaid.
+    sentAt: at(),
+    createdAt: createdAt(),
+  },
+  (table) => [allowed(table.state, INVOICE_STATES), shopIsolation(table.shopId)],
+)

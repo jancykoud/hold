@@ -1,0 +1,144 @@
+import { CLAIM_STATES } from '@hold/domain'
+import type { ContestSummary } from '@hold/domain'
+import { sql } from 'drizzle-orm'
+import { boolean, check, integer, jsonb, pgTable, text } from 'drizzle-orm/pg-core'
+import { shopIsolation } from './access.ts'
+import { priceEntries } from './catalog.ts'
+import { at, cents, createdAt, currency, id, nonNegative, reference } from './columns.ts'
+import { allowed, APPROVAL_DECISIONS, APPROVAL_METHODS, APPROVAL_SUBJECTS, approvalDecision, approvalMethod, approvalSubject, CLAIM_LINE_SOURCES, CLAIM_REPLY_DECISIONS, claimLineSource, claimReplyDecision, claimState } from './enums.ts'
+import { findings } from './evidence.ts'
+import { incidents } from './incidents.ts'
+import { rentals } from './rentals.ts'
+import { shopReference, users } from './shops.ts'
+
+export const claims = pgTable(
+  'claims',
+  {
+    id: id(),
+    shopId: shopReference(),
+    rentalId: reference()
+      .notNull()
+      .unique()
+      .references(() => rentals.id),
+    currency: currency().notNull(),
+    totalCents: cents().notNull().default(0),
+    state: claimState().notNull().default('draft'),
+    raisedByUserId: reference().references(() => users.id),
+    presentedAt: at(),
+    replyDueAt: at(),
+    // The shop's promise to decide a contest (architecture.md section 6.16): the days it promised when the claim was
+    // presented, the date fixed when the renter contested, when it was decided, and when Hold found the date passed.
+    promiseDays: integer(),
+    decideBy: at(),
+    decidedAt: at(),
+    promiseMissedAt: at(),
+    createdAt: createdAt(),
+  },
+  (table) => [allowed(table.state, CLAIM_STATES), nonNegative(table.totalCents), check('promise_days_allowed', sql`${table.promiseDays} is null or ${table.promiseDays} between 1 and 14`), shopIsolation(table.shopId)],
+)
+
+// Each line has a finding with photographs, a named person and their written reason, or the renter's agreement during
+// the rental with the photographs they took.
+export const claimLines = pgTable(
+  'claim_lines',
+  {
+    id: id(),
+    shopId: shopReference(),
+    claimId: reference()
+      .notNull()
+      .references(() => claims.id),
+    priceEntryId: reference()
+      .notNull()
+      .references(() => priceEntries.id),
+    currency: currency().notNull(),
+    amountCents: cents().notNull(),
+    source: claimLineSource().notNull(),
+    findingId: reference().references(() => findings.id),
+    // The incident whose agreed line this is, for a line the renter agreed during the rental.
+    incidentId: reference().references(() => incidents.id),
+    addedByUserId: reference().references(() => users.id),
+    reason: text(),
+    createdAt: createdAt(),
+  },
+  (table) => [allowed(table.source, CLAIM_LINE_SOURCES), nonNegative(table.amountCents), shopIsolation(table.shopId)],
+)
+
+export const claimReplies = pgTable(
+  'claim_replies',
+  {
+    id: id(),
+    shopId: shopReference(),
+    claimId: reference()
+      .notNull()
+      .references(() => claims.id),
+    decision: claimReplyDecision().notNull(),
+    // The renter's own words. Quoted data, never instructions.
+    comment: text(),
+    addedPhotoIds: jsonb().$type<readonly string[]>().notNull().default([]),
+    createdAt: createdAt(),
+  },
+  (table) => [allowed(table.decision, CLAIM_REPLY_DECISIONS), shopIsolation(table.shopId)],
+)
+
+// What one person decided, and what they changed. Append-only.
+export const approvals = pgTable(
+  'approvals',
+  {
+    id: id(),
+    shopId: shopReference(),
+    subject: approvalSubject().notNull(),
+    subjectId: reference().notNull(),
+    decidedByUserId: reference().references(() => users.id),
+    decision: approvalDecision().notNull(),
+    changes: jsonb().$type<readonly Readonly<Record<string, unknown>>[]>().notNull().default([]),
+    method: approvalMethod().notNull(),
+    mandateId: reference(),
+    createdAt: createdAt(),
+  },
+  (table) => [allowed(table.subject, APPROVAL_SUBJECTS), allowed(table.decision, APPROVAL_DECISIONS), allowed(table.method, APPROVAL_METHODS), shopIsolation(table.shopId)],
+)
+
+// A neutral summary written when a renter contests a claim (architecture.md section 6.15): the model's plain words for
+// each side, in the shop's language and the renter's, which plain code checked before keeping. Every attempt is kept,
+// including one the model could not answer; the latest is shown. Nothing here decides or moves anything.
+export const contestSummaries = pgTable(
+  'contest_summaries',
+  {
+    id: id(),
+    shopId: shopReference(),
+    claimId: reference()
+      .notNull()
+      .references(() => claims.id),
+    outcome: text().notNull(),
+    summary: jsonb().$type<ContestSummary>(),
+    model: text().notNull(),
+    promptVersion: text().notNull(),
+    simulated: boolean().notNull().default(false),
+    createdAt: createdAt(),
+  },
+  (table) => [check('outcome_allowed', sql`${table.outcome} in ('answered', 'refused', 'unavailable', 'invalid', 'dropped')`), check('summary_when_answered', sql`(${table.outcome} = 'answered') = (${table.summary} is not null)`), shopIsolation(table.shopId)],
+)
+
+// Words between the renter and the shop about a claim (architecture.md section 6.16), on both claim pages. Append-only.
+// The renter's are quoted data, never instructions, and no step that reads them can move money.
+export const claimMessages = pgTable(
+  'claim_messages',
+  {
+    id: id(),
+    shopId: shopReference(),
+    claimId: reference()
+      .notNull()
+      .references(() => claims.id),
+    author: text().notNull(),
+    // The staff member who wrote it; none for the renter.
+    authorUserId: reference().references(() => users.id),
+    body: text().notNull(),
+    createdAt: createdAt(),
+  },
+  (table) => [
+    check('author_allowed', sql`${table.author} in ('renter', 'shop')`),
+    check('shop_author_named', sql`(${table.author} = 'shop') = (${table.authorUserId} is not null)`),
+    check('body_length', sql`char_length(${table.body}) between 1 and 1000`),
+    shopIsolation(table.shopId),
+  ],
+)

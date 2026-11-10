@@ -1,0 +1,47 @@
+import type { CatalogItem, CatalogType } from '@hold/db'
+import { Pencil } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { Panel } from '@/components/ui/panel'
+import { SampleTag } from '@/components/ui/sample-tag'
+import { Link } from '@/i18n/navigation'
+import type { ShopClock } from '@/hooks/use-shop-format'
+import { itemRoutes } from '@/lib/routes'
+import { AddItemsForm } from './add-items-form'
+import { CATEGORY_ICONS } from './category-icon'
+import { ItemList } from './item-list'
+import { TypeFacts } from './type-facts'
+
+type TypeSectionProps = { type: CatalogType; items: readonly CatalogItem[]; clock: ShopClock; canManage: boolean }
+
+// One item type: its terms, its items and, for those who may, a way to change it or add to it. Sample types belong
+// to the sample rentals, so nobody changes them.
+export function TypeSection({ type, items, clock, canManage }: TypeSectionProps) {
+  const t = useTranslations('shop.items')
+  const changeable = canManage && !type.simulated
+  const aside = (
+    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+      <span className="text-sm text-muted-foreground">{t(`categories.${type.category}`)}</span>
+      {type.simulated ? <SampleTag /> : null}
+      {changeable ? (
+        <Link
+          href={itemRoutes.type(type.id)}
+          aria-label={t('type.editNamed', { name: type.name })}
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-foreground/6 hover:text-foreground"
+        >
+          <Pencil aria-hidden="true" className="size-3.5" />
+          {t('type.edit')}
+        </Link>
+      ) : null}
+    </div>
+  )
+
+  return (
+    <Panel title={type.name} aside={aside} icon={CATEGORY_ICONS[type.category]}>
+      <TypeFacts type={type} clock={clock} />
+      {type.simulated ? <p className="border-b border-border/70 bg-muted/50 px-4 py-2.5 text-[0.8125rem] text-muted-foreground md:px-5">{t('type.sampleNote')}</p> : null}
+      {/* From md the fleet grid above lists the items; a phone lists them here. */}
+      {items.length === 0 ? <p className="px-4 py-5 text-muted-foreground md:px-5">{t('type.noItems')}</p> : <div className="md:hidden"><ItemList items={items} clock={clock} /></div>}
+      {changeable ? <div id={`add-items-${type.id}`} className="scroll-mt-6"><AddItemsForm itemTypeId={type.id} typeName={type.name} /></div> : null}
+    </Panel>
+  )
+}

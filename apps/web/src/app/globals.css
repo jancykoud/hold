@@ -1,0 +1,439 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  /* An ink-coloured surface that flips with the theme: the second door and the renter's button. */
+  --color-contrast: var(--contrast);
+  --color-contrast-foreground: var(--contrast-foreground);
+  /* The dark band stays dark in both themes. */
+  --color-band: var(--band);
+  --color-band-foreground: var(--band-foreground);
+  --color-band-muted: var(--band-muted);
+  --color-band-border: var(--band-border);
+  --color-band-accent: var(--band-accent);
+  /* A row in the dark band under the pointer, and the row of the current page. */
+  --color-band-hover: var(--band-hover);
+  --color-band-active: var(--band-active);
+  --color-band-success: var(--band-success);
+  --color-warning: var(--warning);
+  /* Anything drawn on top of a photograph keeps one set of colours in both themes. */
+  --color-photo: var(--photo);
+  --color-photo-foreground: var(--photo-foreground);
+  --color-photo-scrim: var(--photo-scrim);
+  --color-mark: var(--mark);
+  --color-mark-foreground: var(--mark-foreground);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-device: 2.125rem;
+  --radius-screen: 1.5625rem;
+
+  --container-page: 80rem;
+  /* Half the page, for a screen split down the middle whose two halves keep to the page's edges. */
+  --container-half-page: 40rem;
+  --container-prose: 34rem;
+  /* The working area of a signed-in page, beside the shop's menu. */
+  --container-app: 77.5rem;
+  --container-device: 18rem;
+
+  --text-display: clamp(3.375rem, 1.4rem + 6vw, 6.25rem);
+  --text-display--line-height: 0.9;
+  --text-display--letter-spacing: -0.05em;
+  --text-display--font-weight: 800;
+  --text-closing: clamp(3rem, 1.5rem + 5vw, 5.25rem);
+  --text-closing--line-height: 0.92;
+  --text-closing--letter-spacing: -0.05em;
+  --text-closing--font-weight: 800;
+  --text-headline: clamp(2.375rem, 1.5rem + 3vw, 3.75rem);
+  --text-headline--line-height: 0.96;
+  --text-headline--letter-spacing: -0.045em;
+  --text-headline--font-weight: 800;
+  --text-title: clamp(1.75rem, 1.4rem + 1.2vw, 2.25rem);
+  --text-title--line-height: 1;
+  --text-title--letter-spacing: -0.04em;
+  --text-title--font-weight: 800;
+  /* The heading of a signed-in page: smaller than the public pages', which sell; these are worked in. */
+  --text-page-title: clamp(2rem, 1.55rem + 1.5vw, 2.875rem);
+  --text-page-title--line-height: 1;
+  --text-page-title--letter-spacing: -0.045em;
+  --text-page-title--font-weight: 800;
+  /* A figure on the Today page. */
+  --text-figure: clamp(1.625rem, 1.35rem + 0.9vw, 2.125rem);
+  --text-figure--line-height: 1.1;
+  --text-figure--letter-spacing: -0.04em;
+  --text-figure--font-weight: 800;
+  --text-lead: 1.125rem;
+  --text-lead--line-height: 1.55;
+
+  /* Surfaces sit on the paper with a soft shadow, never a heavy rule: a card, a card lifted under the pointer, and a
+   * layer above the page. Black shadows read on both themes; in the dark one the border carries the edge. */
+  --shadow-xs: 0 1px 2px rgb(20 20 18 / 0.05);
+  --shadow-card: 0 1px 2px rgb(20 20 18 / 0.04), 0 3px 10px -3px rgb(20 20 18 / 0.07);
+  --shadow-raised: 0 2px 4px rgb(20 20 18 / 0.04), 0 14px 34px -10px rgb(20 20 18 / 0.18);
+  --shadow-overlay: 0 4px 12px rgb(20 20 18 / 0.08), 0 28px 70px -14px rgb(20 20 18 / 0.32);
+  /* The primary button glows faintly in its own colour, with a highlight along its top edge. */
+  --shadow-glow: inset 0 1px 0 rgb(255 255 255 / 0.2), 0 1px 2px rgb(20 20 18 / 0.12), 0 8px 22px -8px color-mix(in oklab, var(--primary) 70%, transparent);
+
+  /* Motion: things arrive quickly and settle softly. Every animation stops for a reader who asks for less motion. */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-swift: cubic-bezier(0.2, 0, 0, 1);
+  --animate-rise: rise 0.7s var(--ease-spring) both;
+  --animate-fade: fade 0.5s ease-out both;
+  --animate-pop: pop 0.5s var(--ease-spring) both;
+  --animate-shimmer: shimmer 1.8s linear infinite;
+  --animate-pulse-ring: pulse-ring 2.2s var(--ease-swift) infinite;
+  --animate-draw: draw 1.4s var(--ease-spring) both;
+
+  --aspect-evidence: 21 / 9;
+  --aspect-evidence-tall: 4 / 5;
+  --aspect-thumbnail: 4 / 3;
+}
+
+:root {
+  --background: #f4f2ed;
+  --foreground: #141412;
+  --card: #ffffff;
+  --card-foreground: #141412;
+  --popover: #ffffff;
+  --popover-foreground: #141412;
+  --primary: #b93f08;
+  --primary-foreground: #ffffff;
+  --secondary: #ebe8e0;
+  --secondary-foreground: #141412;
+  --muted: #eeebe4;
+  --muted-foreground: #5c5952;
+  --accent: #ebe8e0;
+  --accent-foreground: #141412;
+  --destructive: #a32a1a;
+  --success: #1b6b45;
+  --border: #e2ded5;
+  --border-strong: #b4afa3;
+  --input: #b4afa3;
+  --ring: #b93f08;
+  --contrast: #141412;
+  --contrast-foreground: #f4f2ed;
+  --band: #141412;
+  --band-foreground: #f2efe8;
+  --band-muted: #a6a298;
+  --band-border: #34342f;
+  --band-accent: #ff6a2b;
+  --band-hover: #1f1f1c;
+  --band-active: #2a2a26;
+  --band-success: #6fcf9d;
+  --warning: #8a5a00;
+  --photo: #17191a;
+  --photo-foreground: #f2efe8;
+  --photo-scrim: rgb(10 10 9 / 0.78);
+  --mark: #ff6a2b;
+  --mark-foreground: #1c0d04;
+  --radius: 0.625rem;
+}
+
+.dark {
+  --background: #0e0e0d;
+  --foreground: #f2efe8;
+  --card: #171715;
+  --card-foreground: #f2efe8;
+  --popover: #1b1b19;
+  --popover-foreground: #f2efe8;
+  --primary: #ff6a2b;
+  --primary-foreground: #1c0d04;
+  --secondary: #23231f;
+  --secondary-foreground: #f2efe8;
+  --muted: #1c1c1a;
+  --muted-foreground: #a6a298;
+  --accent: #23231f;
+  --accent-foreground: #f2efe8;
+  --destructive: #ff8a75;
+  --success: #6fcf9d;
+  --border: #292926;
+  --border-strong: #47473f;
+  --input: #47473f;
+  --ring: #ff6a2b;
+  --contrast: #f2efe8;
+  --contrast-foreground: #0e0e0d;
+  --band: #181816;
+  --band-hover: #22221f;
+  --band-active: #2e2e29;
+  --warning: #e6b450;
+}
+
+@utility label {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/*
+ * The evidence photograph keeps its 21:9 frame at every width, so marks drawn over it stay in place.
+ * On phones the stage is taller than the frame: the canvas overflows it and is shifted so both marks stay in view.
+ */
+@utility evidence-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  aspect-ratio: 1400 / 600;
+  max-width: none;
+  @media (width < 40rem) {
+    transform: translateX(-17.14%);
+  }
+}
+
+/*
+ * One long word (German has many) can be wider than a phone, in a large headline or a narrow table cell.
+ * The element may shrink below its content and break the word as a last resort. Automatic hyphenation is off because
+ * it also splits words that fit, such as "photo-graph" in the hero. Translations mark good break points with a soft hyphen.
+ */
+@utility wrap-long-words {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/*
+ * The logo is the name set in lowercase. Its tracking is named so the filled o can stay centred under it.
+ */
+@utility wordmark {
+  --wordmark-tracking: -0.045em;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: var(--wordmark-tracking);
+  white-space: nowrap;
+}
+
+/*
+ * The o keeps what is inside it. A disc sits behind the font's own o, resting on the baseline, larger than the
+ * counter and smaller than the bowl, so only the counter shows it. Every size is in em, so it holds at any type size.
+ * The letter carries its tracking on its right edge, so the disc moves right by half of it to stay centred.
+ */
+@utility held-o {
+  display: inline-grid;
+  justify-items: center;
+  align-items: baseline;
+  &::before {
+    content: "";
+    grid-area: 1 / 1;
+    width: 0.36em;
+    height: 0.42em;
+    border-radius: 50%;
+    background: var(--primary);
+    transform: translate(calc(var(--wordmark-tracking) / -2), -0.053em);
+  }
+  & > * {
+    grid-area: 1 / 1;
+  }
+}
+
+/* A card: white on the paper, softly rounded, with a hairline and a soft shadow. */
+@utility surface {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-card);
+}
+
+/* A card that answers the pointer: it lifts a little, and its shadow deepens. */
+@utility lift {
+  transition: transform 0.35s var(--ease-spring), box-shadow 0.35s var(--ease-spring), border-color 0.2s ease;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-raised);
+    border-color: var(--border-strong);
+  }
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* A bar that stays on top while the page moves under it: the page shows through, blurred. */
+@utility glass {
+  background-color: color-mix(in oklab, var(--background) 78%, transparent);
+  backdrop-filter: blur(18px) saturate(1.5);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+}
+
+/* Each child arrives a moment after the one before it. */
+@utility stagger {
+  & > * {
+    animation: var(--animate-rise);
+  }
+  & > :nth-child(2) { animation-delay: 60ms; }
+  & > :nth-child(3) { animation-delay: 120ms; }
+  & > :nth-child(4) { animation-delay: 180ms; }
+  & > :nth-child(5) { animation-delay: 240ms; }
+  & > :nth-child(6) { animation-delay: 300ms; }
+  & > :nth-child(7) { animation-delay: 340ms; }
+  & > :nth-child(8) { animation-delay: 380ms; }
+  & > :nth-child(n + 9) { animation-delay: 420ms; }
+}
+
+/* A shape standing in for content that is on its way: a soft band of light passes over it. */
+@utility skeleton {
+  border-radius: var(--radius-md);
+  background-color: var(--muted);
+  background-image: linear-gradient(100deg, transparent 20%, color-mix(in oklab, var(--card) 70%, transparent) 50%, transparent 80%);
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
+/* A faint grid of dots, for the backdrop of a hero or an empty state. */
+@utility dot-grid {
+  background-image: radial-gradient(color-mix(in oklab, var(--foreground) 13%, transparent) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+@utility figures {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, currentColor 45%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: var(--draw-length, 1000);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  ::selection {
+    background-color: color-mix(in oklab, var(--primary) 24%, transparent);
+  }
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    line-height: 1.55;
+    font-feature-settings: "ss01", "cv11";
+    text-rendering: optimizeLegibility;
+  }
+  html {
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/*
+ * Hold's grids (components/grid): the row shown beside a grid, a decision or a pair, is marked with the accent, as a
+ * bar and a tint, while AG Grid's own ring stays on the focused cell. Its cell says so to screen readers.
+ */
+.hold-grid .ag-row:has([data-chosen]) {
+  background-color: color-mix(in oklab, var(--primary) 7%, var(--card));
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+
+/*
+ * The price list editor's grid (features/prices): a cell publishing would refuse is underlined in the warning colour,
+ * while the row's last column says what is wrong in words.
+ */
+.hold-grid .price-cell-problem {
+  box-shadow: inset 0 -2px 0 var(--destructive);
+  background-color: color-mix(in oklab, var(--destructive) 7%, transparent);
+}
+
+/* AG Studio's controls that its theme gives no size for, made room for a finger like every control in Hold
+ * (AGENTS.md section 9): the insights agent's prompt starters, thread and send buttons, and the filter pickers on the
+ * canvas. Height only: widths come from their words, and Studio lays its toolbars out by its own sizes. */
+.hold-studio :is(.ag-studio-ai-prompt-starter, .ag-studio-ai-thread-button, .ag-studio-ai-thread-new-button, .ag-studio-ai-assistant-send-button, .ag-studio-layout-widget-skeleton-drop-target) {
+  min-height: 2.75rem;
+}

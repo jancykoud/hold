@@ -1,0 +1,57 @@
+import { createHash } from 'node:crypto'
+import { readFile } from 'node:fs/promises'
+import { parseArgs } from 'node:util'
+import { createBedrockComparisonModel, PROMPT_VERSION } from '@hold/compare'
+import { createDataApiDatabase } from '@hold/db/data-api'
+import { EVALUATION_GROUPS } from '@hold/domain'
+import { perceptualHash } from '@hold/vision'
+import { z } from 'zod'
+import { runEvaluation } from './evaluate.ts'
+import { HALVES } from './manifest.ts'
+import { pipelineVersion } from './pipeline-version.ts'
+
+// Runs one half of the evaluation set through the comparison on Bedrock.
+//   pnpm eval --half gate [--accept] [--limit 10]
+//   pnpm eval --half tuning --group damage [--group clean_hard]   (a cheap look at some groups: never recorded or accepted)
+// Records the run in eval_runs when HOLD_DATABASE_CLUSTER_ARN and a login are set: HOLD_DATABASE_EVAL_SECRET_ARN in CI,
+// or HOLD_DATABASE_ADMIN_SECRET_ARN (the owner, as for migrations) to accept a run. Exits non-zero when the gate half
+// fails the gate.
+
+const { values } = parseArgs({ options: { half: { type: 'string', default: 'tuning' }, accept: { type: 'boolean', default: false }, limit: { type: 'string' }, group: { type: 'string', multiple: true } } })
+const half = z.enum(HALVES).parse(values.half)
+const groups = values.group === undefined ? undefined : z.array(z.enum(EVALUATION_GROUPS)).min(1).parse(values.group)
+const here = new URL('..', import.meta.url).pathname
+const repository = new URL('../..', import.meta.url).pathname
+
+const limitsSchema = z.strictObject({ maxCleanWronglyFlagged: z.number().min(0).max(1), maxDamageFoundDrop: z.number().min(0).max(1) })
+const limits = await readFile(`${here}gate-limits.json`, 'utf8').then((text) => limitsSchema.parse(JSON.parse(text)), () => null)
+
+const cluster = process.env['HOLD_DATABASE_CLUSTER_ARN']
+// The evaluation login, which may only record and read runs; the owner's login locally, which may also accept one.
+const owner = process.env['HOLD_DATABASE_EVAL_SECRET_ARN'] ?? process.env['HOLD_DATABASE_ADMIN_SECRET_ARN']
+const region = process.env['AWS_REGION'] ?? process.env['HOLD_AWS_REGION'] ?? 'us-east-1'
+const database = cluster !== undefined && owner !== undefined && cluster !== '' && owner !== '' ? createDataApiDatabase({ region, clusterArn: cluster, secretArn: owner, database: process.env['HOLD_DATABASE_NAME'] ?? 'hold_db' }) : undefined
+if (groups !== undefined) console.warn(`Only these groups: ${groups.join(', ')}. The run is written to eval/results only, never to eval_runs.`)
+else if (database === undefined) console.warn('No database settings: the run is written to eval/results only, not to eval_runs.')
+
+const outcome = await runEvaluation(
+  { root: `${here}set`, half, resultsDir: `${here}results`, accept: values.accept, limits, ...(values.limit === undefined ? {} : { limit: Number(values.limit) }), ...(groups === undefined ? {} : { groups }) },
+  {
+    model: createBedrockComparisonModel({ awsRegion: region }),
+    fingerprint: async (photo) => ({ sha256: createHash('sha256').update(photo).digest('hex'), perceptualHash: await perceptualHash(photo) }),
+    database,
+    now: () => new Date(),
+    pipelineVersion: await pipelineVersion([`${repository}packages/compare/src`, `${repository}packages/vision/src`, `${repository}packages/domain/src`], PROMPT_VERSION),
+  },
+)
+console.log(await readFile(outcome.reportPath, 'utf8'))
+console.log(`Report: ${outcome.reportPath}`)
+if (half === 'gate' && outcome.gate.outcome === 'failed') {
+  console.error(`The comparison failed the gate: ${outcome.gate.reasons.join(', ')}.`)
+  process.exitCode = 1
+}
+// Not a failure, since the first run must be able to become the baseline, and not a pass either. In GitHub Actions the
+// line is an annotation on the run, so nobody reads a green build as a measured one.
+if (half === 'gate' && outcome.gate.outcome === 'no_baseline') {
+  console.warn(`${process.env['GITHUB_ACTIONS'] === 'true' ? '::warning title=No baseline::' : ''}No accepted run to compare against: the gate checked nothing. A person accepts a run with --accept to set the baseline.`)
+}
