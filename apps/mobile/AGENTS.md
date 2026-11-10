@@ -133,8 +133,8 @@ return <LoadState state={state} onRetry={retry} empty={{ title, body }} isEmpty=
   is https at build time (`app.config.ts` then adds `applinks:<host>` and an Android `autoVerify` intent filter) and
   the web app serves, at `https://<host>/.well-known/`:
   - `apple-app-site-association` (JSON, no extension, `application/json`), with `applinks.details` naming
-    `<TeamID>.com.rogerjeasy.hold` and paths `/r/*` and `/*/r/*`;
-  - `assetlinks.json` naming the package `com.rogerjeasy.hold` and the SHA-256 fingerprint of its signing key.
+    `<TeamID>.com.jancykoud.hold` and paths `/r/*` and `/*/r/*`;
+  - `assetlinks.json` naming the package `com.jancykoud.hold` and the SHA-256 fingerprint of its signing key.
   Neither file exists yet; they belong in `apps/web`. Until then a link opens the web page, and the app is reached by
   scanning or pasting.
 

@@ -11,7 +11,7 @@ Baseline source: `9cd59b05fcdef3eba4a5e0adfbc4dddb06ebd81b`. A focused, uncommit
 ## Observed baseline and deployment repair
 
 - Fresh `pnpm check` passed lint, type checks, 159 test files and 1,233 tests. These tests use local PostgreSQL/fakes or recorded responses; they do not prove live settlement.
-- [CI for the source commit passed](https://github.com/rogerjeasy/hold/actions/runs/39497094923). [Its deployment failed](https://github.com/rogerjeasy/hold/actions/runs/39498179389).
+- CI for the source commit passed. Its deployment failed.
 - AWS confirmed `HoldWork` was `UPDATE_ROLLBACK_COMPLETE`, with `iam:PassRole` explicitly denied for `hold-comparison`. The comparison, evidence and receipt workers were absent. App Runner still ran `9772a5acf46f5bea7ab92c098de60d0ef7c2866a`.
 - Reviewed and deployed the existing `HoldDelivery` template. AWS reported `UPDATE_COMPLETE` at 07:14:27 UTC on 22 October. The changes allow passing only the three additional named Hold worker roles, exact-version S3 reads and the configured Bedrock models; S3 KMS access is constrained to Hold's buckets. No product code or other project's resource was changed.
 - The failed pipeline's migration step reported 21 migrations applied on 20 October, including a working `hold_worker` login. This is historical pipeline evidence, not a fresh migration-count query.

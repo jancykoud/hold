@@ -3,7 +3,7 @@ import { color } from '@hold/design-tokens';
 
 // Expo app config. Nothing here is a secret. Per-environment values (the Hold address) come from EXPO_PUBLIC_*
 // variables in a local, gitignored .env (see .env.example).
-const STORE_BUNDLE_ID = 'com.rogerjeasy.hold';
+const STORE_BUNDLE_ID = 'com.jancykoud.hold';
 // A development build is its own app, so it installs next to the store app.
 const IS_DEV_BUILD = process.env.APP_VARIANT === 'development';
 const BUNDLE_ID = IS_DEV_BUILD ? `${STORE_BUNDLE_ID}.dev` : STORE_BUNDLE_ID;
@@ -27,7 +27,6 @@ const GOOGLE_SERVICES_FILE = process.env.GOOGLE_SERVICES_JSON;
 const config: ExpoConfig = {
   name: IS_DEV_BUILD ? 'Hold Dev' : 'Hold',
   slug: 'hold',
-  owner: 'rogerjeasy',
   scheme: 'hold',
   version: '0.1.0',
   orientation: 'default',

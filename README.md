@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/rogerjeasy/hold/actions/workflows/ci.yml"><img src="https://github.com/rogerjeasy/hold/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/jancykoud/hold/actions/workflows/ci.yml"><img src="https://github.com/jancykoud/hold/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
   <img src="https://img.shields.io/badge/PayPal-Orders%20v2%20%C2%B7%20sandbox-003087?logo=paypal&logoColor=white" alt="PayPal sandbox">
   <img src="https://img.shields.io/badge/Claude-Opus%204.6%20%C2%B7%20Bedrock-D97757?logo=anthropic&logoColor=white" alt="Claude on Amazon Bedrock">
