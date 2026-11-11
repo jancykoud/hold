@@ -697,7 +697,7 @@ describe('the comparison gate', () => {
             Condition: {
               StringEquals: {
                 'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
-                'token.actions.githubusercontent.com:sub': 'repo:rogerjeasy@58919295/hold@1418569084:ref:refs/heads/main',
+                'token.actions.githubusercontent.com:sub': 'repo:jancykoud@148472932/hold@1453331957:ref:refs/heads/main',
               },
             },
           }),
@@ -742,7 +742,7 @@ describe('delivery', () => {
             Condition: {
               StringEquals: {
                 'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
-                'token.actions.githubusercontent.com:sub': 'repo:rogerjeasy@58919295/hold@1418569084:ref:refs/heads/main',
+                'token.actions.githubusercontent.com:sub': 'repo:jancykoud@148472932/hold@1453331957:ref:refs/heads/main',
               },
             },
           }),

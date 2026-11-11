@@ -74,8 +74,8 @@ export const CREDENTIAL_KEY_ALIAS = 'alias/hold-credential-key'
 // The repository GitHub Actions deploys from. Only its main branch may take the deploy role. The repository uses
 // GitHub's immutable subject, which names the owner and the repository by their ids as well, so a renamed or
 // recreated repository of the same name does not match.
-export const GITHUB_REPOSITORY = 'rogerjeasy/hold'
-export const GITHUB_DEPLOY_SUBJECT = 'repo:rogerjeasy@58919295/hold@1418569084:ref:refs/heads/main'
+export const GITHUB_REPOSITORY = 'jancykoud/hold'
+export const GITHUB_DEPLOY_SUBJECT = 'repo:jancykoud@148472932/hold@1453331957:ref:refs/heads/main'
 // Every role Hold's stacks make carries this boundary, so none can reach beyond Hold (infra/lib/delivery-stack.ts).
 export const PERMISSIONS_BOUNDARY = 'hold-permissions-boundary'
 // The account's CDK bootstrap, shared with the other projects. Hold uses only its bucket, under a prefix of its own,
