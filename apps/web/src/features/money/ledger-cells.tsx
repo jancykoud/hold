@@ -4,6 +4,8 @@ import type { CustomCellRendererProps } from 'ag-grid-react'
 import { CircleCheck, TriangleAlert } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { createContext, useContext } from 'react'
+import type { RowCellProps } from '@/components/grid/section-grid'
+import type { SectionEntry } from '@/components/grid/sections'
 import { SampleTag } from '@/components/ui/sample-tag'
 import type { LedgerRow } from './ledger-rows'
 import type { LedgerText } from './use-ledger-text'
@@ -22,17 +24,16 @@ function useLedgerGrid(): LedgerGridState {
   return state
 }
 
-type CellProps = CustomCellRendererProps<LedgerRow>
+type CellProps = RowCellProps<LedgerRow>
 
 export function WhenCell({ data }: CellProps) {
   const { text } = useLedgerGrid()
-  return data === undefined ? null : <span className="figures flex h-full items-center text-sm">{text.moment(data.occurredAt)}</span>
+  return <span className="figures flex h-full items-center text-sm">{text.moment(data.occurredAt)}</span>
 }
 
 // What the line did; grouped by month, also whose rental it was.
 export function WhatCell({ data }: CellProps) {
   const { text, grouping } = useLedgerGrid()
-  if (data === undefined) return null
   return (
     <div className="grid h-full min-w-0 content-center gap-0.5 leading-snug">
       <span className="truncate font-semibold">{text.what(data)}</span>
@@ -46,31 +47,36 @@ export function WhatCell({ data }: CellProps) {
   )
 }
 
-export function MoneyCell({ value }: CustomCellRendererProps<LedgerRow, number | null>) {
+export function MoneyCell({ value }: CustomCellRendererProps<SectionEntry<LedgerRow>, number | null>) {
   const { text } = useLedgerGrid()
   return typeof value === 'number' ? <span className="figures flex h-full items-center justify-end font-semibold">{text.money(value)}</span> : null
 }
 
 export function ReferenceCell({ data }: CellProps) {
-  return data === undefined ? null : <span className="flex h-full min-w-0 items-center font-mono text-xs"><span className="truncate">{data.paypalReference}</span></span>
+  return <span className="flex h-full min-w-0 items-center font-mono text-xs"><span className="truncate">{data.paypalReference}</span></span>
 }
 
-// A group's heading across the grid, with the totals the grid added up. A rental's also says what its money's checks
-// found, in words and with a sign, never by colour alone.
-export function LedgerGroupLabel({ node }: CellProps) {
+// What a group's lines moved one way, in cents.
+export function flowTotal(rows: readonly LedgerRow[], flow: LedgerRow['flow']): number {
+  return rows.reduce((sum, row) => (row.flow === flow ? sum + row.amountCents : sum), 0)
+}
+
+// A group's heading across the grid, with what its lines sent to the shop and back. A rental's also says what its
+// money's checks found, in words and with a sign, never by colour alone.
+export function LedgerGroupLabel({ rows }: { rows: readonly LedgerRow[] }) {
   const t = useTranslations('money')
   const { text, grouping } = useLedgerGrid()
-  const first = node.allLeafChildren?.[0]?.data
+  const first = rows[0]
   if (first === undefined) return null
-  const aggregates: unknown = node.aggData
-  const total = (column: string): unknown => (typeof aggregates === 'object' && aggregates !== null && column in aggregates ? Reflect.get(aggregates, column) : null)
-  const figure = (label: string, cents: unknown) => `${label} ${text.money(typeof cents === 'number' ? cents : 0)}`
+  const figure = (label: string, cents: number) => `${label} ${text.money(cents)}`
+  const toShop = flowTotal(rows, 'to_shop')
+  const back = flowTotal(rows, 'to_renter')
   if (grouping === 'month') {
     return (
       <span className="flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-0.5 leading-normal">
         <span className="font-semibold">{text.month(first.month)}</span>
         <span className="figures text-sm text-muted-foreground">
-          {[figure(t('group.toShop'), total('toShop')), figure(t('group.backToRenters'), total('back')), t('group.lines', { count: node.allChildrenCount ?? 0 })].join(' · ')}
+          {[figure(t('group.toShop'), toShop), figure(t('group.backToRenters'), back), t('group.lines', { count: rows.length })].join(' · ')}
         </span>
       </span>
     )
@@ -88,7 +94,7 @@ export function LedgerGroupLabel({ node }: CellProps) {
           <span className="truncate">{text.checks(money.checks)}</span>
         </span>
       </span>
-      <span className="figures truncate text-sm text-muted-foreground">{[figure(t('group.toShop'), total('toShop')), figure(t('group.backToRenter'), total('back')), figure(t('group.heldNow'), money.heldNowCents)].join(' · ')}</span>
+      <span className="figures truncate text-sm text-muted-foreground">{[figure(t('group.toShop'), toShop), figure(t('group.backToRenter'), back), figure(t('group.heldNow'), money.heldNowCents)].join(' · ')}</span>
     </span>
   )
 }

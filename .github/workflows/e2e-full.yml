@@ -33,10 +33,6 @@ jobs:
       - name: Install Chromium for Playwright
         run: pnpm --filter @hold/web exec playwright install --with-deps chromium
       - run: pnpm test:e2e
-        # Without their keys AG Grid and AG Studio write a licence notice to the console, which fails every test of them.
-        env:
-          HOLD_AG_GRID_LICENCE_KEY: ${{ secrets.AG_GRID_LICENCE_KEY }}
-          HOLD_AG_STUDIO_LICENCE_KEY: ${{ secrets.AG_STUDIO_LICENCE_KEY }}
       - name: Keep the report of a failed run
         if: failure()
         uses: actions/upload-artifact@v4

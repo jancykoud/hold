@@ -2356,10 +2356,9 @@
         "role_may_not_retire": "Solo el propietario o un encargado pueden retirar un artículo."
       },
       "fleet": {
-        "keys": "Los días fuera cuentan este año. Daños muestra lo que la comparación encontró en cada uno de los últimos alquileres de un artículo. Las flechas pasan de una fila a otra; Intro abre el pasaporte de un artículo; clic derecho en una fila para su pasaporte, su estado o la retención de su tipo.",
+        "keys": "Los días fuera cuentan este año. Daños muestra lo que la comparación encontró en cada uno de los últimos alquileres de un artículo. Las flechas pasan de una fila a otra; Intro abre el pasaporte de un artículo; el botón al final de una fila ofrece su pasaporte, su estado o la retención de su tipo.",
         "grid": "Flota",
         "download": "Descargar la flota para una hoja de cálculo",
-        "sheet": "Flota",
         "items": "{count, plural, one {# artículo} other {# artículos}}",
         "fastest": "Se desgasta más rápido",
         "columns": {
@@ -2376,13 +2375,15 @@
           "signal": "Señal",
           "repairCost": "Coste de reparación",
           "repairMargin": "Recuperado menos reparaciones",
-          "openRepairs": "Reparaciones pendientes"
+          "openRepairs": "Reparaciones pendientes",
+          "more": "Más"
         },
         "menu": {
           "passport": "Abrir el pasaporte",
           "status": "Enviar a reparar o retirar",
           "hold": "Cambiar la retención de {name}",
-          "type": "Abrir el tipo"
+          "type": "Abrir el tipo",
+          "more": "Más sobre {name}"
         },
         "recoveredOf": "{recovered} de {priced}"
       }
@@ -2694,14 +2695,12 @@
       "noItemsBody": "El calendario muestra cada artículo que alquilas.",
       "noItemsAction": "Ir a los artículos",
       "unknownRenter": "Cliente aún desconocido",
-      "loading": "Cargando el calendario…",
-      "loadFailed": "No se pudo cargar el calendario. Vuelva a cargar la página o busque cada alquiler en Alquileres.",
       "view": {
         "label": "Ver el calendario como",
         "timeline": "Línea de tiempo",
         "list": "Lista"
       },
-      "rentalsRow": "Alquileres"
+      "timeline": "Alquileres día a día"
     },
     "priceEditor": {
       "draftOf": "Borrador de la versión {version}",
@@ -2723,14 +2722,15 @@
       },
       "grid": {
         "label": "Precios de este borrador",
-        "keys": "Intro edita una celda y Tab pasa a la siguiente. Mayús con las flechas elige celdas; Ctrl o ⌘ con C las copia, y con V pega celdas de una hoja de cálculo en la celda elegida. Haz clic derecho en una fila para añadir o quitar un precio. Arrastra una fila por su asa para cambiar el orden que leen los clientes. Ctrl o ⌘ con Z deshace el último cambio."
+        "keys": "Intro edita una celda y Tab pasa a la siguiente. Ctrl o ⌘ con C copia la celda elegida, y con V pega celdas de una hoja de cálculo en la celda elegida. El botón al final de una fila añade un precio encima o debajo, o quita la fila. Arrastra una fila por su asa para cambiar el orden que leen los clientes. Ctrl o ⌘ con Z deshace el último cambio."
       },
       "columns": {
         "order": "Orden",
         "description": "Para qué es",
         "kind": "Tipo",
         "amount": "Importe, {currency}",
-        "remove": "Quitar"
+        "remove": "Quitar",
+        "more": "Más"
       },
       "remove": "Quitar {description}",
       "removeUnnamed": "Quitar el precio {number}",
@@ -2780,10 +2780,11 @@
       "menu": {
         "above": "Añadir un precio encima",
         "below": "Añadir un precio debajo",
-        "remove": "Quitar este precio"
+        "remove": "Quitar este precio",
+        "more": "Más sobre {description}",
+        "moreUnnamed": "Más sobre el precio {number}"
       },
-      "download": "Descargar para una hoja de cálculo",
-      "sheet": "Precios"
+      "download": "Descargar para una hoja de cálculo"
     },
     "erasure": {
       "title": "Borrar los datos personales del cliente",
@@ -3833,7 +3834,10 @@
     "openPair": "Abrir el par {id}",
     "closePair": "Cerrar el par {id}",
     "download": "Descargar estos pares para una hoja de cálculo",
-    "sheet": "Pares"
+    "resultFilter": {
+      "label": "Resultado",
+      "all": "Todos los resultados"
+    }
   },
   "trust": {
     "reason": "Tu retención es de {amount}, no de {ordinary}, porque has devuelto {count, plural, one {# alquiler} other {# alquileres}} en buen estado en los últimos {months} meses.",
@@ -4445,7 +4449,8 @@
       "due": "Vence",
       "amount": "Importe",
       "choose": "Elegir",
-      "open": "Abrir"
+      "open": "Abrir",
+      "more": "Más"
     },
     "titles": {
       "claim": "Aprobar una reclamación",
@@ -4565,11 +4570,10 @@
     "groupCount": "{count, plural, one {# decisión} other {# decisiones}}",
     "groupTotal": "{amount} en total",
     "menu": {
-      "open": "Abrir la decisión",
-      "close": "Cerrar la decisión",
       "claim": "Abrir la página de la reclamación",
       "rental": "Abrir el alquiler",
-      "passport": "Abrir el pasaporte del artículo"
+      "passport": "Abrir el pasaporte del artículo",
+      "more": "Más sobre {title}"
     },
     "repairLine": {
       "claim": "De la reclamación cobrada a {renter}",
@@ -4606,7 +4610,6 @@
     "grid": "Registro de dinero",
     "cards": "Alquileres y su dinero",
     "download": "Descargar para una hoja de cálculo",
-    "sheet": "Registro de dinero",
     "openLine": "Abrir {line}",
     "closeLine": "Cerrar {line}",
     "lineName": "{what}, {amount}",
@@ -4693,7 +4696,7 @@
   },
   "insights": {
     "title": "Análisis",
-    "lead": "Dónde está el dinero de la tienda, cuánto cuesta en daños cada tipo de artículo y qué volvió, a partir de los propios registros de Hold. Pide al agente de análisis que añada o cambie un gráfico: lee estas tablas y ordena el panel, y no cambia ningún registro.",
+    "lead": "Dónde está el dinero de la tienda, cuánto cuesta en daños cada tipo de artículo y qué volvió, a partir de los propios registros de Hold.",
     "onlyDeciders": "Solo el propietario o un gerente abre el panel de análisis.",
     "empty": "Todavía no hay nada que mostrar. El panel se llena cuando los alquileres cobran tarifas, ponen retenciones y se liquidan.",
     "narrow": "El panel necesita una pantalla más ancha. Estas son las cifras con las que se abre.",
@@ -4805,7 +4808,9 @@
     "onlyDecidersBody": "Pide estas cifras a un propietario o encargado. La página Dinero, que todo el personal puede leer, muestra cada pago tal como lo registró PayPal.",
     "openMoney": "Abrir la página Dinero",
     "emptyTitle": "Aún no hay cifras",
-    "live": "Hecho con tus registros, al momento."
+    "live": "Hecho con tus registros, al momento.",
+    "panelEmpty": "Todavía no hay nada que mostrar aquí.",
+    "livesLeftOut": "{count, plural, one {# retención más no está dibujada} other {# retenciones más no están dibujadas}}."
   },
   "selfReturn": {
     "card": {

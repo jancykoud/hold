@@ -2356,10 +2356,9 @@
         "role_may_not_retire": "Only the owner or a manager can retire an item."
       },
       "fleet": {
-        "keys": "Days out count this year. Damage shows what the comparison found on each of an item’s last rentals. Arrow keys move between rows; Enter opens an item’s passport; right-click a row for its passport, its status or its type’s hold.",
+        "keys": "Days out count this year. Damage shows what the comparison found on each of an item’s last rentals. Arrow keys move between rows; Enter opens an item’s passport; the button at the end of a row offers its passport, its status or its type’s hold.",
         "grid": "Fleet",
         "download": "Download the fleet for a spreadsheet",
-        "sheet": "Fleet",
         "items": "{count, plural, one {# item} other {# items}}",
         "fastest": "Wearing fastest",
         "columns": {
@@ -2376,13 +2375,15 @@
           "signal": "Signal",
           "repairCost": "Repair cost",
           "repairMargin": "Recovered less repairs",
-          "openRepairs": "Repairs to do"
+          "openRepairs": "Repairs to do",
+          "more": "More"
         },
         "menu": {
           "passport": "Open the passport",
           "status": "Send to repair or retire",
           "hold": "Change the hold for {name}",
-          "type": "Open the type"
+          "type": "Open the type",
+          "more": "More for {name}"
         },
         "recoveredOf": "{recovered} of {priced}"
       }
@@ -2694,14 +2695,12 @@
       "noItemsBody": "The calendar shows each item you rent.",
       "noItemsAction": "Go to items",
       "unknownRenter": "Renter not known yet",
-      "loading": "Loading the calendar…",
-      "loadFailed": "The calendar could not load. Reload the page, or find each rental under Rentals.",
       "view": {
         "label": "Show the calendar as",
         "timeline": "Timeline",
         "list": "List"
       },
-      "rentalsRow": "Rentals"
+      "timeline": "Rentals day by day"
     },
     "priceEditor": {
       "draftOf": "Draft of version {version}",
@@ -2723,14 +2722,15 @@
       },
       "grid": {
         "label": "Prices in this draft",
-        "keys": "Enter edits a cell and Tab moves on. Shift with the arrows chooses cells; Ctrl or ⌘ with C copies them, and with V pastes cells from a spreadsheet at the focused cell. Right-click a row to add or remove a price. Drag a row by its handle to change the order renters read. Ctrl or ⌘ with Z takes back the last change."
+        "keys": "Enter edits a cell and Tab moves on. Ctrl or ⌘ with C copies the focused cell, and with V pastes cells from a spreadsheet at the focused cell. The button at the end of a row adds a price above or below it, or removes it. Drag a row by its handle to change the order renters read. Ctrl or ⌘ with Z takes back the last change."
       },
       "columns": {
         "order": "Order",
         "description": "What it is for",
         "kind": "Kind",
         "amount": "Amount, {currency}",
-        "remove": "Remove"
+        "remove": "Remove",
+        "more": "More"
       },
       "remove": "Remove {description}",
       "removeUnnamed": "Remove price {number}",
@@ -2780,10 +2780,11 @@
       "menu": {
         "above": "Add a price above",
         "below": "Add a price below",
-        "remove": "Remove this price"
+        "remove": "Remove this price",
+        "more": "More for {description}",
+        "moreUnnamed": "More for price {number}"
       },
-      "download": "Download for a spreadsheet",
-      "sheet": "Prices"
+      "download": "Download for a spreadsheet"
     },
     "erasure": {
       "title": "Erase the renter’s personal details",
@@ -3833,7 +3834,10 @@
     "openPair": "Open pair {id}",
     "closePair": "Close pair {id}",
     "download": "Download these pairs for a spreadsheet",
-    "sheet": "Pairs"
+    "resultFilter": {
+      "label": "Result",
+      "all": "Every result"
+    }
   },
   "trust": {
     "reason": "Your hold is {amount}, not {ordinary}, because you have returned {count, plural, one {# rental} other {# rentals}} in good condition in the last {months} months.",
@@ -4445,7 +4449,8 @@
       "due": "Due",
       "amount": "Amount",
       "choose": "Choose",
-      "open": "Open"
+      "open": "Open",
+      "more": "More"
     },
     "titles": {
       "claim": "Approve a claim",
@@ -4565,11 +4570,10 @@
     "groupCount": "{count, plural, one {# decision} other {# decisions}}",
     "groupTotal": "{amount} in all",
     "menu": {
-      "open": "Open the decision",
-      "close": "Close the decision",
       "claim": "Open the claim page",
       "rental": "Open the rental",
-      "passport": "Open the item’s passport"
+      "passport": "Open the item’s passport",
+      "more": "More for {title}"
     },
     "repairLine": {
       "claim": "From {renter}’s charged claim",
@@ -4606,7 +4610,6 @@
     "grid": "Money log",
     "cards": "Rentals and their money",
     "download": "Download for a spreadsheet",
-    "sheet": "Money log",
     "openLine": "Open {line}",
     "closeLine": "Close {line}",
     "lineName": "{what}, {amount}",
@@ -4693,7 +4696,7 @@
   },
   "insights": {
     "title": "Insights",
-    "lead": "Where the shop’s money is, what each kind of item costs in damage, and what came back, built from Hold’s own records. Ask the insights agent to add or change a chart: it reads these tables and arranges the dashboard, and it changes no record.",
+    "lead": "Where the shop’s money is, what each kind of item costs in damage, and what came back, built from Hold’s own records.",
     "onlyDeciders": "Only the owner or a manager opens the insights dashboard.",
     "empty": "Nothing to show yet. The dashboard fills as rentals take fees, place holds and settle.",
     "narrow": "The dashboard needs a wider screen. These are the figures it opens with.",
@@ -4805,7 +4808,9 @@
     "onlyDecidersBody": "Ask an owner or manager for these figures. The Money page, which every staff member reads, shows each payment as PayPal recorded it.",
     "openMoney": "Open the Money page",
     "emptyTitle": "No figures yet",
-    "live": "Built from your records, as of now."
+    "live": "Built from your records, as of now.",
+    "panelEmpty": "Nothing to show here yet.",
+    "livesLeftOut": "{count, plural, one {# more hold is} other {# more holds are}} not drawn."
   },
   "selfReturn": {
     "card": {

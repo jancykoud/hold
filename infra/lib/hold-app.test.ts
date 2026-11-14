@@ -551,20 +551,11 @@ describe('the web app', () => {
     expect(variables()).toContainEqual({ Name: 'HOLD_PUBLIC_URL', Value: 'https://abc123.us-east-1.awsapprunner.com' })
   })
 
-  it('takes the AG Grid licence key from Secrets Manager when it starts, never as a plain setting', () => {
-    const secrets = (service()['SourceConfiguration'] as { ImageRepository: { ImageConfiguration: { RuntimeEnvironmentSecrets: Variable[] } } }).ImageRepository.ImageConfiguration.RuntimeEnvironmentSecrets
-    web.hasResourceProperties('AWS::SecretsManager::Secret', { Name: 'hold/web/ag-grid-licence' })
-    expect(JSON.stringify(secrets.find((secret) => secret.Name === 'HOLD_AG_GRID_LICENCE_KEY')?.Value)).toContain('GridLicence')
-    expect(variables().map((variable) => variable.Name)).not.toContain('HOLD_AG_GRID_LICENCE_KEY')
-    expect(instancePolicy()).toContain('GridLicence')
-  })
-
-  it('takes the AG Studio licence key from a secret of its own when it starts, never as a plain setting', () => {
-    const secrets = (service()['SourceConfiguration'] as { ImageRepository: { ImageConfiguration: { RuntimeEnvironmentSecrets: Variable[] } } }).ImageRepository.ImageConfiguration.RuntimeEnvironmentSecrets
-    web.hasResourceProperties('AWS::SecretsManager::Secret', { Name: 'hold/web/ag-studio-licence' })
-    expect(JSON.stringify(secrets.find((secret) => secret.Name === 'HOLD_AG_STUDIO_LICENCE_KEY')?.Value)).toContain('StudioLicence')
-    expect(variables().map((variable) => variable.Name)).not.toContain('HOLD_AG_STUDIO_LICENCE_KEY')
-    expect(instancePolicy()).toContain('StudioLicence')
+  it('holds no licence key: the grids, the calendar and the insights dashboard need none', () => {
+    const image = (service()['SourceConfiguration'] as { ImageRepository: { ImageConfiguration: { RuntimeEnvironmentSecrets?: Variable[] } } }).ImageRepository.ImageConfiguration
+    expect((image.RuntimeEnvironmentSecrets ?? []).map((secret) => secret.Name).filter((name) => name.includes('LICENCE'))).toEqual([])
+    expect(Object.keys(web.findResources('AWS::SecretsManager::Secret', { Properties: { Name: 'hold/web/ag-grid-licence' } }))).toEqual([])
+    expect(Object.keys(web.findResources('AWS::SecretsManager::Secret', { Properties: { Name: 'hold/web/ag-studio-licence' } }))).toEqual([])
   })
 
   // Each judge's demo gets accounts of its own (architecture.md section 20.3). The app may create a user, never set a

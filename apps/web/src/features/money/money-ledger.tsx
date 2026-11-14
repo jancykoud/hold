@@ -3,7 +3,7 @@
 import { CircleCheck, Keyboard, SearchX } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
-import type { DetailHeading } from '@/components/grid/master-detail'
+import type { DetailHeading } from '@/components/grid/section-grid'
 import { ToggleChip } from '@/components/ui/toggle-chip'
 import type { ShopClock } from '@/hooks/use-shop-format'
 import type { LedgerGrouping } from './ledger-cells'

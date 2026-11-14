@@ -1,5 +1,5 @@
 // Copies the gate half's photographs from eval/set to public/eval as display copies, where the open scorecard shows
-// each pair (src/features/open-scorecard). It runs before every build and development server, like the Bryntum copy.
+// each pair (src/features/open-scorecard). It runs before every build and development server.
 // The copies are not committed; a set with no photographs yet copies nothing.
 import { existsSync, mkdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join } from 'node:path'

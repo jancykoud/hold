@@ -16,7 +16,7 @@ import { shopRoutes } from '@/lib/routes'
 import { CalendarList } from './calendar-list'
 import { calendarModel, STANDING_COLORS, STANDINGS } from './calendar-model'
 import type { Standing } from './calendar-model'
-import { RentalScheduler } from './rental-scheduler'
+import { RentalTimeline } from './rental-timeline'
 
 type CalendarScreenProps = { shopName: string; clock: ShopClock; window: { readonly from: Date; readonly to: Date }; calendar: ShopCalendar }
 type View = 'timeline' | 'list'
@@ -43,7 +43,7 @@ function ViewSwitch({ view, onView }: { view: View; onView: (view: View) => void
   )
 }
 
-// The shop's calendar (extensions.md section 12.5). On a laptop, Bryntum Scheduler draws each item as a row and each
+// The shop's calendar (extensions.md section 12.5). On a laptop, a timeline draws each item as a row and each
 // rental as a bar marked by where its PayPal hold stands; on a phone, and on request, the same rentals are listed by
 // item.
 export function CalendarScreen({ shopName, clock, window, calendar }: CalendarScreenProps) {
@@ -51,7 +51,6 @@ export function CalendarScreen({ shopName, clock, window, calendar }: CalendarSc
   const format = useShopFormat(clock)
   const [view, setView] = useState<View>('timeline')
   const model = useMemo(() => calendarModel(calendar, t('unknownRenter')), [calendar, t])
-  // Kept the same object between renders: the scheduler is built from it, and a new one would rebuild it.
   const standingText: Readonly<Record<Standing, string>> = useMemo(() => ({ held: t('standings.held'), awaiting: t('standings.awaiting'), late: t('standings.late'), settling: t('standings.settling'), done: t('standings.done') }), [t])
   return (
     <ShopFrame shopName={shopName} title={t('title')} description={t('lead')}>
@@ -83,7 +82,7 @@ export function CalendarScreen({ shopName, clock, window, calendar }: CalendarSc
           </ul>
           {model.events.length === 0 ? <p className="px-4 py-3 text-muted-foreground md:px-5">{t('empty')}</p> : null}
           <div className={cn('min-w-0', view === 'timeline' ? 'hidden md:block' : 'hidden')}>
-            <RentalScheduler resources={model.resources} events={model.events} window={window} itemColumn={t('item')} rentalsRow={t('rentalsRow')} barLabel={(event) => `${event.name}, ${standingText[event.standing]}, ${format.day(new Date(event.startDate))} – ${format.day(new Date(event.endDate))}`} standingText={standingText} loading={t('loading')} failed={t('loadFailed')} />
+            <RentalTimeline resources={model.resources} events={model.events} window={window} clock={clock} standingText={standingText} />
           </div>
           <CalendarList resources={model.resources} events={model.events} clock={clock} standingText={standingText} className={view === 'timeline' ? 'md:hidden' : undefined} />
         </section>

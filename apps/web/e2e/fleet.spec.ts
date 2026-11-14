@@ -31,7 +31,7 @@ test('an owner reads the fleet by type: what each item’s rentals cost and reco
   await expect(row(page, 'Hybrid bike 4')).toContainText('Wearing fastest')
   await expect(row(page, 'Hybrid bike 4').locator('[col-id="openRepairs"]')).toHaveText('1')
   await expect(third.locator('[col-id="marks"]')).toHaveText('1')
-  await expect(third.locator('[col-id="findings"] canvas')).toBeVisible()
+  await expect(third.locator('[col-id="findings"] span > span').first()).toBeVisible()
   await expect(row(page, 'Hybrid bike 4').locator('[col-id="recovered"]')).toHaveText('€35.00 of €35.00')
   await expect(row(page, 'Gravel bike 2').locator('[col-id="recovered"]')).toHaveText('€0.00 of €45.00')
   await expect(third.locator('[col-id="recovered"]')).toHaveText('—')
@@ -41,10 +41,10 @@ test('an owner reads the fleet by type: what each item’s rentals cost and reco
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Hybrid bike 3')
 })
 
-test('the right-click menu opens an item’s passport, its status, or its type’s hold, for a type the shop may change', async ({ page }) => {
+test('a row’s menu opens an item’s passport, its status, or its type’s hold, for a type the shop may change', async ({ page }) => {
   await openItems(page)
-  await row(page, 'City bike 1').locator('[col-id="rentals"]').click({ button: 'right' })
-  const menu = page.locator('.ag-menu')
+  await row(page, 'City bike 1').getByRole('button', { name: 'More for City bike 1' }).click()
+  const menu = page.getByRole('menu')
   await expect(menu.getByRole('menuitem', { name: 'Open the passport' })).toBeVisible()
   await expect(menu.getByRole('menuitem', { name: 'Send to repair or retire' })).toBeVisible()
   await menu.getByRole('menuitem', { name: 'Change the hold for City bike' }).click()
@@ -53,19 +53,19 @@ test('the right-click menu opens an item’s passport, its status, or its type�
 
   await page.goBack()
   // A sample type belongs to the sample rentals, so nobody changes its hold.
-  await row(page, 'Hybrid bike 3').locator('[col-id="rentals"]').click({ button: 'right' })
-  await expect(page.locator('.ag-menu').getByRole('menuitem', { name: 'Open the passport' })).toBeVisible()
-  await expect(page.locator('.ag-menu').getByRole('menuitem', { name: /Change the hold/ })).toHaveCount(0)
+  await row(page, 'Hybrid bike 3').getByRole('button', { name: 'More for Hybrid bike 3' }).click()
+  await expect(page.getByRole('menu').getByRole('menuitem', { name: 'Open the passport' })).toBeVisible()
+  await expect(page.getByRole('menu').getByRole('menuitem', { name: /Change the hold/ })).toHaveCount(0)
 })
 
 test('the fleet downloads for a spreadsheet, and counter staff read it without the owner’s actions', async ({ page }) => {
   await openItems(page, 'Jonas, at the counter')
   const download = page.waitForEvent('download')
   await page.getByRole('button', { name: 'Download the fleet for a spreadsheet' }).click()
-  expect((await download).suggestedFilename()).toBe('hold-fleet.xlsx')
-  await row(page, 'City bike 1').locator('[col-id="rentals"]').click({ button: 'right' })
-  await expect(page.locator('.ag-menu').getByRole('menuitem', { name: 'Open the passport' })).toBeVisible()
-  await expect(page.locator('.ag-menu').getByRole('menuitem', { name: /Change the hold/ })).toHaveCount(0)
+  expect((await download).suggestedFilename()).toBe('hold-fleet.csv')
+  await row(page, 'City bike 1').getByRole('button', { name: 'More for City bike 1' }).click()
+  await expect(page.getByRole('menu').getByRole('menuitem', { name: 'Open the passport' })).toBeVisible()
+  await expect(page.getByRole('menu').getByRole('menuitem', { name: /Change the hold/ })).toHaveCount(0)
 })
 
 test('the fleet fits every width, and on a phone each type keeps its list of items', async ({ page }) => {

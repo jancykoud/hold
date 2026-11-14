@@ -5,7 +5,7 @@ import { ownerWithPrices } from './support/shop'
 import { expectInShop } from './support/sign-in'
 import { expect, test } from './support/test'
 
-// The price list editor (extensions.md section 12.5): the next version as a draft on AG Grid Enterprise, pasted from a
+// The price list editor (extensions.md section 12.5): the next version as a draft in an editable grid, pasted from a
 // spreadsheet into the panel or straight onto the cells, every cell checked, every change undoable, read as a renter
 // would in their language, compared with any version, downloaded for a spreadsheet, and published as version N plus one.
 
@@ -72,8 +72,8 @@ test('an owner adds a row from the menu, pastes cells from a spreadsheet onto it
   await context.grantPermissions(['clipboard-read', 'clipboard-write'])
   await ownerWithPrices(page)
   await openPrices(page)
-  await dataRows(page).first().locator('[col-id="description"]').click({ button: 'right' })
-  const menu = page.locator('.ag-menu')
+  await dataRows(page).first().getByRole('button', { name: /^More for / }).click()
+  const menu = page.getByRole('menu')
   await expect(menu.getByRole('menuitem', { name: 'Add a price above' })).toBeVisible()
   await expect(menu.getByRole('menuitem', { name: 'Remove this price' })).toBeVisible()
   await menu.getByRole('menuitem', { name: 'Add a price below' }).click()
@@ -93,7 +93,7 @@ test('an owner adds a row from the menu, pastes cells from a spreadsheet onto it
 
   const download = page.waitForEvent('download')
   await page.getByRole('button', { name: 'Download for a spreadsheet' }).click()
-  expect((await download).suggestedFilename()).toBe('hold-price-list-draft.xlsx')
+  expect((await download).suggestedFilename()).toBe('hold-price-list-draft.csv')
 })
 
 test('on a phone, each price of the draft is a card', async ({ page }) => {

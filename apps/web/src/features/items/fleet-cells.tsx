@@ -61,25 +61,36 @@ export function FleetNameCell({ data }: CellProps) {
 }
 
 // Where an item is; for a type, how many of its items are shown.
-export function FleetStandingCell({ data, node }: CellProps) {
+export function FleetStandingCell({ data }: CellProps) {
   const t = useTranslations('shop.items.fleet')
   if (data === undefined) return null
   if (data.kind === 'item') return <span className="flex h-full items-center"><StandingBadge standing={data.item.standing} /></span>
-  return <span className="flex h-full items-center text-sm text-muted-foreground">{t('items', { count: node.allChildrenCount ?? 0 })}</span>
+  return <span className="flex h-full items-center text-sm text-muted-foreground">{t('items', { count: data.totals.items })}</span>
 }
 
-// What was recovered of the damage priced: an item's own, or a type's, as the grid added them up.
-export function FleetRecoveredCell({ data, node }: CellProps) {
+// What was recovered of the damage priced: an item's own, or a type's items added up.
+export function FleetRecoveredCell({ data }: CellProps) {
   const t = useTranslations('shop.items.fleet')
   const { money } = useFleetGrid()
-  const aggregates: unknown = node.aggData
-  const figure = (column: 'incurred' | 'recovered'): number => {
-    if (data?.kind === 'item') return column === 'incurred' ? data.wear.incurredCents : data.wear.recoveredCents
-    const value: unknown = typeof aggregates === 'object' && aggregates !== null && column in aggregates ? Reflect.get(aggregates, column) : 0
-    return typeof value === 'number' ? value : 0
-  }
-  const priced = figure('incurred')
-  return <span className="figures flex h-full items-center justify-end">{priced === 0 ? '—' : t('recoveredOf', { recovered: money(figure('recovered')), priced: money(priced) })}</span>
+  if (data === undefined) return null
+  const priced = data.kind === 'item' ? data.wear.incurredCents : (data.totals.incurredCents ?? 0)
+  const recovered = data.kind === 'item' ? data.wear.recoveredCents : (data.totals.recoveredCents ?? 0)
+  return <span className="figures flex h-full items-center justify-end">{priced === 0 ? '—' : t('recoveredOf', { recovered: money(recovered), priced: money(priced) })}</span>
+}
+
+// The damage found on an item, rental by rental, as a line of bars: the tallest is the rental with the most. A
+// picture of figures the spreadsheet holds in full, so it is not read aloud.
+export function FleetFindingsCell({ data }: CellProps) {
+  if (data?.kind !== 'item' || data.wear.findingsByRental.length === 0) return null
+  const most = Math.max(1, ...data.wear.findingsByRental)
+  return (
+    <span aria-hidden="true" className="flex h-full items-end gap-0.5 py-2.5">
+      {data.wear.findingsByRental.map((findings, rental) => (
+        // The rentals are in the order they happened and never move, so their place names them.
+        <span key={rental} className="min-h-px min-w-1 flex-1 rounded-sm bg-primary" style={{ height: `${String(Math.round((findings / most) * 100))}%` }} />
+      ))}
+    </span>
+  )
 }
 
 export function FleetCountCell({ value }: CustomCellRendererProps<FleetRow, number | null>) {

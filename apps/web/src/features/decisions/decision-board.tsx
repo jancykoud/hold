@@ -3,7 +3,7 @@
 import { Keyboard, SearchX } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useActionState, useCallback, useEffect, useMemo, useState } from 'react'
-import type { DetailHeading } from '@/components/grid/master-detail'
+import type { DetailHeading } from '@/components/grid/section-grid'
 import type { ShopClock } from '@/hooks/use-shop-format'
 import { approveProposals } from '@/features/operations/actions'
 import { ApprovalMessage } from '@/features/operations/approval-message'

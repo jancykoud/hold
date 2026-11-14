@@ -34,9 +34,9 @@ export const shopRoutes = {
   rentals: '/shop/rentals',
   // Every line of the money log, checked against its hold, its claim and PayPal, on AG Grid (extensions.md section 12.5).
   money: '/shop/money',
-  // The owner's dashboard on AG Studio, with the insights agent (extensions.md section 12.5).
+  // The owner's dashboard, drawn by Hold from its own records (extensions.md section 12.5).
   insights: '/shop/insights',
-  // Every item as a row and every rental as a bar, on Bryntum Scheduler (extensions.md section 12.5).
+  // Every item as a row and every rental as a bar, on Hold's own timeline (extensions.md section 12.5).
   calendar: '/shop/calendar',
   items: '/shop/items',
   // What renters reported during their rentals (extensions.md section 10).

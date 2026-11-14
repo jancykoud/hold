@@ -3,7 +3,7 @@ import { insightsTables } from './insights-tables'
 import type { InsightsHold, InsightsItem, InsightsLine, InsightsRental, InsightsWords } from './insights-tables'
 
 // The insights dashboard's tables (extensions.md section 12.5): the money ledger's lines and rentals and the fleet's
-// items, as AG Studio's data engine reads them. Every figure is the one those pages show; no renter is named.
+// items, which the dashboard's figures are added up from. Every figure is the one those pages show; no renter is named.
 
 const words: InsightsWords = {
   kind: (kind) => `kind:${kind}`,
@@ -18,7 +18,7 @@ const words: InsightsWords = {
 }
 const at = new Date('2026-10-03T10:00:00Z')
 const startsAt = new Date('2026-10-01T09:00:00Z')
-const line = (id: string, kind: InsightsLine['kind'], flow: InsightsLine['flow'], amountCents: number): InsightsLine => ({ id, rentalId: 'r1', kind, flow, amountCents, occurredAt: at })
+const line = (id: string, kind: InsightsLine['kind'], flow: InsightsLine['flow'], amountCents: number): InsightsLine => ({ id, rentalId: 'r1', kind, flow, amountCents, occurredAt: at, month: '2026-10' })
 const lines = [line('1', 'hold_placed', 'held', 250_00), line('2', 'hold_captured', 'to_shop', 35_00), line('3', 'hold_released', 'to_renter', 215_00)]
 const rentals: InsightsRental[] = [{ rentalId: 'r1', renterName: 'Priya Natarajan', startsAt, simulated: true, reservedCents: 250_00, trustRung: 2, ordinaryCents: 300_00, money: { heldNowCents: 0, toShopCents: 35_00, backCents: 215_00, invoicedUnpaidCents: 0, where: 'taken', checks: [] } }]
 const NOW = new Date('2026-10-14T10:00:00Z')
@@ -30,9 +30,9 @@ describe('the insights dashboard’s tables', () => {
   it('gives each money line what it did and where its money went, in cents, with its rental', () => {
     const { money } = insightsTables({ lines, rentals, fleet: items, holds: live, now: NOW }, words)
     expect(money).toEqual([
-      { line_id: '1', rental_id: 'r1', occurred_at: new Date('2026-10-03T10:00:00Z'), kind: 'kind:hold_placed', flow: 'flow:held', amount_cents: 250_00, to_shop_cents: null, back_cents: null },
-      { line_id: '2', rental_id: 'r1', occurred_at: new Date('2026-10-03T10:00:00Z'), kind: 'kind:hold_captured', flow: 'flow:to_shop', amount_cents: 35_00, to_shop_cents: 35_00, back_cents: null },
-      { line_id: '3', rental_id: 'r1', occurred_at: new Date('2026-10-03T10:00:00Z'), kind: 'kind:hold_released', flow: 'flow:to_renter', amount_cents: 215_00, to_shop_cents: null, back_cents: 215_00 },
+      { line_id: '1', rental_id: 'r1', occurred_at: new Date('2026-10-03T10:00:00Z'), month: '2026-10', kind: 'kind:hold_placed', flow: 'flow:held', amount_cents: 250_00, to_shop_cents: null, back_cents: null },
+      { line_id: '2', rental_id: 'r1', occurred_at: new Date('2026-10-03T10:00:00Z'), month: '2026-10', kind: 'kind:hold_captured', flow: 'flow:to_shop', amount_cents: 35_00, to_shop_cents: 35_00, back_cents: null },
+      { line_id: '3', rental_id: 'r1', occurred_at: new Date('2026-10-03T10:00:00Z'), month: '2026-10', kind: 'kind:hold_released', flow: 'flow:to_renter', amount_cents: 215_00, to_shop_cents: null, back_cents: 215_00 },
     ])
   })
 

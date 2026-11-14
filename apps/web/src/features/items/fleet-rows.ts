@@ -4,10 +4,25 @@ import type { DateWindow, ItemWear } from '@hold/domain'
 import { shows } from './standing'
 import type { ItemFilter } from './standing'
 
-// The fleet passport's rows (extensions.md section 12.5): each item type with its items below it, as AG Grid's tree
-// data holds them, each item with what its rentals say about it. The figures and the signal are the domain's.
+// The fleet passport's rows (extensions.md section 12.5): each item type with its items below it, each item with what
+// its rentals say about it, and each type with its items added up. The figures and the signal are the domain's.
 
-export type FleetTypeRow = { readonly kind: 'type'; readonly id: string; readonly path: readonly string[]; readonly type: CatalogType }
+// A type's items added up. A figure is empty when none of its items shown has one.
+export type FleetTotals = {
+  readonly items: number
+  readonly rentals: number | null
+  readonly daysOut: number | null
+  readonly damageFindings: number | null
+  readonly incurredCents: number | null
+  readonly recoveredCents: number | null
+  readonly repairCostCents: number | null
+  readonly repairMarginCents: number | null
+  readonly openRepairs: number | null
+  readonly openMarks: number | null
+}
+
+// order: where the type comes among the types, which a sorted column must not change.
+export type FleetTypeRow = { readonly kind: 'type'; readonly id: string; readonly path: readonly string[]; readonly type: CatalogType; readonly order: number; readonly totals: FleetTotals }
 export type FleetItemRow = {
   readonly kind: 'item'
   readonly id: string
@@ -32,13 +47,11 @@ export function fleetRows(catalog: ItemCatalog, records: readonly FleetItemRecor
   const fastest = wearingFastest(catalog.items.filter((item) => item.standing !== 'retired').map((item) => ({ itemId: item.id, typeId: item.itemTypeId, rentals: wearOf.get(item.id)?.rentals ?? 0, damageFindings: wearOf.get(item.id)?.damageFindings ?? 0 })))
   // A shop's own types first, the samples after them, as on the rest of the items page.
   const types = [...catalog.types].sort((a, b) => Number(a.simulated) - Number(b.simulated))
-  return types.flatMap((type): FleetRow[] => {
+  return types.flatMap((type, order): FleetRow[] => {
     const items = catalog.items.filter((item) => item.itemTypeId === type.id && shows(show, item.standing))
     if (show !== 'all' && items.length === 0) return []
     const none = { done: 0, doneCostCents: 0, open: 0 }
-    return [
-      { kind: 'type', id: type.id, path: [type.id], type },
-      ...items.map((item): FleetItemRow => ({
+    const shown = items.map((item): FleetItemRow => ({
         kind: 'item',
         id: item.id,
         path: [type.id, item.id],
@@ -50,7 +63,34 @@ export function fleetRows(catalog: ItemCatalog, records: readonly FleetItemRecor
         repairCostCents: (recordOf.get(item.id)?.repairs ?? none).done === 0 ? null : (recordOf.get(item.id)?.repairs ?? none).doneCostCents,
         openRepairs: (recordOf.get(item.id)?.repairs ?? none).open,
         repairMarginCents: repairMargin((wearOf.get(item.id) ?? itemWear([], window)).recoveredCents, recordOf.get(item.id)?.repairs ?? none),
-      })),
-    ]
+      }))
+    return [{ kind: 'type', id: type.id, path: [type.id], type, order, totals: totalsOf(shown) }, ...shown]
   })
+}
+
+function totalsOf(items: readonly FleetItemRow[]): FleetTotals {
+  const sum = (of: (item: FleetItemRow) => number | null): number | null => {
+    const figures = items.flatMap((item) => of(item) ?? [])
+    return figures.length === 0 ? null : figures.reduce((total, figure) => total + figure, 0)
+  }
+  return {
+    items: items.length,
+    rentals: sum((item) => item.wear.rentals),
+    daysOut: sum((item) => item.wear.daysOut),
+    damageFindings: sum((item) => item.wear.damageFindings),
+    incurredCents: sum((item) => item.wear.incurredCents),
+    recoveredCents: sum((item) => item.wear.recoveredCents),
+    repairCostCents: sum((item) => item.repairCostCents),
+    repairMarginCents: sum((item) => item.repairMarginCents),
+    openRepairs: sum((item) => item.openRepairs),
+    openMarks: sum((item) => item.openMarks),
+  }
+}
+
+// Puts the grid's rows back under their types after it sorted them by a column, in place: a sort moves the items
+// inside their type and never a type.
+export function keepItemsUnderTypes(nodes: { readonly data: FleetRow | undefined }[]): void {
+  const types = nodes.flatMap((node) => (node.data?.kind === 'type' ? [{ node, order: node.data.order, id: node.data.type.id }] : [])).sort((first, second) => first.order - second.order)
+  const arranged = types.flatMap((type) => [type.node, ...nodes.filter((node) => node.data?.kind === 'item' && node.data.type.id === type.id)])
+  nodes.splice(0, nodes.length, ...arranged, ...nodes.filter((node) => !arranged.includes(node)))
 }

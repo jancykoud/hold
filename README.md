@@ -302,7 +302,7 @@ To run against your own AWS services, fill in `apps/web/.env.local` from `apps/w
 
 PayPal (Orders v2, Payments v2, JavaScript SDK v6, webhooks, Invoicing v2, Disputes v1, MCP server) · Claude Opus 4.6
 and 4.5 on Amazon Bedrock · OpenCV · Next.js, React, Tailwind CSS and shadcn/ui, in English, German, Spanish and
-French · AG Grid Enterprise (five grids) and AG Studio · Bryntum Scheduler · Aurora PostgreSQL, SQS, Lambda, S3 and
+French · AG Grid Community (five grids) · Aurora PostgreSQL, SQS, Lambda, S3 and
 Cognito with passkeys, on AWS CDK · Vitest, fast-check and Playwright. Why each was chosen is in
 [`docs/tech-stack.md`](docs/tech-stack.md); the full description is in
 [`docs/project-description.md`](docs/project-description.md).

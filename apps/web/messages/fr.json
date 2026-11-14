@@ -2356,10 +2356,9 @@
         "role_may_not_retire": "Seuls le propriétaire ou un responsable peuvent retirer un article."
       },
       "fleet": {
-        "keys": "Les jours dehors comptent cette année. Dommages montre ce que la comparaison a trouvé à chacune des dernières locations d’un article. Les flèches passent d’une ligne à l’autre ; Entrée ouvre le passeport d’un article ; clic droit sur une ligne pour son passeport, son état ou le blocage de son type.",
+        "keys": "Les jours dehors comptent cette année. Dommages montre ce que la comparaison a trouvé à chacune des dernières locations d’un article. Les flèches passent d’une ligne à l’autre ; Entrée ouvre le passeport d’un article ; le bouton en fin de ligne propose son passeport, son état ou le blocage de son type.",
         "grid": "Flotte",
         "download": "Télécharger la flotte pour un tableur",
-        "sheet": "Flotte",
         "items": "{count, plural, one {# article} other {# articles}}",
         "fastest": "S’use le plus vite",
         "columns": {
@@ -2376,13 +2375,15 @@
           "signal": "Signal",
           "repairCost": "Coût des réparations",
           "repairMargin": "Récupéré moins réparations",
-          "openRepairs": "Réparations à faire"
+          "openRepairs": "Réparations à faire",
+          "more": "Plus"
         },
         "menu": {
           "passport": "Ouvrir le passeport",
           "status": "Envoyer en réparation ou retirer",
           "hold": "Modifier le blocage de {name}",
-          "type": "Ouvrir le type"
+          "type": "Ouvrir le type",
+          "more": "Plus pour {name}"
         },
         "recoveredOf": "{recovered} sur {priced}"
       }
@@ -2694,14 +2695,12 @@
       "noItemsBody": "Le calendrier montre chaque article que vous louez.",
       "noItemsAction": "Aller aux articles",
       "unknownRenter": "Client pas encore connu",
-      "loading": "Chargement du calendrier…",
-      "loadFailed": "Le calendrier n’a pas pu se charger. Rechargez la page, ou retrouvez chaque location dans Locations.",
       "view": {
         "label": "Afficher le calendrier en",
         "timeline": "Frise",
         "list": "Liste"
       },
-      "rentalsRow": "Locations"
+      "timeline": "Locations jour par jour"
     },
     "priceEditor": {
       "draftOf": "Brouillon de la version {version}",
@@ -2723,14 +2722,15 @@
       },
       "grid": {
         "label": "Prix de ce brouillon",
-        "keys": "Entrée modifie une cellule et Tab passe à la suivante. Maj avec les flèches choisit des cellules ; Ctrl ou ⌘ avec C les copie, et avec V colle des cellules d’un tableur à la cellule choisie. Un clic droit sur une ligne ajoute ou retire un prix. Faites glisser une ligne par sa poignée pour changer l’ordre lu par les clients. Ctrl ou ⌘ avec Z annule la dernière modification."
+        "keys": "Entrée modifie une cellule et Tab passe à la suivante. Ctrl ou ⌘ avec C copie la cellule choisie, et avec V colle des cellules d’un tableur à la cellule choisie. Le bouton en fin de ligne ajoute un prix au-dessus ou en dessous, ou retire la ligne. Faites glisser une ligne par sa poignée pour changer l’ordre lu par les clients. Ctrl ou ⌘ avec Z annule la dernière modification."
       },
       "columns": {
         "order": "Ordre",
         "description": "À quoi il correspond",
         "kind": "Type",
         "amount": "Montant, {currency}",
-        "remove": "Retirer"
+        "remove": "Retirer",
+        "more": "Plus"
       },
       "remove": "Retirer {description}",
       "removeUnnamed": "Retirer le prix {number}",
@@ -2780,10 +2780,11 @@
       "menu": {
         "above": "Ajouter un prix au-dessus",
         "below": "Ajouter un prix en dessous",
-        "remove": "Retirer ce prix"
+        "remove": "Retirer ce prix",
+        "more": "Plus pour {description}",
+        "moreUnnamed": "Plus pour le prix {number}"
       },
-      "download": "Télécharger pour un tableur",
-      "sheet": "Prix"
+      "download": "Télécharger pour un tableur"
     },
     "erasure": {
       "title": "Effacer les données personnelles du client",
@@ -3833,7 +3834,10 @@
     "openPair": "Ouvrir la paire {id}",
     "closePair": "Fermer la paire {id}",
     "download": "Télécharger ces paires pour un tableur",
-    "sheet": "Paires"
+    "resultFilter": {
+      "label": "Résultat",
+      "all": "Tous les résultats"
+    }
   },
   "trust": {
     "reason": "Votre empreinte est de {amount}, et non de {ordinary}, car vous avez rendu {count, plural, one {# location} other {# locations}} en bon état au cours des {months} derniers mois.",
@@ -4445,7 +4449,8 @@
       "due": "Échéance",
       "amount": "Montant",
       "choose": "Choisir",
-      "open": "Ouvrir"
+      "open": "Ouvrir",
+      "more": "Plus"
     },
     "titles": {
       "claim": "Approuver une réclamation",
@@ -4565,11 +4570,10 @@
     "groupCount": "{count, plural, one {# décision} other {# décisions}}",
     "groupTotal": "{amount} au total",
     "menu": {
-      "open": "Ouvrir la décision",
-      "close": "Fermer la décision",
       "claim": "Ouvrir la page de la réclamation",
       "rental": "Ouvrir la location",
-      "passport": "Ouvrir le passeport de l’article"
+      "passport": "Ouvrir le passeport de l’article",
+      "more": "Plus pour {title}"
     },
     "repairLine": {
       "claim": "Issue de la réclamation débitée à {renter}",
@@ -4606,7 +4610,6 @@
     "grid": "Journal de l’argent",
     "cards": "Les locations et leur argent",
     "download": "Télécharger pour un tableur",
-    "sheet": "Journal de l’argent",
     "openLine": "Ouvrir {line}",
     "closeLine": "Fermer {line}",
     "lineName": "{what}, {amount}",
@@ -4693,7 +4696,7 @@
   },
   "insights": {
     "title": "Analyses",
-    "lead": "Où est l’argent de la boutique, ce que chaque type d’article coûte en dommages et ce qui est revenu, à partir des propres enregistrements de Hold. Demandez à l’agent d’analyse d’ajouter ou de modifier un graphique : il lit ces tables et arrange le tableau de bord, et ne modifie aucun enregistrement.",
+    "lead": "Où est l’argent de la boutique, ce que chaque type d’article coûte en dommages et ce qui est revenu, à partir des propres enregistrements de Hold.",
     "onlyDeciders": "Seul le propriétaire ou un responsable ouvre le tableau de bord d’analyse.",
     "empty": "Rien à montrer pour l’instant. Le tableau de bord se remplit à mesure que les locations encaissent des frais, posent des blocages et se règlent.",
     "narrow": "Le tableau de bord demande un écran plus large. Voici les chiffres avec lesquels il s’ouvre.",
@@ -4805,7 +4808,9 @@
     "onlyDecidersBody": "Demandez ces chiffres à un propriétaire ou un responsable. La page Argent, que tout le personnel peut lire, montre chaque paiement tel que PayPal l’a enregistré.",
     "openMoney": "Ouvrir la page Argent",
     "emptyTitle": "Pas encore de chiffres",
-    "live": "Établi à partir de vos données, à l’instant."
+    "live": "Établi à partir de vos données, à l’instant.",
+    "panelEmpty": "Rien à afficher ici pour l’instant.",
+    "livesLeftOut": "{count, plural, one {# autre blocage n’est pas dessiné} other {# autres blocages ne sont pas dessinés}}."
   },
   "selfReturn": {
     "card": {

@@ -2,7 +2,6 @@ import { decisionRecords, inShop } from '@hold/db'
 import { shopDay } from '@hold/domain'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
-import { GridLicence } from '@/components/grid/grid-licence'
 import { boardRows } from '@/features/decisions/board'
 import { DecisionsScreen } from '@/features/decisions/decisions-screen'
 import { boardContestViews } from '@/server/contest-view'
@@ -19,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 // the drop-offs shown get links that work for a few minutes.
 export default async function Page() {
   const context = await requireShop()
-  const { config, database, evidence } = await getServices()
+  const { database, evidence } = await getServices()
   const now = new Date()
   const scope = { role: 'hold_app', shopId: context.shop.id, userId: context.person.userId } as const
   // Side by side: the board's reads, the contests' summaries and the passkey the page may ask for.
@@ -32,7 +31,6 @@ export default async function Page() {
   const photoUrls: Readonly<Record<string, string>> = evidence === undefined ? {} : Object.fromEntries(await Promise.all(keys.map(async (key) => [key, await evidence.displayLink(key)] as const)))
   return (
     <>
-      <GridLicence licenceKey={config.gridLicenceKey} />
       <DecisionsScreen
         shopName={context.shop.name}
         clock={{ timeZone: context.shop.timeZone, currency: context.shop.currency }}

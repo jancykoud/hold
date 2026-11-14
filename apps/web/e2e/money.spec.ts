@@ -4,8 +4,8 @@ import { expectFitsEveryWidth } from './support/responsive'
 import { expectInShop } from './support/sign-in'
 import { expect, test } from './support/test'
 
-// The money ledger (extensions.md section 12.5) on AG Grid Enterprise, as the demo shop's owner, counter staff and an
-// accountant read it: every line of the money log grouped by rental or by month with the grid's own totals, each
+// The money ledger (extensions.md section 12.5), as the demo shop's owner, counter staff and an
+// accountant read it: every line of the money log grouped by rental or by month with each group's totals, each
 // rental checked against its hold, its approved claim and PayPal, each line opening into what confirmed it.
 
 async function startDemo(page: Page, as: 'Tomás, the owner' | 'Jonas, at the counter'): Promise<void> {
@@ -17,7 +17,7 @@ async function startDemo(page: Page, as: 'Tomás, the owner' | 'Jonas, at the co
 }
 
 const grid = (page: Page) => page.getByRole('region', { name: 'Money log' })
-const groups = (page: Page) => grid(page).locator('.ag-full-width-row.ag-row-group')
+const groups = (page: Page) => grid(page).locator('.ag-full-width-row:has([data-section-heading])')
 const dataRows = (page: Page) => grid(page).locator('.ag-row:not(.ag-full-width-row)')
 const month = () => new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric', timeZone: 'Europe/Lisbon' }).format(new Date())
 
@@ -63,7 +63,7 @@ test('the money log downloads for the accountant’s spreadsheet', async ({ page
   await startDemo(page, 'Tomás, the owner')
   const download = page.waitForEvent('download')
   await page.getByRole('button', { name: 'Download for a spreadsheet' }).click()
-  expect((await download).suggestedFilename()).toBe('hold-money-log.xlsx')
+  expect((await download).suggestedFilename()).toBe('hold-money-log.csv')
 })
 
 test('counter staff read the money log too, and on a phone each rental is a card', async ({ page }) => {

@@ -2356,10 +2356,9 @@
         "role_may_not_retire": "Nur Inhaber oder Leitung können einen Artikel ausmustern."
       },
       "fleet": {
-        "keys": "Tage unterwegs zählen dieses Jahr. Schäden zeigt, was der Vergleich bei jeder der letzten Mieten eines Artikels fand. Pfeiltasten wechseln zwischen Zeilen; Enter öffnet den Pass eines Artikels; Rechtsklick auf eine Zeile für Pass, Status oder die Reservierung der Art.",
+        "keys": "Tage unterwegs zählen dieses Jahr. Schäden zeigt, was der Vergleich bei jeder der letzten Mieten eines Artikels fand. Pfeiltasten wechseln zwischen Zeilen; Enter öffnet den Pass eines Artikels; die Schaltfläche am Zeilenende bietet Pass, Status oder die Reservierung der Art.",
         "grid": "Flotte",
         "download": "Die Flotte für eine Tabelle herunterladen",
-        "sheet": "Flotte",
         "items": "{count, plural, one {# Artikel} other {# Artikel}}",
         "fastest": "Nutzt sich am schnellsten ab",
         "columns": {
@@ -2376,13 +2375,15 @@
           "signal": "Signal",
           "repairCost": "Reparaturkosten",
           "repairMargin": "Erstattet abzüglich Reparaturen",
-          "openRepairs": "Offene Reparaturen"
+          "openRepairs": "Offene Reparaturen",
+          "more": "Mehr"
         },
         "menu": {
           "passport": "Pass öffnen",
           "status": "In Reparatur geben oder ausmustern",
           "hold": "Reservierung für {name} ändern",
-          "type": "Art öffnen"
+          "type": "Art öffnen",
+          "more": "Mehr zu {name}"
         },
         "recoveredOf": "{recovered} von {priced}"
       }
@@ -2694,14 +2695,12 @@
       "noItemsBody": "Der Kalender zeigt jeden Artikel, den Sie vermieten.",
       "noItemsAction": "Zu den Artikeln",
       "unknownRenter": "Kundschaft noch unbekannt",
-      "loading": "Kalender wird geladen…",
-      "loadFailed": "Der Kalender konnte nicht geladen werden. Laden Sie die Seite neu oder finden Sie jede Miete unter Mieten.",
       "view": {
         "label": "Kalender anzeigen als",
         "timeline": "Zeitleiste",
         "list": "Liste"
       },
-      "rentalsRow": "Vermietungen"
+      "timeline": "Mieten Tag für Tag"
     },
     "priceEditor": {
       "draftOf": "Entwurf von Version {version}",
@@ -2723,14 +2722,15 @@
       },
       "grid": {
         "label": "Preise in diesem Entwurf",
-        "keys": "Enter bearbeitet eine Zelle, Tab geht weiter. Umschalt mit den Pfeilen wählt Zellen; Strg oder ⌘ mit C kopiert sie, mit V fügst du Zellen aus einer Tabelle an der gewählten Zelle ein. Rechtsklick auf eine Zeile fügt einen Preis hinzu oder entfernt ihn. Zieh eine Zeile am Griff, um die Reihenfolge für Mieter zu ändern. Strg oder ⌘ mit Z nimmt die letzte Änderung zurück."
+        "keys": "Enter bearbeitet eine Zelle, Tab geht weiter. Strg oder ⌘ mit C kopiert die gewählte Zelle, mit V fügst du Zellen aus einer Tabelle an der gewählten Zelle ein. Die Schaltfläche am Zeilenende fügt einen Preis darüber oder darunter hinzu oder entfernt die Zeile. Zieh eine Zeile am Griff, um die Reihenfolge für Mieter zu ändern. Strg oder ⌘ mit Z nimmt die letzte Änderung zurück."
       },
       "columns": {
         "order": "Reihenfolge",
         "description": "Wofür",
         "kind": "Art",
         "amount": "Betrag, {currency}",
-        "remove": "Entfernen"
+        "remove": "Entfernen",
+        "more": "Mehr"
       },
       "remove": "{description} entfernen",
       "removeUnnamed": "Preis {number} entfernen",
@@ -2780,10 +2780,11 @@
       "menu": {
         "above": "Preis darüber hinzufügen",
         "below": "Preis darunter hinzufügen",
-        "remove": "Diesen Preis entfernen"
+        "remove": "Diesen Preis entfernen",
+        "more": "Mehr zu {description}",
+        "moreUnnamed": "Mehr zu Preis {number}"
       },
-      "download": "Für eine Tabelle herunterladen",
-      "sheet": "Preise"
+      "download": "Für eine Tabelle herunterladen"
     },
     "erasure": {
       "title": "Persönliche Daten der mietenden Person löschen",
@@ -3833,7 +3834,10 @@
     "openPair": "Paar {id} öffnen",
     "closePair": "Paar {id} schließen",
     "download": "Diese Paare für eine Tabelle herunterladen",
-    "sheet": "Paare"
+    "resultFilter": {
+      "label": "Ergebnis",
+      "all": "Alle Ergebnisse"
+    }
   },
   "trust": {
     "reason": "Ihre Reservierung beträgt {amount} statt {ordinary}, weil Sie in den letzten {months} Monaten {count, plural, one {# Miete} other {# Mieten}} einwandfrei zurückgegeben haben.",
@@ -4445,7 +4449,8 @@
       "due": "Fällig",
       "amount": "Betrag",
       "choose": "Wählen",
-      "open": "Öffnen"
+      "open": "Öffnen",
+      "more": "Mehr"
     },
     "titles": {
       "claim": "Eine Forderung freigeben",
@@ -4565,11 +4570,10 @@
     "groupCount": "{count, plural, one {# Entscheidung} other {# Entscheidungen}}",
     "groupTotal": "{amount} insgesamt",
     "menu": {
-      "open": "Entscheidung öffnen",
-      "close": "Entscheidung schließen",
       "claim": "Forderungsseite öffnen",
       "rental": "Miete öffnen",
-      "passport": "Pass des Artikels öffnen"
+      "passport": "Pass des Artikels öffnen",
+      "more": "Mehr zu {title}"
     },
     "repairLine": {
       "claim": "Aus der belasteten Forderung an {renter}",
@@ -4606,7 +4610,6 @@
     "grid": "Geldprotokoll",
     "cards": "Mieten und ihr Geld",
     "download": "Für eine Tabelle herunterladen",
-    "sheet": "Geldprotokoll",
     "openLine": "{line} öffnen",
     "closeLine": "{line} schließen",
     "lineName": "{what}, {amount}",
@@ -4693,7 +4696,7 @@
   },
   "insights": {
     "title": "Einblicke",
-    "lead": "Wo das Geld des Geschäfts ist, was jede Art Artikel an Schäden kostet und was zurückkam, aus Holds eigenen Aufzeichnungen. Bitte den Einblick-Agenten, ein Diagramm hinzuzufügen oder zu ändern: Er liest diese Tabellen und ordnet das Dashboard, und er ändert keine Aufzeichnung.",
+    "lead": "Wo das Geld des Geschäfts ist, was jede Art Artikel an Schäden kostet und was zurückkam, aus Holds eigenen Aufzeichnungen.",
     "onlyDeciders": "Nur der Inhaber oder eine Leitung öffnet das Einblick-Dashboard.",
     "empty": "Noch nichts zu zeigen. Das Dashboard füllt sich, sobald Mieten Gebühren einnehmen, Reservierungen setzen und abrechnen.",
     "narrow": "Das Dashboard braucht einen breiteren Bildschirm. Das sind die Zahlen, mit denen es öffnet.",
@@ -4805,7 +4808,9 @@
     "onlyDecidersBody": "Fragen Sie Inhaber oder Leitung nach diesen Zahlen. Die Seite Geld, die alle im Team lesen, zeigt jede Zahlung so, wie PayPal sie verbucht hat.",
     "openMoney": "Seite Geld öffnen",
     "emptyTitle": "Noch keine Zahlen",
-    "live": "Aus Ihren Aufzeichnungen, Stand jetzt."
+    "live": "Aus Ihren Aufzeichnungen, Stand jetzt.",
+    "panelEmpty": "Hier gibt es noch nichts zu zeigen.",
+    "livesLeftOut": "{count, plural, one {# weitere Reservierung ist} other {# weitere Reservierungen sind}} nicht gezeichnet."
   },
   "selfReturn": {
     "card": {

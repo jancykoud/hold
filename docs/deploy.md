@@ -145,7 +145,7 @@ In the GitHub repository's settings, add these **variables**, from the stacks' o
 | `HOLD_DATABASE_ADMIN_SECRET_ARN`, `HOLD_DATABASE_EVAL_SECRET_ARN` | The ARNs of the secrets `hold/database/admin` and `hold/database/eval`, which HoldData made |
 
 And these **secrets**: `HOLD_ALARM_EMAIL`, the address alarms and the budget email (a secret only so Actions masks it
-in the log); `AG_GRID_LICENCE_KEY` and `AG_STUDIO_LICENCE_KEY`, for CI's end-to-end tests of the grids, optional.
+in the log). No licence key is needed: since 14 November 2026 Hold uses no paid library.
 
 From then on, every push to `main` that passes CI runs `.github/workflows/deploy.yml`: migrations, the image, then the
 five resource stacks through Hold's own CloudFormation role. HoldDelivery is never among them.
@@ -156,8 +156,6 @@ The stacks make these with random values, kept if a stack is deleted. Put the re
 
 | Secret | Holds | Without it |
 |---|---|---|
-| `hold/web/ag-grid-licence` | The AG Grid Enterprise key | The grids work and show AG Grid's watermark |
-| `hold/web/ag-studio-licence` | The AG Studio key | The insights dashboard runs as AG Studio does without a key |
 | `hold/notify/expo-push-access-token` | An Expo access token, for pushes to the phone app | Pushes go without one |
 
 `hold/web/cookie-key`, `hold/web/renter-link-key` and `hold/web/trust-key` are made by HoldIdentity and need nothing.

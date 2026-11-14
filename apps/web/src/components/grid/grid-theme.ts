@@ -27,9 +27,6 @@ export const holdGridTheme = themeQuartz.withParams({
   fontSize: 15,
   rowHoverColor: 'color-mix(in oklab, var(--muted) 55%, transparent)',
   selectedRowBackgroundColor: 'color-mix(in oklab, var(--primary) 8%, transparent)',
-  // Cells chosen in the price list editor: a tint with the accent's edge, so their text stays readable.
-  rangeSelectionBackgroundColor: 'color-mix(in oklab, var(--primary) 14%, transparent)',
-  rangeSelectionBorderColor: 'var(--primary)',
   // The card's corners are the app's own (rounded-2xl); menus, inputs and pickers inside take the smaller radius.
   borderRadius: 8,
   wrapperBorderRadius: 18,

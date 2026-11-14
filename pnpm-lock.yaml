@@ -356,9 +356,6 @@ importers:
       '@aws-sdk/client-secrets-manager':
         specifier: 3.1151.0
         version: 3.1151.0
-      '@bryntum/scheduler':
-        specifier: npm:@bryntum/scheduler-trial@7.3.7
-        version: '@bryntum/scheduler-trial@7.3.7'
       '@hold/agent':
         specifier: workspace:*
         version: link:../../packages/agent
@@ -416,21 +413,12 @@ importers:
       '@techstark/opencv-js':
         specifier: 4.12.0-release.1
         version: 4.12.0-release.1
-      ag-charts-community:
-        specifier: 14.2.0
-        version: 14.2.0
       ag-grid-community:
-        specifier: 36.2.0
-        version: 36.2.0
-      ag-grid-enterprise:
         specifier: 36.2.0
         version: 36.2.0
       ag-grid-react:
         specifier: 36.2.0
         version: 36.2.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      ag-studio:
-        specifier: 3.0.0
-        version: 3.0.0
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -1692,13 +1680,6 @@ packages:
   '@bramus/specificity@2.4.3':
     resolution: {integrity: sha512-0GEz8qJWokkUVYQYRukmkSHIFNoBH8QTreeHrAFbvz1XFYc3Y+puhMs8PQ5x8GNugiC2l5jvDBXKLbBIByeSBw==}
     hasBin: true
-
-  '@bryntum/scheduler-trial-lib@1.0.1':
-    resolution: {integrity: sha512-gTrNKz2O7JdNalEU9hma0fYyZ1mGhXXb6yCn/+E+SPjRyg/qFad1bQ7vfBUFitw3S3eB66IdtAZLD+QCtiIUKw==}
-
-  '@bryntum/scheduler-trial@7.3.7':
-    resolution: {integrity: sha512-O5qpP6cmdgUZ6OelP7IqmJ6ZqSN4h2aqqsUP4maoagvNl9xl8jMYdzT9W3VrIXaFHbNRsNbeFa9eDWTP2oNOFA==}
-    engines: {node: '>=0.10.0'}
 
   '@cacheable/memory@2.2.0':
     resolution: {integrity: sha512-CTLKqLItRCEixEAewD3/j9DB3/o96gpTPD4eJ1v+DGOlxZRZncRQkGYqqnAGCscYd6RNeXfGeiuCphsPtqyIfQ==}
@@ -4745,26 +4726,11 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  ag-charts-community@14.2.0:
-    resolution: {integrity: sha512-AQ9u5jJGjCGWY19XMehZFhC5db6e9J5DGCurSGjm1h9MUkfTQfj9KMDHLhTQqdNhVvTXI7J4OB8ZNbWMh3TJug==}
-
-  ag-charts-core@14.2.0:
-    resolution: {integrity: sha512-te4u0sFYMNuzfZMU/uh3nVEctIFpsAfLFBJIJtlMqBKI8otYdB3y4M5Ax8KAAg888X6G1lDaBW8FoNGzX3caSg==}
-
-  ag-charts-enterprise@14.2.0:
-    resolution: {integrity: sha512-Qw/TICVK1lGfiz5L4QPgzTD2bffWfRWMydvnlH/fbWUUz7E9noE/bERD+E65nRKmzH+++i7hSvQDGEob13SRPA==}
-
-  ag-charts-locale@14.2.0:
-    resolution: {integrity: sha512-zoG9yxh193FKc7jvx9FFp8oWUTcYIzHJLNmq1+54KCIe0us9Ay5odkp31y7WJX5gDtty8hKq+uyOEBPXtE9GHw==}
-
   ag-charts-types@14.2.0:
     resolution: {integrity: sha512-4pDV6/4zbzPN7t607Gr1o6DO9RhmPafQGr+hIpTJBaerbaMoC+WOO3v/wkxFbvCNrHKOexEKSfNTH7PaAR4UzA==}
 
   ag-grid-community@36.2.0:
     resolution: {integrity: sha512-tK0Toj7t0fV/OMLPnDc0xlYKAqDbnCT3iJodYSn2TJ541caU8jPdYwWhMdW+AP2+pUNwFiJVgc04eJNfvBPsWw==}
-
-  ag-grid-enterprise@36.2.0:
-    resolution: {integrity: sha512-xwc8yVqjSaJPb0sPzFeLoidtF+cGBMyqXQHmkRzuBj1o44cibCoTP3ICshhc5upfc+ewhSYknBC8KPxcB+d0Ag==}
 
   ag-grid-react@36.2.0:
     resolution: {integrity: sha512-7dsaR4Ga8/bJAOov7XJqxsDc1JAjUU5Bmh9+s4U9+/TKIdSsaVo53SuZb2yEFSB1elv3eh6aZP8a1fqGZehXwA==}
@@ -4774,9 +4740,6 @@ packages:
 
   ag-stack@36.2.0:
     resolution: {integrity: sha512-f3XT2htFs9dUPcHni2z9ak69QNta5ODEpooHuuNvbjN98JkokpEqRQ9YLQHQJFdCcgi9Ybs/j3zkkvmNRamIPg==}
-
-  ag-studio@3.0.0:
-    resolution: {integrity: sha512-/kXv0vsy3TIY0mjdQzLEVvfbQmf8hlrTW+9ju7tET5bGNE8qCA4t5ay9TYUciMixkypsqAochTx1Ip5wy8Q7Nw==}
 
   agent-base@6.0.2:
     resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
@@ -11197,12 +11160,6 @@ snapshots:
     dependencies:
       css-tree: 3.2.1
 
-  '@bryntum/scheduler-trial-lib@1.0.1': {}
-
-  '@bryntum/scheduler-trial@7.3.7':
-    dependencies:
-      '@bryntum/scheduler-trial-lib': 1.0.1
-
   '@cacheable/memory@2.2.0':
     dependencies:
       '@cacheable/utils': 2.5.0
@@ -14608,37 +14565,12 @@ snapshots:
 
   acorn@8.19.0: {}
 
-  ag-charts-community@14.2.0:
-    dependencies:
-      ag-charts-core: 14.2.0
-      ag-charts-locale: 14.2.0
-      ag-charts-types: 14.2.0
-
-  ag-charts-core@14.2.0:
-    dependencies:
-      ag-charts-types: 14.2.0
-
-  ag-charts-enterprise@14.2.0:
-    dependencies:
-      ag-charts-community: 14.2.0
-      ag-charts-core: 14.2.0
-
-  ag-charts-locale@14.2.0: {}
-
   ag-charts-types@14.2.0: {}
 
   ag-grid-community@36.2.0:
     dependencies:
       ag-charts-types: 14.2.0
       ag-stack: 36.2.0
-
-  ag-grid-enterprise@36.2.0:
-    dependencies:
-      ag-grid-community: 36.2.0
-      ag-stack: 36.2.0
-    optionalDependencies:
-      ag-charts-community: 14.2.0
-      ag-charts-enterprise: 14.2.0
 
   ag-grid-react@36.2.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:
@@ -14648,13 +14580,6 @@ snapshots:
       react-dom: 19.3.0(react@19.3.0)
 
   ag-stack@36.2.0: {}
-
-  ag-studio@3.0.0:
-    dependencies:
-      ag-charts-enterprise: 14.2.0
-      ag-grid-enterprise: 36.2.0
-      ag-stack: 36.2.0
-      tslib: 2.8.1
 
   agent-base@6.0.2(supports-color@8.1.1):
     dependencies:

@@ -10,7 +10,7 @@ import { expect, test } from './support/test'
 // how confidence held up, what each pair should have ended in against what it did, and run against run.
 
 const grid = (page: Page) => page.getByRole('region', { name: 'Pairs of the gate half' })
-const groups = (page: Page) => grid(page).locator('.ag-full-width-row.ag-row-group')
+const groups = (page: Page) => grid(page).locator('.ag-full-width-row:has([data-section-heading])')
 const dataRows = (page: Page) => grid(page).locator('.ag-row:not(.ag-full-width-row)')
 const pair = (page: Page, id: string) => grid(page).getByRole('region', { name: `Pair ${id}` })
 const panel = (page: Page) => page.getByRole('region', { name: 'Chosen pair' })
@@ -40,20 +40,16 @@ test('a renter checks the comparison pair by pair: grouped with each record, fil
   await expect(dataRows(page).first()).toContainText('Sent to a person')
 })
 
-test('anyone narrows the pairs by a column’s values, and downloads them for a spreadsheet', async ({ page }) => {
+test('anyone narrows the pairs to one result, and downloads them for a spreadsheet', async ({ page }) => {
   await page.goto('/reliability')
   await expect(dataRows(page)).toHaveCount(11)
-  await grid(page).locator('.ag-header-cell[col-id="verdict"] .ag-header-cell-filter-button').click()
-  const filter = page.locator('.ag-set-filter')
-  await filter.getByText('(Select All)').click()
-  await filter.getByText('Wrong', { exact: true }).click()
+  await page.getByLabel('Result').selectOption({ label: 'Wrong' })
   await expect(dataRows(page)).toHaveCount(1)
   await expect(dataRows(page).first()).toContainText('clean-hard-02')
-  await page.keyboard.press('Escape')
 
   const download = page.waitForEvent('download')
   await page.getByRole('button', { name: 'Download these pairs for a spreadsheet' }).click()
-  expect((await download).suggestedFilename()).toBe('hold-gate-pairs.xlsx')
+  expect((await download).suggestedFilename()).toBe('hold-gate-pairs.csv')
 })
 
 test('the calibration, the matrix and run against run are counted from the same pairs', async ({ page }) => {

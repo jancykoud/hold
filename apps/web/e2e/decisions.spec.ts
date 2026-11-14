@@ -22,9 +22,8 @@ async function openBoard(page: Page): Promise<void> {
 }
 
 const grid = (page: Page) => page.getByRole('region', { name: 'Decisions waiting on a person' })
-// AG Grid draws a group's heading and an opened decision's evidence as rows across the whole grid; a decision's own
-// row has columns.
-const groups = (page: Page) => grid(page).locator('.ag-full-width-row.ag-row-group')
+// A group's heading and an opened decision's evidence are rows across the whole grid; a decision's own row has columns.
+const groups = (page: Page) => grid(page).locator('.ag-full-width-row:has([data-section-heading])')
 const dataRows = (page: Page) => grid(page).locator('.ag-row:not(.ag-full-width-row)')
 const evidence = (page: Page, heading: string) => grid(page).getByRole('region', { name: heading })
 
@@ -122,12 +121,12 @@ test('a contested claim opens on where the two sides differ, and the owner has t
   await expectFitsEveryWidth(page)
 })
 
-test('the right-click menu goes to a decision’s rental, and never offers to move money', async ({ page }) => {
+test('a decision’s menu goes to its claim page or its rental, and never offers to move money', async ({ page }) => {
   await startDemo(page, 'Tomás, the owner')
   await openBoard(page)
-  await dataRows(page).filter({ hasText: 'Approve a claim' }).locator('[col-id="due"]').click({ button: 'right' })
-  const menu = page.locator('.ag-menu')
-  await expect(menu.getByRole('menuitem')).toHaveText(['Open the decision', 'Open the claim page', 'Open the rental'])
+  await dataRows(page).filter({ hasText: 'Approve a claim' }).getByRole('button', { name: 'More for Approve a claim' }).click()
+  const menu = page.getByRole('menu')
+  await expect(menu.getByRole('menuitem')).toHaveText(['Open the claim page', 'Open the rental'])
   await menu.getByRole('menuitem', { name: 'Open the rental' }).click()
   await expect(page).toHaveURL(/\/shop\/rentals\/[0-9a-f-]{36}$/)
 })

@@ -6,12 +6,13 @@ import type { CustomCellRendererProps } from 'ag-grid-react'
 import { TriangleAlert, X } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { createContext, useContext } from 'react'
+import { RowMenu } from '@/components/grid/row-menu'
 import { formatMoney } from '@/lib/money'
 import type { EditorRow } from './editor-model'
 
-// What the cells need beyond their row: the shop's currency, each row's problems, and how to remove a row. ag-grid-react
+// What the cells need beyond their row: the shop's currency, each row's problems, and how to remove a row or add one. ag-grid-react
 // draws the cells inside the grid's React tree, so a change here reaches them without the grid redrawing a row.
-export type PriceGridState = { readonly currency: string; readonly problems: ReadonlyMap<number, PriceCellProblems>; readonly onRemove: (key: number) => void }
+export type PriceGridState = { readonly currency: string; readonly problems: ReadonlyMap<number, PriceCellProblems>; readonly onRemove: (key: number) => void; readonly onInsert: (atIndex: number) => void }
 export const PriceGridContext = createContext<PriceGridState | null>(null)
 
 function useGridState(): PriceGridState {
@@ -70,5 +71,24 @@ export function RemoveCell({ data, node }: CellProps) {
     <button type="button" aria-label={label} onClick={() => { onRemove(data.key) }} className="grid size-11 place-items-center text-muted-foreground hover:bg-muted hover:text-foreground">
       <X aria-hidden="true" className="size-4" />
     </button>
+  )
+}
+
+// A price added above or below this one, or this one removed: the same from a button as from the keyboard.
+export function MoreCell({ data, node }: CellProps) {
+  const t = useTranslations('shop.priceEditor')
+  const { onRemove, onInsert } = useGridState()
+  if (data === undefined) return null
+  const index = node.rowIndex ?? 0
+  const label = data.description.trim() === '' ? t('menu.moreUnnamed', { number: index + 1 }) : t('menu.more', { description: data.description })
+  return (
+    <RowMenu
+      label={label}
+      items={[
+        { name: t('menu.above'), action: () => { onInsert(index) } },
+        { name: t('menu.below'), action: () => { onInsert(index + 1) } },
+        { name: t('menu.remove'), action: () => { onRemove(data.key) } },
+      ]}
+    />
   )
 }

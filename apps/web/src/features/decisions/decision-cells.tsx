@@ -1,8 +1,8 @@
 'use client'
 
-import type { CustomCellRendererProps } from 'ag-grid-react'
 import { Lock, TriangleAlert, UserCheck } from 'lucide-react'
 import { createContext, useContext } from 'react'
+import type { RowCellProps } from '@/components/grid/section-grid'
 import { CheckBox } from '@/components/ui/check-box'
 import { SampleTag } from '@/components/ui/sample-tag'
 import type { BoardRow } from './board'
@@ -19,20 +19,19 @@ export function useGridState(): GridState {
   return state
 }
 
-type CellProps = CustomCellRendererProps<BoardRow>
+type CellProps = RowCellProps<BoardRow>
 
 // A release the viewer may approve with others: a real checkbox, 44 pixels square, kept in step with the grid's own
 // choice of rows. Space on the row chooses it too.
 export function ChooseCell({ data, node }: CellProps) {
   const { text, selectedIds } = useGridState()
-  if (data === undefined || !data.selectable) return null
+  if (!data.selectable) return null
   return <CheckBox label={text.choose(data)} hideLabel checked={selectedIds.has(data.id)} onChange={(on) => { node.setSelected(on, false, 'checkboxSelected') }} />
 }
 
 // What is asked, about whom, and who decides.
 export function DecisionCell({ data }: CellProps) {
   const { text } = useGridState()
-  if (data === undefined) return null
   return (
     <div className="grid h-full min-w-0 content-center gap-0.5 py-2 leading-snug">
       <div className="flex min-w-0 items-center gap-2">
@@ -51,7 +50,6 @@ export function DecisionCell({ data }: CellProps) {
 // When it falls due, as a date; what is already late says so in a word and a sign, never by colour alone.
 export function DueCell({ data }: CellProps) {
   const { text } = useGridState()
-  if (data === undefined) return null
   return (
     <div className="grid h-full min-w-0 content-center gap-1 text-sm leading-snug">
       <span className="figures truncate">{data.due === null ? text.dueNone() : text.moment(data.due)}</span>
@@ -67,6 +65,5 @@ export function DueCell({ data }: CellProps) {
 
 export function AmountCell({ data }: CellProps) {
   const { text } = useGridState()
-  if (data === undefined) return null
   return <span className="figures flex h-full items-center justify-end font-semibold">{text.money(data.amountCents)}</span>
 }

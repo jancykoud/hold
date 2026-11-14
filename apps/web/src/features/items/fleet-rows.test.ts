@@ -1,7 +1,7 @@
 import type { CatalogItem, CatalogType, FleetItemRecord, ItemCatalog } from '@hold/db'
 import type { ItemRentalRecord } from '@hold/domain'
 import { describe, expect, it } from 'vitest'
-import { fleetRows } from './fleet-rows'
+import { fleetRows, keepItemsUnderTypes } from './fleet-rows'
 
 // The fleet passport's rows (extensions.md section 12.5): each item type with its items below it, each item with what
 // its rentals say about it, read by the domain's itemWear and wearingFastest, filtered as the items page is.
@@ -37,5 +37,24 @@ describe('the fleet passport’s rows', () => {
     expect(fleetRows(catalog, records, YEAR, 'in_repair').map((row) => row.path)).toEqual([['ebike'], ['ebike', 'e2']])
     expect(fleetRows(catalog, records, YEAR, 'retired').map((row) => row.path)).toEqual([['kayak'], ['kayak', 'k1']])
     expect(fleetRows({ types: [...catalog.types, type('empty', 'Tandem')], items: catalog.items }, records, YEAR, 'all').map((row) => row.path)).toContainEqual(['empty'])
+  })
+
+  it('adds up each type’s items, and leaves a figure empty when none of its items has one', () => {
+    const rows = fleetRows(catalog, records, YEAR, 'all')
+    expect(rows.find((row) => row.kind === 'type' && row.type.id === 'ebike')).toMatchObject({
+      order: 0,
+      totals: { items: 2, rentals: 3, daysOut: 3, damageFindings: 2, incurredCents: 70_00, recoveredCents: 70_00, repairCostCents: 52_00, repairMarginCents: 18_00, openRepairs: 1, openMarks: 2 },
+    })
+    expect(rows.find((row) => row.kind === 'type' && row.type.id === 'kayak')).toMatchObject({
+      order: 1,
+      totals: { items: 0, rentals: null, daysOut: null, damageFindings: null, incurredCents: null, recoveredCents: null, repairCostCents: null, repairMarginCents: null, openRepairs: null, openMarks: null },
+    })
+  })
+
+  it('keeps each type above its own items when a sorted column has moved the rows', () => {
+    const rows = fleetRows(catalog, records, YEAR, 'all')
+    const nodes = [...rows].reverse().map((data) => ({ data }))
+    keepItemsUnderTypes(nodes)
+    expect(nodes.map((node) => node.data.path)).toEqual([['ebike'], ['ebike', 'e2'], ['ebike', 'e1'], ['kayak']])
   })
 })

@@ -1,4 +1,4 @@
-import { activeHolds, fleetRecords, inShop, itemCatalog, moneyLedgerRecords, savedInsightsDashboard } from '@hold/db'
+import { activeHolds, fleetRecords, inShop, itemCatalog, moneyLedgerRecords } from '@hold/db'
 import { shopYear } from '@hold/domain'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
@@ -18,11 +18,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Page() {
   const context = await requireShop()
   const canDecide = context.role === 'owner' || context.role === 'manager'
-  const { config, database } = await getServices()
+  const { database } = await getServices()
   const scope = { role: 'hold_app', shopId: context.shop.id, userId: context.person.userId } as const
-  const [records, catalog, fleet, live, saved] = canDecide
-    ? await Promise.all([inShop(database, scope, moneyLedgerRecords), inShop(database, scope, itemCatalog), inShop(database, scope, fleetRecords), inShop(database, scope, activeHolds), inShop(database, scope, savedInsightsDashboard)])
-    : [{ lines: [], rentals: [] }, { types: [], items: [] }, [], [], undefined]
+  const [records, catalog, fleet, live] = canDecide
+    ? await Promise.all([inShop(database, scope, moneyLedgerRecords), inShop(database, scope, itemCatalog), inShop(database, scope, fleetRecords), inShop(database, scope, activeHolds)])
+    : [{ lines: [], rentals: [] }, { types: [], items: [] }, [], []]
   const now = new Date()
   const ledger = ledgerRows(records, context.shop.timeZone)
   const money = await getTranslations('money')
@@ -38,5 +38,5 @@ export default async function Page() {
     rung: (rung) => (rung === null ? insights('custom.noRung') : insights('custom.rung', { rung })),
     standing: (standing) => insights(`custom.standing.${standing}`),
   })
-  return <InsightsScreen shopName={context.shop.name} clock={{ timeZone: context.shop.timeZone, currency: context.shop.currency }} tables={tables} saved={saved} canDecide={canDecide} licenceKey={config.studioLicenceKey} />
+  return <InsightsScreen shopName={context.shop.name} clock={{ timeZone: context.shop.timeZone, currency: context.shop.currency }} tables={tables} canDecide={canDecide} />
 }

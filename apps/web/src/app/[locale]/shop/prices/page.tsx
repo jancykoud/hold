@@ -2,7 +2,6 @@ import { amountText, money } from '@hold/domain'
 import { currentPriceList, inShop, priceListVersions, repairCosts } from '@hold/db'
 import type { Metadata } from 'next'
 import { getMessages, getTranslations } from 'next-intl/server'
-import { GridLicence } from '@/components/grid/grid-licence'
 import { PricesScreen } from '@/features/prices/prices-screen'
 import { repairCostRows } from '@/features/prices/repair-cost-rows'
 import type { TermsMessages } from '@/features/prices/terms-preview'
@@ -28,7 +27,7 @@ async function previewTerms(): Promise<Record<Locale, TermsMessages>> {
 
 export default async function Page() {
   const context = await requireShop()
-  const { config, database } = await getServices()
+  const { database } = await getServices()
   const scope = { role: 'hold_app', shopId: context.shop.id, userId: context.person.userId } as const
   const [loaded, gate, terms] = await Promise.all([
     inShop(database, scope, async (transaction) => ({ current: await currentPriceList(transaction), versions: await priceListVersions(transaction), repairs: (await repairCosts(transaction)).byPrice })),
@@ -38,7 +37,6 @@ export default async function Page() {
   const { currency, ownerApprovalThresholdCents } = context.shop
   return (
     <>
-      <GridLicence licenceKey={config.gridLicenceKey} />
       <PricesScreen
         shopName={context.shop.name}
         shopId={context.shop.id}

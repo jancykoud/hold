@@ -103,6 +103,7 @@ describe('what CI enforces', () => {
     expect(full).toContain('workflow_dispatch:')
     expect(full).toMatch(/concurrency:\s+group: e2e-full\s+cancel-in-progress: true/)
     expect(full).toContain('run: pnpm test:e2e\n')
-    expect(full).toContain('HOLD_AG_GRID_LICENCE_KEY: ${{ secrets.AG_GRID_LICENCE_KEY }}')
+    // No licence key: nothing Hold draws with needs one.
+    expect(full).not.toContain('LICENCE_KEY')
   })
 })

@@ -1,17 +1,19 @@
 'use client'
 
-import type { ColDef, GetContextMenuItems, GetRowIdParams, GridApi, GridReadyEvent, IAggFuncParams, IRowNode, RowHeightParams, SelectionChangedEvent } from 'ag-grid-community'
-import { ContextMenuModule, MasterDetailModule, RowGroupingModule } from 'ag-grid-enterprise'
+import type { ColDef, GridApi, GridReadyEvent, IRowNode, RowHeightParams, SelectionChangedEvent } from 'ag-grid-community'
 import { AgGridReact } from 'ag-grid-react'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { CONTROL_COLUMN } from '@/components/grid/control-column'
 import { registerGridModules } from '@/components/grid/grid-modules'
 import { holdGridTheme } from '@/components/grid/grid-theme'
-import { createMasterDetail, useRowToggle } from '@/components/grid/master-detail'
+import { RowMenu } from '@/components/grid/row-menu'
+import type { RowMenuItem } from '@/components/grid/row-menu'
+import { createSections, sectionRowHeight, useSections } from '@/components/grid/section-grid'
+import type { DetailHeading, RowCellProps } from '@/components/grid/section-grid'
+import type { SectionEntry } from '@/components/grid/sections'
 import { usePopupParent } from '@/components/grid/use-popup-parent'
-import type { DetailHeading } from '@/components/grid/master-detail'
 import { useRouter } from '@/i18n/navigation'
 import { itemRoutes, rentalRoutes } from '@/lib/routes'
 import type { BoardRow } from './board'
@@ -21,11 +23,26 @@ import type { RowText } from './use-row-text'
 
 registerGridModules()
 
-// Grouping by kind, each decision opening in place, and the right-click menu: AG Grid Enterprise.
-const MODULES = [RowGroupingModule, MasterDetailModule, ContextMenuModule]
-const { MasterDetailProvider, OpenRowCell, DetailRowCell } = createMasterDetail<BoardRow>()
+type Entry = SectionEntry<BoardRow>
+const { SectionsProvider, OpenRowCell, FullWidthRow, rowCell, rowValue } = createSections<BoardRow>()
 // The controls on a decision's row that do their own thing when clicked.
-const CONTROLS = ['open', 'choose']
+const CONTROLS = ['open', 'choose', 'more']
+
+// Where else a decision leads, and the words for the button that offers it.
+type MoreState = { readonly label: (row: BoardRow) => string; readonly items: (row: BoardRow) => readonly RowMenuItem[] }
+const MoreContext = createContext<MoreState | null>(null)
+
+// Only ways to read a decision: its claim page, its rental or its item, and nothing that moves money.
+function MoreCell({ data }: RowCellProps<BoardRow>) {
+  const more = useContext(MoreContext)
+  return more === null ? null : <RowMenu label={more.label(data)} items={more.items(data)} />
+}
+
+const Choose = rowCell(ChooseCell)
+const Decision = rowCell(DecisionCell)
+const Due = rowCell(DueCell)
+const Amount = rowCell(AmountCell)
+const More = rowCell(MoreCell)
 
 export type DecisionGridProps = {
   rows: readonly BoardRow[]
@@ -45,15 +62,10 @@ const lastWhenMissing = (first: number | null, second: number | null, _a: unknow
   return first - second
 }
 
-// A group's total, from the amounts its decisions have; none when no decision in it has one.
-function amountTotal({ values }: IAggFuncParams<BoardRow>): number | null {
-  const amounts = values.filter((value): value is number => typeof value === 'number')
-  return amounts.length === 0 ? null : amounts.reduce((sum, value) => sum + value, 0)
-}
-
 const idOf = (row: BoardRow) => row.id
-const getRowId = ({ data }: GetRowIdParams<BoardRow>) => data.id
-const getRowHeight = ({ node }: RowHeightParams<BoardRow>) => (node.group === true ? 52 : undefined)
+const groupOf = (row: BoardRow) => row.group
+const getRowHeight = ({ data }: RowHeightParams<Entry>) => sectionRowHeight(data, 52)
+const renderGroup = (group: string, rows: readonly BoardRow[]) => <DecisionGroupLabel group={group} rows={rows} />
 
 // The board as a grid, for a laptop or a tablet: one row per decision, grouped by kind with the group holding the most
 // urgent decision first, in the order they fall due within it unless a column is sorted. A click or Enter opens a
@@ -62,90 +74,75 @@ export function DecisionGrid({ rows, text, grouped, selectedIds, onSelect, rende
   const t = useTranslations('decisions')
   const popupParent = usePopupParent()
   const router = useRouter()
-  const [api, setApi] = useState<GridApi<BoardRow> | null>(null)
+  const [api, setApi] = useState<GridApi<Entry> | null>(null)
   const selectable = rows.some((row) => row.selectable)
-  const { toggle, focusOnOpen, onCellClicked, onCellKeyDown } = useRowToggle(idOf, CONTROLS)
+  const { entries, openIds, toggle, focusOnOpen, grid } = useSections(rows, idOf, grouped ? groupOf : undefined, CONTROLS)
 
-  const columns = useMemo<ColDef<BoardRow>[]>(() => [
-    { colId: 'group', valueGetter: ({ data }) => data?.group, rowGroup: grouped, hide: true },
+  const columns = useMemo<ColDef<Entry>[]>(() => [
     { colId: 'open', headerName: t('columns.open'), cellRenderer: OpenRowCell, ...CONTROL_COLUMN },
-    { colId: 'choose', headerName: t('columns.choose'), cellRenderer: ChooseCell, ...CONTROL_COLUMN, hide: !selectable },
-    { colId: 'decision', headerName: t('columns.decision'), cellRenderer: DecisionCell, flex: 3, minWidth: 260, sortable: false },
-    { colId: 'due', headerName: t('columns.due'), cellRenderer: DueCell, valueGetter: ({ data }) => data?.due?.getTime() ?? null, comparator: lastWhenMissing, flex: 1, minWidth: 170 },
-    { colId: 'amount', headerName: t('columns.amount'), cellRenderer: AmountCell, valueGetter: ({ data }) => data?.amountCents ?? null, aggFunc: amountTotal, comparator: lastWhenMissing, width: 132, minWidth: 116, type: 'rightAligned' },
-  ], [t, grouped, selectable])
+    { colId: 'choose', headerName: t('columns.choose'), cellRenderer: Choose, ...CONTROL_COLUMN, hide: !selectable },
+    { colId: 'decision', headerName: t('columns.decision'), cellRenderer: Decision, flex: 3, minWidth: 260, sortable: false },
+    // Room for a whole moment, such as "Nov 13, 06:00 PM", beside the row's menu.
+    { colId: 'due', headerName: t('columns.due'), cellRenderer: Due, valueGetter: rowValue((row) => row.due?.getTime() ?? null), comparator: lastWhenMissing, flex: 1, minWidth: 196 },
+    { colId: 'amount', headerName: t('columns.amount'), cellRenderer: Amount, valueGetter: rowValue((row) => row.amountCents), comparator: lastWhenMissing, width: 132, minWidth: 116, type: 'rightAligned' },
+    { colId: 'more', headerName: t('columns.more'), cellRenderer: More, ...CONTROL_COLUMN },
+  ], [t, selectable])
 
   // The page's choice of releases, also made in the phone's list, kept in step with the grid's own.
   useEffect(() => {
-    api?.forEachNode((node: IRowNode<BoardRow>) => {
-      if (node.group === true) return
-      const chosen = node.data !== undefined && selectedIds.has(node.data.id)
+    api?.forEachNode((node: IRowNode<Entry>) => {
+      if (node.data?.kind !== 'row') return
+      const chosen = selectedIds.has(node.data.row.id)
       if (node.isSelected() !== chosen) node.setSelected(chosen, false, 'api')
     })
-  }, [api, selectedIds, rows])
+  }, [api, selectedIds, entries])
 
-  const onGridReady = useCallback((event: GridReadyEvent<BoardRow>) => { setApi(event.api) }, [])
-  const onSelectionChanged = useCallback((event: SelectionChangedEvent<BoardRow>) => {
+  const onGridReady = useCallback((event: GridReadyEvent<Entry>) => { setApi(event.api) }, [])
+  const onSelectionChanged = useCallback((event: SelectionChangedEvent<Entry>) => {
     if (event.source === 'api') return
-    onSelect(event.api.getSelectedRows().map((row) => row.id))
+    onSelect(event.api.getSelectedRows().flatMap((entry) => (entry.kind === 'row' ? [entry.row.id] : [])))
   }, [onSelect])
-  // Only ways to read a decision: the menu opens it, its claim page or its rental, and offers nothing that moves money.
-  const getContextMenuItems = useCallback<GetContextMenuItems<BoardRow>>(({ node }) => {
-    const row = node?.data
-    if (node === null || row === undefined) return []
-    return [
-      { name: node.expanded ? t('menu.close') : t('menu.open'), action: () => { toggle(node) } },
+  const more = useMemo<MoreState>(() => ({
+    label: (row) => t('menu.more', { title: text.title(row) }),
+    items: (row) => [
       ...((row.kind === 'claim' || row.kind === 'contested' || row.kind === 'escalated') && row.rentalId !== null ? [{ name: t('menu.claim'), action: () => { router.push(rentalRoutes.claim(row.rentalId ?? '')) } }] : []),
       ...(row.rentalId === null ? [] : [{ name: t('menu.rental'), action: () => { router.push(rentalRoutes.rental(row.rentalId ?? '')) } }]),
       ...(row.kind === 'repair' ? [{ name: t('menu.passport'), action: () => { router.push(itemRoutes.item(row.itemId)) } }] : []),
-    ]
-  }, [t, toggle, router])
+    ],
+  }), [t, text, router])
 
-  // A new array only when the rows change, so opening a decision never makes the grid compare its rows again.
-  const rowData = useMemo(() => [...rows], [rows])
   const state = useMemo(() => ({ text, selectedIds }), [text, selectedIds])
-  const opening = useMemo(
-    () => ({ toggle, focusOnOpen, idOf, nameOf: text.heading, toggleLabel: (row: BoardRow, open: boolean) => t(open ? 'closeEvidence' : 'openEvidence', { title: text.title(row) }), renderDetail }),
-    [toggle, focusOnOpen, text, t, renderDetail],
+  const sections = useMemo(
+    () => ({ openIds, toggle, focusOnOpen, idOf, nameOf: text.heading, toggleLabel: (row: BoardRow, open: boolean) => t(open ? 'closeEvidence' : 'openEvidence', { title: text.title(row) }), renderDetail, renderGroup }),
+    [openIds, toggle, focusOnOpen, text, t, renderDetail],
   )
   return (
     <GridStateContext.Provider value={state}>
-      <MasterDetailProvider value={opening}>
-        <div className="hold-grid min-w-0" role="region" aria-label={t('grid')}>
-          <AgGridReact<BoardRow>
-            modules={MODULES}
-            theme={holdGridTheme}
-            popupParent={popupParent}
-            rowData={rowData}
-            columnDefs={columns}
-            getRowId={getRowId}
-            // Three lines a decision: what, about whom, and who decides.
-            rowHeight={84}
-            getRowHeight={getRowHeight}
-            domLayout="autoHeight"
-            ensureDomOrder
-            suppressMovableColumns
-            suppressDragLeaveHidesColumns
-            animateRows={false}
-            groupDisplayType="groupRows"
-            groupRowRendererParams={{ innerRenderer: DecisionGroupLabel, suppressCount: true }}
-            // Every group open and every decision closed: AG Grid counts a decision as a level below its group.
-            groupDefaultExpanded={grouped ? 1 : 0}
-            groupMaintainOrder
-            suppressAggFuncInHeader
-            masterDetail
-            isRowMaster={() => true}
-            detailCellRenderer={DetailRowCell}
-            detailRowAutoHeight
-            getContextMenuItems={getContextMenuItems}
-            rowSelection={{ mode: 'multiRow', checkboxes: false, headerCheckbox: false, enableClickSelection: false, groupSelects: 'self', isRowSelectable: (node) => node.data?.selectable === true }}
-            onGridReady={onGridReady}
-            onSelectionChanged={onSelectionChanged}
-            onCellKeyDown={onCellKeyDown}
-            onCellClicked={onCellClicked}
-          />
-        </div>
-      </MasterDetailProvider>
+      <MoreContext.Provider value={more}>
+        <SectionsProvider value={sections}>
+          <div className="hold-grid min-w-0" role="region" aria-label={t('grid')}>
+            <AgGridReact<Entry>
+              theme={holdGridTheme}
+              popupParent={popupParent}
+              rowData={entries}
+              columnDefs={columns}
+              {...grid}
+              fullWidthCellRenderer={FullWidthRow}
+              // Three lines a decision: what, about whom, and who decides.
+              rowHeight={84}
+              getRowHeight={getRowHeight}
+              domLayout="autoHeight"
+              ensureDomOrder
+              suppressMovableColumns
+              suppressDragLeaveHidesColumns
+              animateRows={false}
+              rowSelection={{ mode: 'multiRow', checkboxes: false, headerCheckbox: false, enableClickSelection: false, isRowSelectable: (node) => node.data?.kind === 'row' && node.data.row.selectable }}
+              onGridReady={onGridReady}
+              onSelectionChanged={onSelectionChanged}
+            />
+          </div>
+        </SectionsProvider>
+      </MoreContext.Provider>
     </GridStateContext.Provider>
   )
 }

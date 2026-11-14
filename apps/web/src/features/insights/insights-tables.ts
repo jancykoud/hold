@@ -1,13 +1,13 @@
 import { HOLD_VALIDITY_DAYS, holdDay, holdStanding } from '@hold/domain'
 import type { HoldStanding, ItemWear, LineFlow, MoneyEventKind, MoneyWhere, RentalMoney } from '@hold/domain'
 
-// The insights dashboard's tables (extensions.md section 12.5), as AG Studio's data engine reads them: the money
+// The insights dashboard's tables (extensions.md section 12.5), which its figures are added up from: the money
 // ledger's lines and rentals, and the fleet's items, as those pages already work them out. Amounts stay in cents; the
 // dashboard shows them in the shop's currency. No renter is named: a rental is its identifier. Labels arrive in the
 // viewer's language.
 
 // What this reads of the ledger's and the fleet's rows; the route that composes the page hands them in.
-export type InsightsLine = { readonly id: string; readonly rentalId: string; readonly kind: MoneyEventKind; readonly flow: LineFlow; readonly amountCents: number; readonly occurredAt: Date }
+export type InsightsLine = { readonly id: string; readonly rentalId: string; readonly kind: MoneyEventKind; readonly flow: LineFlow; readonly amountCents: number; readonly occurredAt: Date; readonly month: string }
 export type InsightsRental = { readonly rentalId: string; readonly renterName?: string | null; readonly startsAt: Date; readonly simulated: boolean; readonly reservedCents: number | null; readonly trustRung: number | null; readonly ordinaryCents: number | null; readonly money: RentalMoney }
 // A hold PayPal holds now, with its clocks.
 export type InsightsHold = { readonly rentalId: string; readonly reservedCents: number; readonly createdAt: Date; readonly assuredUntil: Date; readonly validUntil: Date; readonly simulated: boolean }
@@ -39,6 +39,8 @@ export function insightsTables({ lines, rentals, fleet, holds, now }: InsightsIn
       line_id: line.id,
       rental_id: line.rentalId,
       occurred_at: line.occurredAt,
+      // "2026-10", as the shop's own clock counts it.
+      month: line.month,
       kind: words.kind(line.kind === 'hold_released' && line.flow === 'replaced' ? 'replaced' : line.kind),
       flow: words.flow(line.flow),
       amount_cents: line.amountCents,

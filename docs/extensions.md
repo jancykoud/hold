@@ -226,7 +226,7 @@ All carry `shop_id` and row-level security, except where noted.
 | `negotiations` | Claim, both mandate IDs, state, round, deadline, transcript head fingerprint | 4 |
 | `negotiation_moves` | Negotiation, side, move, line amounts, grounds, evidence references, previous move fingerprint | 4 |
 | `incidents` | Rental item, kind, state, description, triage result, model and prompt version | 5 |
-| `insights_dashboards` | The shop's insights dashboard as AG Studio last left it, the report version it was built on, who saved it and when. One per shop. | 12.5 |
+| `insights_dashboards` | Unread since 14 November 2026, when the dashboard left AG Studio (section 12.5). The shop's insights dashboard as AG Studio last left it, the report version it was built on, who saved it and when. One per shop. | 12.5 |
 
 ---
 
@@ -320,6 +320,8 @@ Testing is not the same as a shop. Every real decision is also a label.
 - **X0.6** No number appears anywhere without its count.
 
 **Open scorecard, 28 October 2026.** Built: the runner keeps every pair with its run, and `/reliability` shows them case by case on AG Grid with the calibration, the outcome table and run against run (`features/open-scorecard`, `scorecard-cases.ts` in `packages/domain`). It is checked end to end against a made-up fixture run in the test environment only; the deployed page shows it once a real run over the evaluation set is accepted, which still waits for X0.1.
+
+**Open scorecard on AG Grid Community, 14 November 2026.** The grid needs no licence: the pairs are still grouped by kind and open in place, they narrow to one result from a list above the grid, where each column had a filter of its values, and they download as CSV. What follows is how it stood before.
 
 **Open scorecard on AG Grid Enterprise, 29 October 2026.** The pairs are grouped by kind with each group's record, each pair opens in place into its photographs (master-detail), each column with words filters by its values (set filter), and the pairs shown download for a spreadsheet, every cell in words as the grid shows it (Excel export). On a phone the pairs stay a list with the chosen pair below it.
 
@@ -1394,7 +1396,11 @@ Never cut: the spine, the scorecard, the morning queue.
 
 Screens built for the sponsor prizes in `tech-stack.md` section 15. They follow every rule in section 3 and change no money rule. They come after the six extensions and are the first thing cut.
 
-**The rental calendar, on Bryntum Scheduler**
+**The rental calendar**
+
+**Since 14 November 2026 the calendar is Hold's own timeline (`apps/web/src/features/calendar/rental-timeline.tsx`), with no library and no licence: each item a row, each rental a bar that is a link to its rental, placed by plain code (`barSpan` and `timelineDays` in `calendar-model.ts`), a line marking now. It is read only, as before. What follows describes it as first built on Bryntum Scheduler's trial package.**
+
+**As first built, on Bryntum Scheduler**
 
 Page `/shop/calendar`. Items down the side, grouped by item type, and time across the top. Each rental is a bar on each of its items.
 
@@ -1418,10 +1424,10 @@ Page `/shop/decisions`, right after Today in the menu. Every record that waits o
 - **The order.** What falls due first comes first: a missed return, a proposal's deadline, the end of a hold's validity, which is also the date a claim must be decided by. Rows with no date follow, oldest first. With every group shown, the rows are grouped by kind (claims, the agent's, incidents, holds and returns), the group holding the most urgent decision first, each heading saying how many decisions it holds and the total of their amounts as the grid adds them up. The amount and due columns sort within each group, with missing values last either way, and the groups keep their order.
 - **Who decides, for the viewer.** Each row says it from where the viewer stands, through the domain's `mayConfirm`: counter staff decide a claim within their approval limit and see a larger one waiting for an owner or manager; the owner who raised a contested claim sees that another owner or manager decides it, unless the shop has nobody else; the agent's proposals are an owner's or manager's; a read-only member decides nothing. "Only mine" narrows the board to the viewer's own.
 - **The evidence in place.** A decision opens under its own row, by its button, a click on the row or Enter, and closes the same way; several can be open at once: for a claim, its lines and where each came from, the handover and return photographs with the mark outlined on the return, and how the hold would split; for a proposal, its reason, PayPal references, marks and draft, with approve, postpone and reject; for a report, the renter's words quoted as data and any safety note.
-- **Keyboard first.** Arrow keys move between decisions. Enter opens one and puts the focus on its heading, and closes it again. Space chooses a release. A right-click menu opens the decision, its claim page or its rental, and offers nothing that moves money.
+- **Keyboard first.** Arrow keys move between decisions. Enter opens one and puts the focus on its heading, and closes it again. Space chooses a release. A menu button at the end of each row leads to its claim page, its rental or its item's passport, and offers nothing that moves money.
 - **Releases together.** Only the agent's `release_hold` proposals the viewer may approve can be chosen, and the chosen ones are approved in one tap through the morning queue's own `approveProposals`, which checks the kinds and the passkey again on the server.
 - **What it never does.** No row charges anyone. A claim is approved or decided on its own page, with its passkey and limits. Every amount comes from the records.
-- **On AG Grid Enterprise.** Row grouping with aggregation, master-detail and the context menu are Enterprise modules, registered by this grid alone; the licence key is read at runtime (`tech-stack.md` section 15). The grid is themed from Hold's own tokens, follows the light and dark themes, and draws each cell as a React component that reads what it needs from context, so a change never redraws a row or loses the keyboard's place. Below `md` the board is a list of cards holding the same rows, filtered by the same function.
+- **On AG Grid Community, since 14 November 2026.** No licence and no key. A group's heading and an opened decision are rows drawn across the grid, put in place and added up by plain code (`components/grid/sections.ts`, with its own tests); the row menu is a button, not a right-click. The grid is themed from Hold's own tokens, follows the light and dark themes, and draws each cell as a React component that reads what it needs from context, so a change never redraws a row or loses the keyboard's place. Below `md` the board is a list of cards holding the same rows, filtered by the same function.
 
 **Done when**
 
@@ -1450,7 +1456,7 @@ Page `/shop/prices`. The first thing a real shop asks is how its existing list g
 - **Undo.** Every change, a paste of forty rows as much as one cell, is a step that can be taken back and taken back again, by button or Ctrl or ⌘ with Z. The draft stays in the browser until it is published or discarded.
 - **What a renter reads.** The draft as the renter's own pages draw it, in the language chosen, beside the grid on a wide screen.
 - **Versions and what changed.** Every published version with how many open rentals were agreed to it, and what changed between any two of them or against the draft, entry by entry by code. A renter is held to the version they agreed to, never a later one.
-- **On AG Grid Enterprise.** Cell selection, the clipboard, the rich select editor, the context menu and the Excel export are Enterprise modules, registered by this grid alone. The grid hands every paste to the draft rather than writing cells itself, so what is pasted is read by Hold's own rules and taken back in one step; the history covers the wear policy too, so it stays Hold's own, a plain function with its own tests.
+- **On AG Grid Community, since 14 November 2026.** No licence and no key. The focused cell is copied, cells from a spreadsheet are pasted at the focused cell (`clipboard-cells.ts`), a kind is chosen from the grid's plain list, a menu button on each row adds a price above or below it or removes it, and the draft downloads as CSV. A block of cells can no longer be chosen and copied out. The grid hands every paste to the draft rather than writing cells itself, so what is pasted is read by Hold's own rules and taken back in one step; the history covers the wear policy too, so it stays Hold's own, a plain function with its own tests.
 
 **Done when**
 
@@ -1474,7 +1480,7 @@ Page `/shop/money`, "Money" in the menu after the calendar. The owner and the ac
 - **What confirms a line.** A line opens in place into when PayPal says it happened and when Hold wrote it after reading it back, its PayPal reference, the PayPal event about the same resource once its signature was verified (its type, identifier and time, never its body), the execution that asked PayPal for it with its idempotency key and attempts, and the rental's audit trail.
 - **For the accountant.** The lines shown download for a spreadsheet, every cell in words as the grid shows it, with each line's month and renter.
 - **Who reads it.** Every staff member, inside the shop alone. Nothing on it moves money, and no amount on it comes from anywhere but the money log and the records it is checked against.
-- **On AG Grid Enterprise.** Row grouping with aggregation, master-detail and the Excel export, registered by this grid alone. Below `md`, a card per rental with its figures, its checks and its lines.
+- **On AG Grid Community, since 14 November 2026.** No licence and no key. Headings, totals and opened lines as on the decision board; the download is CSV. Below `md`, a card per rental with its figures, its checks and its lines.
 
 **Done when**
 
@@ -1490,13 +1496,13 @@ Page `/shop/money`, "Money" in the menu after the calendar. The owner and the ac
 
 On `/shop/items`, from `md`. An owner deciding which bike to repair, retire or insure needs each item's record set side by side with the rest of its type.
 
-- **Each type above its items.** AG Grid's tree data: a type's row gives how many of its items are shown and its items' totals, which the grid adds up; below it, each item. The items page's filters by standing apply. Each type's panel below the grid keeps its terms, kit and photo plan, a link to change the type, and the form to add items. A phone keeps each type's list of items in its panel.
+- **Each type above its items.** A type's row gives how many of its items are shown and its items' totals, added up by `fleetRows`; below it, each item, kept under its type when a column is sorted. The items page's filters by standing apply. Each type's panel below the grid keeps its terms, kit and photo plan, a link to change the type, and the form to add items. A phone keeps each type's list of items in its panel.
 - **What each item's rentals say.** Read by the domain's `itemWear` from the rentals that went out: how many, the days out this year on the shop's clock (`shopYear`, a part day counted whole), the damage the comparison found at each of the last twelve returns as a line of bars, and what was recovered of the damage priced. The damage priced is the claim lines priced from the item's findings on a claim a person decided, or every line of such a claim when the item went out alone; what was recovered is the item's share of what PayPal collected on the claim, never more than its lines (`recoveredCents`). Open marks are counted from the item's record.
 - **Wearing fastest.** The domain's `wearingFastest`: within each type, the items with the most damage found per rental, when that is more than nothing and more than another item of the type shows. Retired items are not compared. It shows beside the item's name, in words with a sign.
-- **Row actions, each through the page that already does it.** Enter on an item opens its passport. The right-click menu opens the passport, its status panel to send it to repair or retire it, and, for an owner or manager and a type that is not a sample, the type's hold, where it is changed with a passkey. A type's row opens the type. Nothing in the grid changes a record itself.
+- **Row actions, each through the page that already does it.** Enter on an item opens its passport. A menu button at the end of the row opens the passport, its status panel to send it to repair or retire it, and, for an owner or manager and a type that is not a sample, the type's hold, where it is changed with a passkey. A type's row opens the type. Nothing in the grid changes a record itself.
 - **What repairs cost.** Since 29 October 2026 (architecture.md section 9.6): each item's repair cost, what its damage recovered less that (`repairMargin`, none before a repair was done) and its repairs to do, totalled by type.
 - **For the shop's records.** The fleet downloads for a spreadsheet, the damage priced and recovered in columns of their own.
-- **On AG Grid Enterprise.** Tree data, aggregation, sparklines with AG Charts, the context menu and the Excel export, registered by this grid alone; every column is drawn, so one scrolled out of sight is still read by a screen reader.
+- **On AG Grid Community, since 14 November 2026.** No licence and no key. The damage per rental is a line of bars drawn by Hold, the row menu is a button, and the download is CSV; a type can no longer be folded. Every column is drawn, so one scrolled out of sight is still read by a screen reader.
 
 **Done when**
 
@@ -1508,7 +1514,11 @@ On `/shop/items`, from `md`. An owner deciding which bike to repair, retire or i
 
 **Status, 29 October 2026.** Built: `fleet.ts` and `shopYear` in `packages/domain`, `fleetRecords` in `packages/db`, the fleet grid in `features/items`. F1 to F5 pass in tests (`fleet.test.ts`, `shop-calendar.test.ts`, `fleet-records.test.ts`, `fleet-rows.test.ts`, `e2e/fleet.spec.ts`, `e2e/items.spec.ts`). The accessibility check found the type facts' definition list holding a term one level too deep; fixed. A passport report for resale or insurance is not built. The insights dashboard on AG Studio waits for an AG Studio Pro with AI licence key.
 
-**The insights dashboard, on AG Studio**
+**The insights dashboard**
+
+**Since 14 November 2026 the dashboard is drawn by Hold, with no library and no licence** (`apps/web/src/features/insights`): three figures on top (held now, to the shop, back to renters), then money by month, damage priced and recovered by item type, holds by trust rung, each live hold on its 29 days, the settlement stepping down, and every item in a table. The figures are added up by plain code (`insights-figures.ts`, from the same `insightsTables`), each written in words beside its bar, and the page is the same on a phone as on a laptop. Three things went with AG Studio and are not built again yet: the insights agent, arranging or changing the dashboard, and keeping a shop's own dashboard. The agent's turn, its gate and its Bedrock port stay in `packages/agent` and `packages/domain`, with no page calling them; the `insights_dashboards` table stays, unread. What follows describes the dashboard as first built.
+
+**As first built, on AG Studio**
 
 Page `/shop/insights`, for the owner and managers; others read that only the owner or a manager opens it.
 
@@ -1521,6 +1531,8 @@ Page `/shop/insights`, for the owner and managers; others read that only the own
 - **Loading.** AG Studio's own browser build is served from `/vendor/ag-studio`, copied from the package before each build by `apps/web/scripts/vendor-ag-studio.ts`; the app imports only its types (`studio-assets.test.ts`), as for Bryntum.
 - **Licence.** AG Studio Pro with AI, read at runtime from `HOLD_AG_STUDIO_LICENCE_KEY` (`tech-stack.md` section 15).
 - **On a phone and a tablet.** Studio's canvas needs 720 pixels, so below `md` the page shows the figures it opens with. The insights agent's panel lies over the canvas, so below `xl` it starts folded, even on a dashboard left with it open (`withAgentPanel`); a canvas wider than its room scrolls inside Studio. Studio's own controls are given 44 pixels by its theme and by `globals.css`.
+
+**Status, 14 November 2026.** The calendar moved to Hold's own timeline; Bryntum is no longer a dependency.
 
 **Status, 28 October 2026.** The calendar is built, read only: `/shop/calendar` on Bryntum Scheduler's trial package, each item a row and each rental a bar with its standing in words (held on PayPal, waiting for the renter in PayPal, late, being settled, done), opening where the earliest rental still out began, with a line marking now; a bar opens its rental; below `md` a list by item (`apps/web/src/features/calendar`, `shopCalendar` in `packages/db`). The browser loads Bryntum's own build from `/vendor/bryntum`, copied from the package before each build by `apps/web/scripts/vendor-bryntum.ts`, and the app imports only its types: bundling its 4.6 MB module ran the build runners out of memory on 28 October 2026 (`bryntum-assets.test.ts` keeps it out). S1 passes in tests and in the width checks; S2 holds because the calendar reads only states the spine records after verified events. Not built: the finer flags of S3, moving bookings and `move_booking` (S4 to S6).
 
