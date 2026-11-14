@@ -12,6 +12,7 @@ These rules apply to every change in this repository. The design lives in `docs/
 | Which tools and services, and their settings | `docs/tech-stack.md` |
 | Structure, state machines, flows, access, security | `docs/architecture.md` |
 | The six extensions and their acceptance checks | `docs/extensions.md` |
+| What is built next for vehicle rental, and in what order | `docs/vehicle-plan.md` |
 
 - The docs are long. Find the heading with a search and read that section. Do not load a whole file.
 - If a task conflicts with the docs, stop and say so. Do not choose silently.
