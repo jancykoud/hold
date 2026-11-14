@@ -36,6 +36,23 @@ test('an owner adds an item type and its items, then sends one to repair and bac
   await expect(page.getByRole('region', { name: 'Set up your shop' }).getByText('Done.')).toHaveCount(3)
 })
 
+test('a car is suggested the nineteen views of a walk around it, ending on the dashboard, and its form fits every width', async ({ page }) => {
+  test.setTimeout(120_000)
+  await ownerWithPrices(page)
+  await page.getByRole('link', { name: 'New item type' }).first().click()
+  await page.getByLabel('Name').fill('Compact car')
+  await page.getByLabel('Kind').selectOption('car')
+  await expect(page.getByRole('textbox', { name: 'View 9', exact: true })).toHaveValue('Front left wheel')
+  await expect(page.getByRole('textbox', { name: 'View 19', exact: true })).toHaveValue('Dashboard, with mileage and fuel')
+  await expectFitsEveryWidth(page)
+  await page.getByLabel('Value to replace, in EUR').fill('18000')
+  await page.getByLabel('Hold while it is out, in EUR').fill('1200')
+  await page.getByLabel('Fee per day, in EUR').fill('60')
+  await page.getByRole('button', { name: 'Save item type' }).click()
+  await expect(page).toHaveURL(/\/shop\/items$/)
+  await expect(page.getByRole('region', { name: 'Compact car' }).getByText('19 views')).toBeVisible()
+})
+
 test('editing a type’s views keeps the type and its items', async ({ page }) => {
   await ownerWithPrices(page)
   await newType(page, 'Gravel bike')

@@ -39,7 +39,8 @@ export const QUEUES: readonly QueueSpec[] = [
   { name: 'executions', orderedPerRental: true, visibilityTimeout: Duration.minutes(6) },
   // A hold's timed upkeep, sent by its schedules (architecture.md section 7.4), in order per hold.
   { name: 'upkeep', orderedPerRental: true, visibilityTimeout: Duration.minutes(6), deduplicatedByContent: true },
-  { name: 'comparisons', orderedPerRental: false, visibilityTimeout: Duration.minutes(10) },
+  // Longer than the comparison worker may run, which is the longest comparison and three minutes (comparison-worker.ts).
+  { name: 'comparisons', orderedPerRental: false, visibilityTimeout: Duration.minutes(15) },
   { name: 'media', orderedPerRental: false, visibilityTimeout: Duration.minutes(5) },
   { name: 'evidence', orderedPerRental: true, visibilityTimeout: Duration.minutes(5) },
   { name: 'messages', orderedPerRental: false, visibilityTimeout: Duration.minutes(6) },

@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { App } from 'aws-cdk-lib'
 import { Match, Template } from 'aws-cdk-lib/assertions'
+import { LONGEST_INSPECTION_MILLISECONDS } from '@hold/domain'
 import { describe, expect, it } from 'vitest'
 import { createHoldApp } from './hold-app.ts'
 import { CODE_KEY_ARN, CREDENTIAL_KEY_ALIAS, DATABASE_NAME, EVIDENCE_KEPT_DAYS, EVIDENCE_LOCK_DAYS, PREFIX } from './settings.ts'
@@ -297,11 +298,17 @@ describe('queues', () => {
     expect(new Set(actions)).toEqual(new Set(['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'lambda:InvokeFunction']))
   })
 
+  it('gives the comparison worker two minutes more than the longest comparison may take, for reading and lining up the photographs', () => {
+    const timeout = resourcesOfType(work, 'AWS::Lambda::Function').find((each) => each.Properties?.['FunctionName'] === 'hold-worker-comparisons')?.Properties?.['Timeout'] as number
+    expect(timeout).toBeGreaterThanOrEqual(LONGEST_INSPECTION_MILLISECONDS / 1000 + 120)
+  })
+
   it('keeps a message hidden for longer than its worker may run, so two never handle it at once', () => {
     for (const [queue, worker] of [
       ['hold-paypal-events.fifo', 'hold-worker-paypal-events'],
       ['hold-executions.fifo', 'hold-worker-executions'],
       ['hold-upkeep.fifo', 'hold-worker-upkeep'],
+      ['hold-comparisons', 'hold-worker-comparisons'],
     ]) {
       const visibility = resourcesOfType(work, 'AWS::SQS::Queue').find((each) => each.Properties?.['QueueName'] === queue)?.Properties?.['VisibilityTimeout'] as number
       const timeout = resourcesOfType(work, 'AWS::Lambda::Function').find((each) => each.Properties?.['FunctionName'] === worker)?.Properties?.['Timeout'] as number

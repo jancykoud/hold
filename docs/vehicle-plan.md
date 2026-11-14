@@ -34,7 +34,7 @@ Read from the code on 14 November 2026.
 
 | # | Step | What is built | Size |
 |---|---|---|---|
-| 1 | The vehicle's photo plan | A plan of up to 24 views. The car's suggested plan in full: the walk around, four corners, four wheels, windscreen, roof, the inside, the dashboard | Small |
+| 1 | The vehicle's photo plan | A plan of up to 24 views. The car's suggested plan in full: the walk around, four corners, four wheels, windscreen, roof, the inside, the dashboard. The comparison's ceiling grows with the plan | Medium. **Built, 15 November 2026** |
 | 2 | Types of damage | Each finding carries a type: scratch, impact, dent, broken glass, missing part. Shown on the claim and matched to the price list | Medium |
 | 3 | Mileage and fuel | Both read at departure and at return and entered by staff. Two more price categories. Claim lines worked out by plain code from the readings and the published price | Medium |
 | 4 | Accuracy on vehicles | Pairs of photographs of real vehicles, a tuning half and a gate half. A first measured figure, published with its counts | Large, and it waits on photographs |
@@ -50,7 +50,7 @@ Read from the code on 14 November 2026.
 
 ## 4. Each step, and when it is done
 
-**1. The vehicle's photo plan.** Done when a shop saves a plan of 24 views and no more, the car's suggested plan asks for every view above, a handover and a return of 24 views complete on a phone at 360 pixels wide, and the comparison pairs each view of the return with its handover twin.
+**1. The vehicle's photo plan. Built on 15 November 2026**, except the handover and return of a long plan walked on a phone, which is checked by the capture tests of a six-view plan and not yet by one of nineteen. A plan holds up to 24 views and the car's suggested plan has nineteen. Building it showed that a comparison stopped at ten model calls whatever the plan, so a plan of more than ten views, the car's twelve among them, always went to a person; the ceiling now grows with the plan (`architecture.md` section 10). Done when a shop saves a plan of 24 views and no more, the car's suggested plan asks for every view above, a handover and a return of 24 views complete on a phone at 360 pixels wide, and the comparison pairs each view of the return with its handover twin.
 
 **2. Types of damage.** Done when every damage finding has one type from a list in `packages/domain`, a price list entry can name the type it prices, a claim line shows it, the model's answer is checked against the list like every other field, and a finding with no type still reaches a person.
 
@@ -66,6 +66,7 @@ Read from the code on 14 November 2026.
 
 - **Photographs of real vehicles**, at departure and at return, with damage and without, in the light and weather a rental business works in. Some hundreds of pairs, from one or two rental businesses willing to take them. Synthetic damage drawn on a clean photograph proves nothing about real bodywork.
 - **A decision on mileage.** Entered by hand from the dashboard photograph, which is the plan above, or read by the model and confirmed by a person, which is more comfortable and has to be measured first.
+- **More of the comparison model from AWS.** A vehicle's comparison looks at up to 24 pairs of photographs where a bike's looks at six, so it spends about four times the tokens. The account's daily limit for the comparison model was measured at about 940,000 tokens on 29 October 2026 (`tech-stack.md` section 18); what one vehicle's comparison spends is not measured yet, and at that limit a day holds few of them. A rental business needs the limit raised before its first day.
 - **A decision on step 5:** built after the first three steps, or when a first customer asks.
 
 ## 6. What is not in this plan

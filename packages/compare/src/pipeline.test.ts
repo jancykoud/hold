@@ -24,6 +24,15 @@ describe('the return comparison pipeline', () => {
     expect(calls).toBe(10)
     expect(compared.state).toBe('deferred')
   })
+  it('gives every view of a long plan its first look: the nineteen of a car are all compared, not stopped at the tenth', async () => {
+    const given = await input()
+    const dismissed = [{ candidate: 0, reason: 'reflection' }]
+    let calls = 0
+    const compared = await compareInspection({ ...given, views: Array.from({ length: 19 }, (_, index) => ({ ...given.views[0], view: `view-${String(index)}` })).filter((view): view is typeof given.views[number] => view.pair !== undefined) }, { look: () => { calls += 1; return Promise.resolve(reply(result([], dismissed))) } })
+    expect(calls).toBe(19)
+    expect(compared.state).toBe('clean')
+  })
+
   it('reports clean only after a valid model result on every view that accounts for each candidate', async () => {
     const dismissed = [{ candidate: 0, reason: 'shadow' }]
     expect(await compareInspection(await input(), { look: () => Promise.resolve(reply(result([], dismissed))) })).toMatchObject({ state: 'clean', findings: [], model: 'recorded-model' })

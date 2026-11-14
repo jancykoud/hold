@@ -49,8 +49,20 @@ describe('a photo plan', () => {
     }
   })
 
-  it('suggests a walk around a car that ends on the dashboard, where the mileage and the fuel are read', () => {
-    expect(suggestedPhotoPlan('car').map((suggested) => suggested.key)).toEqual(['front', 'rear', 'side_left', 'side_right', 'front_left_corner', 'front_right_corner', 'rear_left_corner', 'rear_right_corner', 'windscreen', 'wheels', 'interior', 'dashboard'])
+  it('takes a plan of twenty-four views, the walk around a vehicle and inside it', () => {
+    expect(PHOTO_PLAN_LIMITS.views).toBe(24)
+  })
+
+  it('suggests the whole walk around a car: its sides and corners, each wheel, the glass and the roof, then inside to the dashboard, where the mileage and the fuel are read', () => {
+    const plan = suggestedPhotoPlan('car')
+    expect(plan.map((suggested) => suggested.key)).toEqual([
+      'front', 'rear', 'side_left', 'side_right',
+      'front_left_corner', 'front_right_corner', 'rear_left_corner', 'rear_right_corner',
+      'wheel_front_left', 'wheel_front_right', 'wheel_rear_left', 'wheel_rear_right',
+      'windscreen', 'rear_window', 'roof',
+      'interior_front', 'interior_rear', 'boot', 'dashboard',
+    ])
+    expect(plan.filter((suggested) => !suggested.required).map((suggested) => suggested.key)).toEqual(['front_left_corner', 'front_right_corner', 'rear_left_corner', 'rear_right_corner', 'rear_window', 'roof', 'interior_rear', 'boot'])
   })
 
   it('suggests the six e-bike views the guided handover shows', () => {

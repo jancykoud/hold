@@ -1,4 +1,4 @@
-import { SAMPLE_PHOTO_SHA256 } from '@hold/domain'
+import { LONGEST_INSPECTION_MILLISECONDS, SAMPLE_PHOTO_SHA256 } from '@hold/domain'
 import { createHash } from 'node:crypto'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -64,7 +64,9 @@ describe('comparison queue processing', () => {
     const { shop, comparison } = await queued(body, body, 'comparison-lease')
     expect(await shop.act((transaction) => beginComparison(transaction, comparison.id, NOW))).toBeDefined()
     expect(await shop.act((transaction) => beginComparison(transaction, comparison.id, new Date(NOW.getTime() + 60_000)))).toBeUndefined()
-    const resumed = new Date(NOW.getTime() + 180_001)
+    // A worker may still be at it for as long as the longest comparison takes, and a minute more.
+    expect(await shop.act((transaction) => beginComparison(transaction, comparison.id, new Date(NOW.getTime() + LONGEST_INSPECTION_MILLISECONDS + 59_000)))).toBeUndefined()
+    const resumed = new Date(NOW.getTime() + LONGEST_INSPECTION_MILLISECONDS + 60_001)
     expect(await shop.act((transaction) => beginComparison(transaction, comparison.id, resumed))).toBeDefined()
     const result = { state: 'clean' as const, model: 'recorded-model', promptVersion: 'inspection-1', alignment: {}, findings: [], simulated: false, reason: null }
     expect(await shop.act((transaction) => completeComparison(transaction, comparison.id, NOW, result, resumed))).toBe(false)

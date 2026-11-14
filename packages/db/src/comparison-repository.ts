@@ -1,5 +1,5 @@
 import { reserveEvidencePack } from './evidence-repository.ts'
-import { INSPECTION_LIMITS, RENTAL_TRANSITIONS, transition } from '@hold/domain'
+import { LONGEST_INSPECTION_MILLISECONDS, RENTAL_TRANSITIONS, transition } from '@hold/domain'
 import { and, asc, eq, inArray, isNotNull, isNull, lte, ne, sql } from 'drizzle-orm'
 import { auditLog, captureSessions, comparisons, findings, incidents, itemTypes, items, marks, photoPlans, photos, priceEntries, rentalItems, rentals, users, wearPolicies } from './schema/index.ts'
 import { comparisonQueued } from './sample-comparison.ts'
@@ -15,7 +15,7 @@ async function sessionPhotos(transaction: Transaction, sessionId: string): Promi
 export async function beginComparison(transaction: Transaction, comparisonId: string, now: Date) {
   const [comparison] = await transaction.select().from(comparisons).where(eq(comparisons.id, comparisonId)).for('update')
   if (comparison === undefined || !['pending', 'running'].includes(comparison.state)) return undefined
-  if (comparison.state === 'running' && comparison.startedAt !== null && now.getTime() - comparison.startedAt.getTime() < INSPECTION_LIMITS.maxMilliseconds + 60_000) return undefined
+  if (comparison.state === 'running' && comparison.startedAt !== null && now.getTime() - comparison.startedAt.getTime() < LONGEST_INSPECTION_MILLISECONDS + 60_000) return undefined
   const [returned] = await transaction.select().from(captureSessions).where(eq(captureSessions.id, comparison.returnSessionId))
   const [handover] = await transaction.select().from(captureSessions).where(eq(captureSessions.id, comparison.handoverSessionId))
   if (returned?.kind !== 'return' || handover?.kind !== 'handover' || returned.sealedAt === null || handover.sealedAt === null || returned.rentalItemId !== handover.rentalItemId) return undefined

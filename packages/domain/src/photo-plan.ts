@@ -44,7 +44,9 @@ export type ItemCategory = (typeof ITEM_CATEGORIES)[number]
 export const VIEW_OUTLINES = ['whole_side', 'front', 'rear', 'top', 'detail'] as const
 export type ViewOutline = (typeof VIEW_OUTLINES)[number]
 
-export const PHOTO_PLAN_LIMITS = { views: 12, label: 60 } as const
+// Twenty-four views: the walk around a vehicle and inside it. The comparison's ceiling grows with a plan's views
+// (inspectionCeiling in inspection.ts), so every view of the longest plan is still compared.
+export const PHOTO_PLAN_LIMITS = { views: 24, label: 60 } as const
 
 export type PhotoPlanViewDraft = { readonly label: string; readonly outline: ViewOutline; readonly required: boolean }
 
@@ -114,7 +116,9 @@ const SUGGESTED: Readonly<Record<ItemCategory, readonly SuggestedView[]>> = {
   camping: [view('whole', 'whole_side'), view('fabric', 'detail'), view('zips', 'detail', false), view('poles', 'detail', false)],
   event: [view('front', 'front'), view('back', 'rear'), view('top', 'top'), view('detail', 'detail', false)],
   tool: [view('whole', 'whole_side'), view('working_end', 'detail'), view('cable', 'detail', false), view('serial_plate', 'detail', false)],
-  // A walk around the car, then inside. The dashboard is where the mileage and the fuel are read.
+  // The whole walk around the car, each wheel, the glass and the roof, then inside. The dashboard is where the mileage
+  // and the fuel are read. The corners, the rear window, the roof, the back seats and the boot are asked for and may be
+  // left out.
   car: [
     view('front', 'front'),
     view('rear', 'rear'),
@@ -124,9 +128,16 @@ const SUGGESTED: Readonly<Record<ItemCategory, readonly SuggestedView[]>> = {
     view('front_right_corner', 'front', false),
     view('rear_left_corner', 'rear', false),
     view('rear_right_corner', 'rear', false),
+    view('wheel_front_left', 'detail'),
+    view('wheel_front_right', 'detail'),
+    view('wheel_rear_left', 'detail'),
+    view('wheel_rear_right', 'detail'),
     view('windscreen', 'detail'),
-    view('wheels', 'detail', false),
-    view('interior', 'detail'),
+    view('rear_window', 'detail', false),
+    view('roof', 'top', false),
+    view('interior_front', 'detail'),
+    view('interior_rear', 'detail', false),
+    view('boot', 'detail', false),
     view('dashboard', 'detail'),
   ],
   van: [

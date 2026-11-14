@@ -66,7 +66,7 @@ export { DECLARED_PHOTO_SOURCES, PHOTO_SOURCES, photoSource, photoTakenBy, short
 export type { DeclaredPhotoSource, PhotoSource, PhotoTaker } from './photo-provenance.ts'
 export { comparisonNotice } from './comparison-notice.ts'
 export type { ComparisonNotice } from './comparison-notice.ts'
-export { checkReportedRegion, INSPECTION_LIMITS, inspectFindings, regionOverlap, unaccountedCandidates } from './inspection.ts'
+export { checkReportedRegion, inspectionCeiling, INSPECTION_LIMITS, inspectFindings, LONGEST_INSPECTION_MILLISECONDS, regionOverlap, unaccountedCandidates } from './inspection.ts'
 export type { InspectionClass, InspectionFinding } from './inspection.ts'
 
 export { claimDeadlineAction, claimReplyAllowed } from './claim-deadline.ts'

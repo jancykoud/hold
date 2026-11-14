@@ -1,5 +1,6 @@
 import { checkRegion } from './capture-session.ts'
 import type { Region } from './capture-session.ts'
+import { PHOTO_PLAN_LIMITS } from './photo-plan.ts'
 
 // reportedOverlap: how far a finding and a mark reported during the rental must cover each other (intersection over
 // union) to be the same damage. maxReportedArea: the largest share of a view a renter's box may cover, so a report can
@@ -7,7 +8,22 @@ import type { Region } from './capture-session.ts'
 // secondLookMinConfidence: the independent second look confirms the first look's damage by naming the same class at
 // this confidence or more. Shown only two close crops, it agreed at 0.6 to 0.65 on the evaluation set's tuning half
 // (29 October 2026), never at the 0.9 a first look needs. A person still approves every charge.
-export const INSPECTION_LIMITS = { minConfidence: 0.9, secondLookMinConfidence: 0.6, knownMarkOverlap: 0.5, reportedOverlap: 0.5, maxReportedArea: 0.1, maxFindings: 8, maxCalls: 10, maxTokensPerCall: 4096, maxMillisecondsPerCall: 60_000, maxMilliseconds: 120_000 } as const
+export const INSPECTION_LIMITS = { minConfidence: 0.9, secondLookMinConfidence: 0.6, knownMarkOverlap: 0.5, reportedOverlap: 0.5, maxReportedArea: 0.1, maxFindings: 8, minCalls: 10, secondLooks: 4, millisecondsAllowedPerCall: 20_000, maxTokensPerCall: 4096, maxMillisecondsPerCall: 60_000 } as const
+
+// What one comparison may spend: a first look for every view of the plan and four second looks, never fewer than the
+// ten calls the six views of a bike always had, each allowed twenty seconds on average (a look took 13 to over 30
+// seconds, measured 27 October 2026; the allowance was twelve until the ceiling grew with the plan). A plan of six
+// views or fewer has ten calls; the nineteen of a car have twenty-three. Past the ceiling the rest goes to a person, as
+// before. A plan never has more views than PHOTO_PLAN_LIMITS allows, so neither does a comparison.
+export function inspectionCeiling(views: number): { readonly maxCalls: number; readonly maxMilliseconds: number } {
+  const counted = Math.min(Math.max(views, 0), PHOTO_PLAN_LIMITS.views)
+  const maxCalls = Math.max(INSPECTION_LIMITS.minCalls, counted + INSPECTION_LIMITS.secondLooks)
+  return { maxCalls, maxMilliseconds: maxCalls * INSPECTION_LIMITS.millisecondsAllowedPerCall }
+}
+
+// The longest any comparison may take: what the worker's own time limit and a stalled comparison are measured against.
+export const LONGEST_INSPECTION_MILLISECONDS = inspectionCeiling(PHOTO_PLAN_LIMITS.views).maxMilliseconds
+
 export type InspectionClass = 'new_damage' | 'missing_part' | 'wear' | 'uncertain' | 'known_mark' | 'reported'
 export type InspectionFinding = { readonly view: string; readonly region: Region; readonly class: InspectionClass; readonly confidence: number; readonly secondLookConfirmed: boolean | null }
 

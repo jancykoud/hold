@@ -505,7 +505,7 @@ Hold is now built as a company's product. The order below is the order of what b
   - An accepted run of the evaluation set, so Hold can state an accuracy at all (section 6.11).
 - **Next: pilots, one kind at a time.** A season with real businesses in three families: cycles and outdoor gear, cameras and electronics, and vehicles with one or two independent agencies. Each pilot adds that kind's measured pairs of photographs to the evaluation set and tunes its photo plan.
 - **Then: what vehicles and groups need.**
-  - For vehicles: mileage and fuel read at handover and return and priced from the list, more than twelve views in a plan, charges that arrive after the return, and the driving licence and the insurance through partners, not built by Hold.
+  - For vehicles: mileage and fuel read at handover and return and priced from the list, a typed list of damage (a plan already holds 24 views, since 15 November 2026), charges that arrive after the return, and the driving licence and the insurance through partners, not built by Hold.
   - For groups: reporting across branches, single sign-on, a programming interface, and connections to the booking tools a business already runs.
   - For rentals longer than 29 days: the renter's saved PayPal wallet, with their consent, so the next hold is placed without asking again.
 - **Later.** A version for rental marketplaces and peer-to-peer lending. A routine of its own for places, where a room is not photographed like an object. Repair partners who quote directly from the evidence. Listing Hold businesses where AI assistants look for things to rent. An independent party to run the renter's advocate.

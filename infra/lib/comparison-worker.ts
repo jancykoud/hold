@@ -1,3 +1,5 @@
+import { LONGEST_INSPECTION_MILLISECONDS } from '@hold/domain'
+import { Duration } from 'aws-cdk-lib'
 import type { Stack } from 'aws-cdk-lib'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
@@ -5,6 +7,10 @@ import { CLAUDE_INVOKE_ACTIONS, CLAUDE_INVOKE_RESOURCES, DATABASE_NAME, name } f
 import { allowPushes, PUSH_ENVIRONMENT } from './pushes.ts'
 import { workerFunction } from './worker.ts'
 import type { WorkerProps } from './worker.ts'
+
+// The longest comparison, the twenty-four views of a vehicle, and three minutes to read and line up its photographs.
+// The comparisons queue keeps a message hidden for longer still (work-stack.ts).
+const COMPARISON_TIMEOUT = Duration.millis(LONGEST_INSPECTION_MILLISECONDS).plus(Duration.minutes(3))
 
 export function createComparisonWorker(stack: Stack, props: WorkerProps): void {
   const queue = props.queues.get('comparisons')
@@ -18,6 +24,6 @@ export function createComparisonWorker(stack: Stack, props: WorkerProps): void {
   // A finished comparison is pushed to the counter's phones to review (architecture.md section 13.9).
   allowPushes(role)
   role.addToPolicy(new iam.PolicyStatement({ actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'], resources: [`arn:aws:logs:${stack.region}:${stack.account}:log-group:/aws/lambda/${name('worker', 'comparisons')}:*`] }))
-  const worker = workerFunction(stack, 'ComparisonWorker', name('worker', 'comparisons'), 'comparisons-lambda.ts', role, { HOLD_DATABASE_CLUSTER_ARN: props.cluster.clusterArn, HOLD_DATABASE_SECRET_ARN: props.workerUserSecret.secretArn, HOLD_DATABASE_NAME: DATABASE_NAME, HOLD_EVIDENCE_BUCKET: props.evidenceBucket.bucketName, HOLD_DISPLAY_BUCKET: props.displayBucket.bucketName, ...PUSH_ENVIRONMENT }, { memorySize: 1536 })
+  const worker = workerFunction(stack, 'ComparisonWorker', name('worker', 'comparisons'), 'comparisons-lambda.ts', role, { HOLD_DATABASE_CLUSTER_ARN: props.cluster.clusterArn, HOLD_DATABASE_SECRET_ARN: props.workerUserSecret.secretArn, HOLD_DATABASE_NAME: DATABASE_NAME, HOLD_EVIDENCE_BUCKET: props.evidenceBucket.bucketName, HOLD_DISPLAY_BUCKET: props.displayBucket.bucketName, ...PUSH_ENVIRONMENT }, { memorySize: 1536, timeout: COMPARISON_TIMEOUT })
   worker.addEventSource(new SqsEventSource(queue, { batchSize: 1, reportBatchItemFailures: true }))
 }

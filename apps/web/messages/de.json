@@ -2178,7 +2178,16 @@
         "bedroom": "Schlafzimmer",
         "floor": "Boden",
         "walls": "Wände",
-        "outside": "Außenbereich"
+        "outside": "Außenbereich",
+        "wheel_front_left": "Rad vorne links",
+        "wheel_front_right": "Rad vorne rechts",
+        "wheel_rear_left": "Rad hinten links",
+        "wheel_rear_right": "Rad hinten rechts",
+        "rear_window": "Heckscheibe",
+        "roof": "Dach",
+        "interior_front": "Vordersitze",
+        "interior_rear": "Rücksitze",
+        "boot": "Kofferraum"
       },
       "type": {
         "hold": "Reservierung",
@@ -2340,7 +2349,7 @@
         "accessory_repeated": "Zubehörteil {row} wiederholt ein anderes. Zählen Sie es einmal, mit einer Anzahl.",
         "accessory_count_invalid": "Zubehörteil {row} braucht eine Anzahl von 1 bis 20.",
         "no_views": "Fügen Sie mindestens eine Ansicht zum Fotografieren hinzu.",
-        "too_many_views": "Ein Fotoplan darf bis zu 12 Ansichten haben.",
+        "too_many_views": "Ein Fotoplan darf bis zu 24 Ansichten haben.",
         "no_required_view": "Machen Sie mindestens eine Ansicht zur Pflicht.",
         "view_label_missing": "Ansicht {row} braucht eine Bezeichnung.",
         "view_label_too_long": "Die Bezeichnung von Ansicht {row} ist zu lang.",

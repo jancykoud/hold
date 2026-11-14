@@ -2178,7 +2178,16 @@
         "bedroom": "Chambre",
         "floor": "Sol",
         "walls": "Murs",
-        "outside": "Extérieur"
+        "outside": "Extérieur",
+        "wheel_front_left": "Roue avant gauche",
+        "wheel_front_right": "Roue avant droite",
+        "wheel_rear_left": "Roue arrière gauche",
+        "wheel_rear_right": "Roue arrière droite",
+        "rear_window": "Lunette arrière",
+        "roof": "Toit",
+        "interior_front": "Sièges avant",
+        "interior_rear": "Sièges arrière",
+        "boot": "Coffre"
       },
       "type": {
         "hold": "Empreinte",
@@ -2340,7 +2349,7 @@
         "accessory_repeated": "L'accessoire {row} en répète un autre. Comptez-le une seule fois, avec un nombre.",
         "accessory_count_invalid": "L'accessoire {row} a besoin d'un nombre de 1 à 20.",
         "no_views": "Ajoutez au moins une vue à photographier.",
-        "too_many_views": "Un plan photo peut compter jusqu'à 12 vues.",
+        "too_many_views": "Un plan photo peut compter jusqu'à 24 vues.",
         "no_required_view": "Rendez au moins une vue obligatoire.",
         "view_label_missing": "La vue {row} a besoin d'un libellé.",
         "view_label_too_long": "Le libellé de la vue {row} est trop long.",

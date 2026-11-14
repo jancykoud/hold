@@ -1,4 +1,4 @@
-import { checkRegion, INSPECTION_LIMITS, inspectFindings, unaccountedCandidates } from '@hold/domain'
+import { checkRegion, inspectFindings, inspectionCeiling, INSPECTION_LIMITS, unaccountedCandidates } from '@hold/domain'
 import type { Region } from '@hold/domain'
 import { mapRegion } from '@hold/vision/homography'
 import type { PairResult } from '@hold/vision/inspect-pair'
@@ -21,7 +21,8 @@ type Observed = ModelFinding & { readonly view: string; readonly secondLookConfi
 
 // There are no action tools. Every call is independent, bounded, structured and revalidated here.
 export async function compareInspection(input: Input, model: ComparisonModel) {
-  const signal = AbortSignal.timeout(INSPECTION_LIMITS.maxMilliseconds)
+  const ceiling = inspectionCeiling(input.views.length)
+  const signal = AbortSignal.timeout(ceiling.maxMilliseconds)
   let calls = 0; let inputTokens = 0; let outputTokens = 0
   const models = new Set<string>()
   const findings: Observed[] = []
@@ -36,7 +37,7 @@ export async function compareInspection(input: Input, model: ComparisonModel) {
     return { ...inspected, state: deferred ? 'deferred' as const : inspected.state, model: [...models].join(', ') || 'not_called', promptVersion: PROMPT_VERSION, modelUnavailable, alignment: { ...alignment, calls, inputTokens, outputTokens, candidates, dismissed, unaccounted } }
   }
   const look: ComparisonModel['look'] = async (request) => {
-    if (calls >= INSPECTION_LIMITS.maxCalls || signal.aborted) return { kind: 'unavailable', model: 'not_called' }
+    if (calls >= ceiling.maxCalls || signal.aborted) return { kind: 'unavailable', model: 'not_called' }
     calls += 1
     const reply = await model.look(request, signal)
     // Only a result or a refusal is the model answering; the comparison is recorded in the name of those models alone.

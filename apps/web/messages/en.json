@@ -2178,7 +2178,16 @@
         "bedroom": "Bedroom",
         "floor": "Floor",
         "walls": "Walls",
-        "outside": "Outside"
+        "outside": "Outside",
+        "wheel_front_left": "Front left wheel",
+        "wheel_front_right": "Front right wheel",
+        "wheel_rear_left": "Rear left wheel",
+        "wheel_rear_right": "Rear right wheel",
+        "rear_window": "Rear window",
+        "roof": "Roof",
+        "interior_front": "Front seats",
+        "interior_rear": "Back seats",
+        "boot": "Boot"
       },
       "type": {
         "hold": "Hold",
@@ -2340,7 +2349,7 @@
         "accessory_repeated": "Kit item {row} repeats another. Count it once, with a number.",
         "accessory_count_invalid": "Kit item {row} needs a number from 1 to 20.",
         "no_views": "Add at least one view to photograph.",
-        "too_many_views": "A photo plan can have up to 12 views.",
+        "too_many_views": "A photo plan can have up to 24 views.",
         "no_required_view": "Make at least one view required.",
         "view_label_missing": "View {row} needs a label.",
         "view_label_too_long": "The label of view {row} is too long.",

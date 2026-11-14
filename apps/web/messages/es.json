@@ -2178,7 +2178,16 @@
         "bedroom": "Dormitorio",
         "floor": "Suelo",
         "walls": "Paredes",
-        "outside": "Exterior"
+        "outside": "Exterior",
+        "wheel_front_left": "Rueda delantera izquierda",
+        "wheel_front_right": "Rueda delantera derecha",
+        "wheel_rear_left": "Rueda trasera izquierda",
+        "wheel_rear_right": "Rueda trasera derecha",
+        "rear_window": "Luneta trasera",
+        "roof": "Techo",
+        "interior_front": "Asientos delanteros",
+        "interior_rear": "Asientos traseros",
+        "boot": "Maletero"
       },
       "type": {
         "hold": "Retención",
@@ -2340,7 +2349,7 @@
         "accessory_repeated": "El accesorio {row} repite otro. Cuéntalo una sola vez, con un número.",
         "accessory_count_invalid": "El accesorio {row} necesita un número del 1 al 20.",
         "no_views": "Añade al menos una vista para fotografiar.",
-        "too_many_views": "Un plan de fotos puede tener hasta 12 vistas.",
+        "too_many_views": "Un plan de fotos puede tener hasta 24 vistas.",
         "no_required_view": "Haz obligatoria al menos una vista.",
         "view_label_missing": "La vista {row} necesita una etiqueta.",
         "view_label_too_long": "La etiqueta de la vista {row} es demasiado larga.",

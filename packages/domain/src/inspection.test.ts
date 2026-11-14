@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { checkReportedRegion, INSPECTION_LIMITS, inspectFindings, unaccountedCandidates } from './inspection.ts'
+import { checkReportedRegion, inspectionCeiling, INSPECTION_LIMITS, inspectFindings, LONGEST_INSPECTION_MILLISECONDS, unaccountedCandidates } from './inspection.ts'
+import { PHOTO_PLAN_LIMITS } from './photo-plan.ts'
 import fc from 'fast-check'
 
 const region = { x: 0.2, y: 0.2, width: 0.2, height: 0.2 }
@@ -89,5 +90,27 @@ describe('the candidate areas code found', () => {
         expect(left.includes(candidate)).toBe(!touched && !dismissed.includes(index))
       })
     }))
+  })
+})
+
+describe('the ceiling of one comparison', () => {
+  it('is ten calls for the six views of a bike, as it always was, at twenty seconds a call', () => {
+    expect(inspectionCeiling(6)).toEqual({ maxCalls: 10, maxMilliseconds: 200_000 })
+    expect(inspectionCeiling(1)).toEqual({ maxCalls: 10, maxMilliseconds: 200_000 })
+  })
+
+  it('grows with the views of a longer plan, a first look for each and four second looks, at the same pace a call', () => {
+    expect(inspectionCeiling(19)).toEqual({ maxCalls: 23, maxMilliseconds: 460_000 })
+    expect(inspectionCeiling(24)).toEqual({ maxCalls: 28, maxMilliseconds: 560_000 })
+  })
+
+  it('always leaves a first look for every view, and never grows without end', () => {
+    fc.assert(fc.property(fc.integer({ min: 1, max: PHOTO_PLAN_LIMITS.views }), (views) => {
+      const ceiling = inspectionCeiling(views)
+      expect(ceiling.maxCalls).toBeGreaterThan(views)
+      expect(ceiling.maxMilliseconds).toBeLessThanOrEqual(LONGEST_INSPECTION_MILLISECONDS)
+    }))
+    expect(inspectionCeiling(1000)).toEqual(inspectionCeiling(PHOTO_PLAN_LIMITS.views))
+    expect(LONGEST_INSPECTION_MILLISECONDS).toBe(560_000)
   })
 })
