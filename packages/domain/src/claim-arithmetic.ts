@@ -1,14 +1,17 @@
-import { add, smaller, subtract, zero } from './money.ts'
+import { add, smaller, subtract, times, zero } from './money.ts'
 import type { Money } from './money.ts'
 import { fail, ok } from './result.ts'
+import type { UnitPriceCategory } from './price-list.ts'
 import type { Result } from './result.ts'
 
 // Where a claim line came from. A line without photographs needs a named person and their written reason. A line the
-// renter agreed during the rental rests on the photographs they took of it (extensions.md section 10.4).
+// renter agreed during the rental rests on the photographs they took of it (extensions.md section 10.4). A line charged
+// from a vehicle's readings rests on the two photographs of its dashboard, at handover and at return (readings.ts).
 export type ClaimLineSource =
   | { readonly kind: 'finding'; readonly findingId: string; readonly photoCount: number }
   | { readonly kind: 'person'; readonly staffId: string; readonly reason: string }
   | { readonly kind: 'agreed_in_rental'; readonly incidentId: string; readonly photoCount: number }
+  | { readonly kind: 'reading'; readonly reading: UnitPriceCategory; readonly quantity: number; readonly photoCount: number }
 
 // The amount is always read from the agreed price list entry, never supplied by a model or a client.
 export type ClaimLine = {
@@ -32,7 +35,16 @@ export function checkClaimLines(lines: readonly ClaimLine[]): Result<void, Claim
 }
 
 function hasEvidence(source: ClaimLineSource): boolean {
-  return source.kind === 'person' ? source.staffId !== '' && source.reason.trim() !== '' : source.photoCount > 0
+  if (source.kind === 'person') return source.staffId !== '' && source.reason.trim() !== ''
+  // A reading is two figures, so it rests on both dashboard photographs.
+  return source.kind === 'reading' ? source.photoCount >= 2 : source.photoCount > 0
+}
+
+// A line charged from the readings: the agreed list's price of one, as many times as plain code counted (readingUsage).
+// The amount is worked out here and nowhere else, so no person and no model ever types it.
+export function readingLine({ priceEntryId, unit, reading, quantity, photoCount }: { readonly priceEntryId: string; readonly unit: Money; readonly reading: UnitPriceCategory; readonly quantity: number; readonly photoCount: number }): Result<ClaimLine, 'nothing_to_charge'> {
+  if (!Number.isSafeInteger(quantity) || quantity < 1) return fail('nothing_to_charge')
+  return ok({ priceEntryId, amount: times(unit, quantity), source: { kind: 'reading', reading, quantity, photoCount } })
 }
 
 // How an approved claim meets the hold. Hold never takes more than the reserved amount, even where PayPal would allow it.

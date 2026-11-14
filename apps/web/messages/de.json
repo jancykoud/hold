@@ -1685,7 +1685,8 @@
       "has_rentals": "Dieser Laden hat schon Vermietungen, daher wurden keine Beispiele hinzugefügt.",
       "notifications_failed": "PayPal hat das Abonnement nicht angenommen. Prüfen Sie die Zugangsdaten der App und versuchen Sie es erneut.",
       "rate_limited": "Zu oft angefragt. Warten Sie ein paar Minuten und versuchen Sie es erneut.",
-      "email_daily_cap": "Die heutigen E-Mails dieses Shops sind aufgebraucht, daher wurde die Einladung nicht gesendet und nichts gespeichert. Versuchen Sie es morgen wieder."
+      "email_daily_cap": "Die heutigen E-Mails dieses Shops sind aufgebraucht, daher wurde die Einladung nicht gesendet und nichts gespeichert. Versuchen Sie es morgen wieder.",
+      "category_repeated": "Preis {row} ist ein zweiter Preis pro Kilometer oder pro Achtel Tank. Behalte je einen."
     },
     "security": {
       "title": "Sicherheit",
@@ -1758,7 +1759,9 @@
         "damage": "Schaden",
         "loss": "Verlust",
         "lateness": "Verspätete Rückgabe",
-        "cleaning": "Reinigung"
+        "cleaning": "Reinigung",
+        "mileage": "Kilometer",
+        "fuel": "Kraftstoff"
       },
       "repairs": {
         "title": "Was Reparaturen kosten",
@@ -2748,7 +2751,8 @@
         "description_too_long": "Zu lang für eine Zeile",
         "description_repeated": "Wie ein anderer Preis",
         "amount_invalid": "Kein Betrag in {currency}",
-        "amount_zero": "Null"
+        "amount_zero": "Null",
+        "category_repeated": "Nur ein Preis dieser Art"
       },
       "preview": {
         "title": "Was ein Mieter liest",

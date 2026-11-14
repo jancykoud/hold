@@ -1685,7 +1685,8 @@
       "has_rentals": "This shop already has rentals, so no samples were added.",
       "notifications_failed": "PayPal did not accept the subscription. Check the app's credentials, then try again.",
       "rate_limited": "Asked too often. Wait a few minutes and try again.",
-      "email_daily_cap": "Today’s emails are used for this shop, so the invitation was not sent and nothing was kept. Try again tomorrow."
+      "email_daily_cap": "Today’s emails are used for this shop, so the invitation was not sent and nothing was kept. Try again tomorrow.",
+      "category_repeated": "Price {row} is a second price for a kilometre or for an eighth of a tank. Keep one of each."
     },
     "security": {
       "title": "Security",
@@ -1758,7 +1759,9 @@
         "damage": "Damage",
         "loss": "Loss",
         "lateness": "Late return",
-        "cleaning": "Cleaning"
+        "cleaning": "Cleaning",
+        "mileage": "Mileage",
+        "fuel": "Fuel"
       },
       "repairs": {
         "title": "What repairs cost",
@@ -2748,7 +2751,8 @@
         "description_too_long": "Too long for one line",
         "description_repeated": "Same as another price",
         "amount_invalid": "Not an amount in {currency}",
-        "amount_zero": "Zero"
+        "amount_zero": "Zero",
+        "category_repeated": "One price of this kind only"
       },
       "preview": {
         "title": "What a renter reads",

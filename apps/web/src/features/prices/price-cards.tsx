@@ -53,7 +53,7 @@ export function PriceCards({ rows, currency, problems, onChange, onRemove }: Pri
             <div className="grid grid-cols-2 gap-3">
               <div className="grid min-w-0 gap-1.5">
                 <Label htmlFor={id('category')}>{t('category')}</Label>
-                <Select id={id('category')} value={row.category} onChange={(event) => { onChange(row.key, { category: PRICE_CATEGORIES.find((each) => each === event.target.value) ?? 'damage' }) }}>
+                <Select id={id('category')} value={row.category} aria-invalid={found.category !== undefined} onChange={(event) => { onChange(row.key, { category: PRICE_CATEGORIES.find((each) => each === event.target.value) ?? 'damage' }) }}>
                   {PRICE_CATEGORIES.map((category) => <option key={category} value={category}>{categories(category)}</option>)}
                 </Select>
               </div>
@@ -62,6 +62,7 @@ export function PriceCards({ rows, currency, problems, onChange, onRemove }: Pri
                 <Input key={`a-${row.amount}`} id={id('amount')} inputMode="decimal" defaultValue={row.amount} maxLength={40} className="figures" aria-invalid={found.amount !== undefined} onBlur={(event) => { if (event.target.value !== row.amount) onChange(row.key, { amount: event.target.value }) }} />
               </div>
             </div>
+            {found.category === undefined ? null : <p className="text-sm font-semibold text-destructive">{editor(`problemsText.${found.category}`, { currency })}</p>}
             {found.amount === undefined ? null : <p className="text-sm font-semibold text-destructive">{editor(`problemsText.${found.amount}`, { currency })}</p>}
           </li>
         )

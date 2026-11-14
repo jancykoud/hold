@@ -24,6 +24,12 @@ export function subtract(a: Money, b: Money): Money {
   return money(a.cents - b.cents, sameCurrency(a, b))
 }
 
+// As many of an amount as a whole, non-negative count: a price a kilometre, for the kilometres driven.
+export function times(a: Money, count: number): Money {
+  if (!Number.isSafeInteger(count) || count < 0) throw new RangeError('An amount is taken a whole, non-negative number of times.')
+  return money(a.cents * count, a.currency)
+}
+
 export function smaller(a: Money, b: Money): Money {
   sameCurrency(a, b)
   return a.cents <= b.cents ? a : b

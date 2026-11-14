@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { money } from './money.ts'
-import { checkPriceList, priceCode, publishedText } from './price-list.ts'
+import { checkPriceList, priceCode, publishedText, UNIT_PRICE_CATEGORIES } from './price-list.ts'
 import type { PriceListDraft } from './price-list.ts'
 
 const chf = (cents: number) => money(cents, 'CHF')
@@ -49,5 +49,14 @@ describe('a price list', () => {
 
   it('writes the text a renter reads', () => {
     expect(publishedText(draft)).toBe('Deep scratch on the frame: 35.00 CHF\nLost lock: 45.00 CHF')
+  })
+
+  // A kilometre and an eighth of a tank are priced each, and a rental is charged for as many as its readings say
+  // (readings.ts), so a list says each price once.
+  it('prices a kilometre beyond those included and an eighth of a tank, once each', () => {
+    expect(UNIT_PRICE_CATEGORIES).toEqual(['mileage', 'fuel'])
+    const vehicle: PriceListDraft = { ...draft, entries: [...draft.entries, { description: 'Each kilometre beyond those included', category: 'mileage', amount: chf(30) }, { description: 'Each eighth of a tank missing', category: 'fuel', amount: chf(12_00) }] }
+    expect(checkPriceList(vehicle)).toEqual([])
+    expect(checkPriceList({ ...vehicle, entries: [...vehicle.entries, { description: 'Another price a kilometre', category: 'mileage', amount: chf(50) }] })).toEqual([{ kind: 'category_repeated', entry: 4 }])
   })
 })

@@ -24,6 +24,11 @@ describe('checking a draft row by row', () => {
     expect(checkPriceRows([row('Lost lock', '4500'), row('Bent wheel', '12.50')], 'JPY')).toEqual([{}, { amount: 'amount_invalid' }])
   })
 
+  it('marks the kind of a second price for a kilometre, or for an eighth of a tank, since a reading is charged at one price', () => {
+    const priced = (description: string, category: 'damage' | 'mileage' | 'fuel') => ({ description, amount: '1', category })
+    expect(checkPriceRows([priced('A kilometre over', 'mileage'), priced('Scratch', 'damage'), priced('Dent', 'damage'), priced('An eighth of a tank', 'fuel'), priced('A kilometre, again', 'mileage')], 'EUR')).toEqual([{}, {}, {}, {}, { category: 'category_repeated' }])
+  })
+
   it('refuses a description longer than a renter can read in one line', () => {
     expect(checkPriceRows([row('x'.repeat(121), '5')], 'EUR')).toEqual([{ description: 'description_too_long' }])
   })

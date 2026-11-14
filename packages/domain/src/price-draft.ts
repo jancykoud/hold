@@ -1,19 +1,23 @@
 import { parseAmount } from './currency.ts'
-import { descriptionProblem, priceCode } from './price-list.ts'
+import { descriptionProblem, priceCode, UNIT_PRICE_CATEGORIES } from './price-list.ts'
 import type { DescriptionProblem, PriceCategory } from './price-list.ts'
 
 // The price list as a shop edits it before publishing it (extensions.md section 12.5). The rules are publishing's own,
 // applied cell by cell, so the editor can say exactly which cell is wrong before anything is sent.
 
-export type PriceCellProblems = { readonly description?: DescriptionProblem; readonly amount?: 'amount_invalid' | 'amount_zero' }
+export type PriceCellProblems = { readonly description?: DescriptionProblem; readonly amount?: 'amount_invalid' | 'amount_zero'; readonly category?: 'category_repeated' }
 
-export function checkPriceRows(rows: readonly { readonly description: string; readonly amount: string }[], currency: string): PriceCellProblems[] {
+export function checkPriceRows(rows: readonly { readonly description: string; readonly amount: string; readonly category?: PriceCategory }[], currency: string): PriceCellProblems[] {
   const seen = new Set<string>()
+  const priced = new Set<PriceCategory>()
   return rows.map((row) => {
+    // A kilometre and an eighth of a tank have one price each (checkPriceList).
+    const repeated = row.category !== undefined && UNIT_PRICE_CATEGORIES.some((category) => category === row.category) && priced.has(row.category)
+    if (row.category !== undefined) priced.add(row.category)
     const description = descriptionProblem(row.description, seen)
     const parsed = parseAmount(row.amount, currency)
     const amount = parsed === undefined ? 'amount_invalid' : parsed.cents === 0 ? 'amount_zero' : undefined
-    return { ...(description === undefined ? {} : { description }), ...(amount === undefined ? {} : { amount }) }
+    return { ...(description === undefined ? {} : { description }), ...(amount === undefined ? {} : { amount }), ...(repeated ? { category: 'category_repeated' as const } : {}) }
   })
 }
 

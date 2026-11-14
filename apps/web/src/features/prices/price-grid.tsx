@@ -15,7 +15,7 @@ import { holdGridTheme } from '@/components/grid/grid-theme'
 import { usePopupParent } from '@/components/grid/use-popup-parent'
 import { clipboardCells } from './clipboard-cells'
 import type { EditorRow, PasteTarget } from './editor-model'
-import { AmountCell, DescriptionCell, MoreCell, PriceGridContext, RemoveCell } from './price-cells'
+import { AmountCell, DescriptionCell, KindCell, MoreCell, PriceGridContext, RemoveCell } from './price-cells'
 
 registerGridModules()
 
@@ -58,11 +58,11 @@ export function PriceGrid({ rows, currency, problems, onChange, onRemove, onMove
   }, [onChange])
   const columns = useMemo<ColDef<EditorRow>[]>(() => {
     // A cell with a problem is marked, and says what it is under its value.
-    const problemIn = (field: 'description' | 'amount') => ({ 'price-cell-problem': (params: CellClassParams<EditorRow>) => params.data !== undefined && problems.get(params.data.key)?.[field] !== undefined })
+    const problemIn = (field: 'description' | 'amount' | 'category') => ({ 'price-cell-problem': (params: CellClassParams<EditorRow>) => params.data !== undefined && problems.get(params.data.key)?.[field] !== undefined })
     return [
       { colId: 'order', headerName: t('columns.order'), rowDrag: true, width: 84, maxWidth: 84, valueGetter: ({ node }) => (node?.rowIndex ?? 0) + 1, sortable: false },
       { colId: 'description', headerName: t('columns.description'), field: 'description', editable: true, valueSetter: setter('description'), cellRenderer: DescriptionCell, cellClassRules: problemIn('description'), flex: 3, minWidth: 200, sortable: false },
-      { colId: 'kind', headerName: t('columns.kind'), field: 'category', editable: true, valueSetter: setter('category'), cellEditor: 'agSelectCellEditor', cellEditorParams: { values: [...PRICE_CATEGORIES] }, refData: kinds, flex: 1, minWidth: 140, sortable: false },
+      { colId: 'kind', headerName: t('columns.kind'), field: 'category', editable: true, valueSetter: setter('category'), cellEditor: 'agSelectCellEditor', cellEditorParams: { values: [...PRICE_CATEGORIES] }, refData: kinds, cellRenderer: KindCell, cellClassRules: problemIn('category'), flex: 1, minWidth: 140, sortable: false },
       { colId: 'amount', headerName: t('columns.amount', { currency }), field: 'amount', editable: true, valueSetter: setter('amount'), cellRenderer: AmountCell, cellClassRules: problemIn('amount'), flex: 2, minWidth: 150, type: 'rightAligned', sortable: false },
       { colId: 'remove', headerName: t('columns.remove'), cellRenderer: RemoveCell, width: 92, maxWidth: 92, sortable: false },
       { colId: 'more', headerName: t('columns.more'), cellRenderer: MoreCell, ...CONTROL_COLUMN },

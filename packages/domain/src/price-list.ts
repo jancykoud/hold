@@ -5,8 +5,14 @@ import { slugOf } from './slug.ts'
 // A shop's published prices for damage, loss and lateness, and what it counts as ordinary wear. A renter agrees to
 // one version at booking, and a claim is priced from that version alone (architecture.md section 7.2).
 
-export const PRICE_CATEGORIES = ['damage', 'loss', 'lateness', 'cleaning'] as const
+export const PRICE_CATEGORIES = ['damage', 'loss', 'lateness', 'cleaning', 'mileage', 'fuel'] as const
 export type PriceCategory = (typeof PRICE_CATEGORIES)[number]
+
+// The categories priced for one of something and charged for as many as a vehicle's readings say (readings.ts): a
+// kilometre beyond those the rental includes, an eighth of a tank missing. A list has one price for each at most, so
+// there is never a choice of which one a reading is charged at.
+export const UNIT_PRICE_CATEGORIES = ['mileage', 'fuel'] as const satisfies readonly PriceCategory[]
+export type UnitPriceCategory = (typeof UNIT_PRICE_CATEGORIES)[number]
 
 export const PRICE_LIST_LIMITS = { entries: 60, description: 120, wearPolicy: 4000 } as const
 
@@ -26,6 +32,7 @@ export type PriceListProblem =
   | { readonly kind: 'description_repeated'; readonly entry: number }
   | { readonly kind: 'amount_zero'; readonly entry: number }
   | { readonly kind: 'wrong_currency'; readonly entry: number }
+  | { readonly kind: 'category_repeated'; readonly entry: number }
   | { readonly kind: 'wear_policy_missing' }
   | { readonly kind: 'wear_policy_too_long' }
 
@@ -46,7 +53,11 @@ export function checkPriceList(draft: PriceListDraft): readonly PriceListProblem
   if (draft.entries.length === 0) problems.push({ kind: 'no_entries' })
   if (draft.entries.length > PRICE_LIST_LIMITS.entries) problems.push({ kind: 'too_many_entries' })
   const seen = new Set<string>()
+  const priced = new Set<PriceCategory>()
   draft.entries.forEach((entry, index) => {
+    const unit = UNIT_PRICE_CATEGORIES.some((category) => category === entry.category)
+    if (unit && priced.has(entry.category)) problems.push({ kind: 'category_repeated', entry: index })
+    priced.add(entry.category)
     const problem = descriptionProblem(entry.description, seen)
     if (problem !== undefined) problems.push({ kind: problem, entry: index })
     if (entry.amount.cents === 0) problems.push({ kind: 'amount_zero', entry: index })

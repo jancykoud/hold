@@ -1685,7 +1685,8 @@
       "has_rentals": "Cette boutique a déjà des locations, aucun exemple n’a donc été ajouté.",
       "notifications_failed": "PayPal n'a pas accepté l'abonnement. Vérifiez les identifiants de l'app, puis réessayez.",
       "rate_limited": "Demandé trop souvent. Attendez quelques minutes et réessayez.",
-      "email_daily_cap": "Les e-mails du jour de cette boutique sont épuisés, l’invitation n’a donc pas été envoyée et rien n’a été conservé. Réessayez demain."
+      "email_daily_cap": "Les e-mails du jour de cette boutique sont épuisés, l’invitation n’a donc pas été envoyée et rien n’a été conservé. Réessayez demain.",
+      "category_repeated": "Le prix {row} est un second prix au kilomètre ou au huitième de réservoir. Gardez-en un seul de chaque."
     },
     "security": {
       "title": "Sécurité",
@@ -1758,7 +1759,9 @@
         "damage": "Dommage",
         "loss": "Perte",
         "lateness": "Retour en retard",
-        "cleaning": "Nettoyage"
+        "cleaning": "Nettoyage",
+        "mileage": "Kilométrage",
+        "fuel": "Carburant"
       },
       "repairs": {
         "title": "Ce que coûtent les réparations",
@@ -2748,7 +2751,8 @@
         "description_too_long": "Trop long pour une ligne",
         "description_repeated": "Identique à un autre prix",
         "amount_invalid": "Pas un montant en {currency}",
-        "amount_zero": "Zéro"
+        "amount_zero": "Zéro",
+        "category_repeated": "Un seul prix de ce type"
       },
       "preview": {
         "title": "Ce que lit un locataire",

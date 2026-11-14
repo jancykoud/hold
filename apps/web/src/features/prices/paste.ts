@@ -7,7 +7,7 @@ import type { PriceCategory } from '@hold/domain'
 export type PastedRow = { readonly description: string; readonly category: PriceCategory; readonly amount: string }
 
 // The kinds of price as people name them in a list, in English. The editor adds the names in the shop's language.
-const KIND_WORDS: Readonly<Record<string, PriceCategory>> = { damage: 'damage', damaged: 'damage', loss: 'loss', lost: 'loss', lateness: 'lateness', late: 'lateness', cleaning: 'cleaning', clean: 'cleaning' }
+const KIND_WORDS: Readonly<Record<string, PriceCategory>> = { damage: 'damage', damaged: 'damage', loss: 'loss', lost: 'loss', lateness: 'lateness', late: 'lateness', cleaning: 'cleaning', clean: 'cleaning', mileage: 'mileage', kilometre: 'mileage', kilometer: 'mileage', km: 'mileage', fuel: 'fuel' }
 
 // An amount as people write it: "€35", "35 EUR", "1.234,50", "CHF 1’200.50". Signs, codes and spaces go; of two
 // separators the last is the decimal one; a lone separator before exactly three digits groups thousands.

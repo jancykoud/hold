@@ -1685,7 +1685,8 @@
       "has_rentals": "Esta tienda ya tiene alquileres, así que no se añadió ninguna muestra.",
       "notifications_failed": "PayPal no aceptó la suscripción. Revisa las credenciales de la app y vuelve a intentarlo.",
       "rate_limited": "Demasiadas veces. Espere unos minutos y vuelva a intentarlo.",
-      "email_daily_cap": "Los correos de hoy de esta tienda se han agotado, así que la invitación no se envió y no se guardó nada. Inténtelo mañana."
+      "email_daily_cap": "Los correos de hoy de esta tienda se han agotado, así que la invitación no se envió y no se guardó nada. Inténtelo mañana.",
+      "category_repeated": "El precio {row} es un segundo precio por kilómetro o por octavo de depósito. Deja solo uno de cada."
     },
     "security": {
       "title": "Seguridad",
@@ -1758,7 +1759,9 @@
         "damage": "Daño",
         "loss": "Pérdida",
         "lateness": "Devolución tardía",
-        "cleaning": "Limpieza"
+        "cleaning": "Limpieza",
+        "mileage": "Kilometraje",
+        "fuel": "Combustible"
       },
       "repairs": {
         "title": "Lo que cuestan las reparaciones",
@@ -2748,7 +2751,8 @@
         "description_too_long": "Demasiado largo para una línea",
         "description_repeated": "Igual que otro precio",
         "amount_invalid": "No es un importe en {currency}",
-        "amount_zero": "Cero"
+        "amount_zero": "Cero",
+        "category_repeated": "Solo un precio de este tipo"
       },
       "preview": {
         "title": "Lo que lee un cliente",

@@ -46,6 +46,21 @@ export function DescriptionCell({ data }: CellProps) {
   )
 }
 
+// The kind of price, in words; a second price for a kilometre or for an eighth of a tank says so.
+export function KindCell({ data }: CellProps) {
+  const t = useTranslations('shop.priceEditor')
+  const kinds = useTranslations('shop.prices.categories')
+  const { currency, problems } = useGridState()
+  if (data === undefined) return null
+  const problem = problems.get(data.key)?.category
+  return (
+    <div className="grid h-full min-w-0 content-center leading-snug">
+      <span className="truncate">{kinds(data.category)}</span>
+      {problem === undefined ? null : <Problem text={t(`problemsText.${problem}`, { currency })} />}
+    </div>
+  )
+}
+
 // The amount in the shop's currency, as a renter will read it, or as typed while it is not yet an amount.
 export function AmountCell({ data }: CellProps) {
   const t = useTranslations('shop.priceEditor')

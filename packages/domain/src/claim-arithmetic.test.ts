@@ -1,6 +1,6 @@
 import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
-import { checkClaimLines, claimTotal, settle } from './claim-arithmetic.ts'
+import { checkClaimLines, claimTotal, readingLine, settle } from './claim-arithmetic.ts'
 import type { ClaimLine } from './claim-arithmetic.ts'
 import { money } from './money.ts'
 
@@ -48,6 +48,33 @@ describe('claim lines', () => {
     ['an agreed line with no photographs', agreedInRental(35_00, 0)],
   ])('refuses %s', (_, line) => {
     expect(checkClaimLines([fromFinding(10_00), line])).toEqual({ ok: false, error: { kind: 'line_without_evidence', lineIndex: 1 } })
+  })
+})
+
+describe('a line charged from the dashboard readings', () => {
+  const perKm = chf(30)
+
+  it('is the published price of one, as many times as the readings say, resting on the two dashboard photographs', () => {
+    expect(readingLine({ priceEntryId: 'per-km', unit: perKm, reading: 'mileage', quantity: 120, photoCount: 2 })).toEqual({ ok: true, value: { priceEntryId: 'per-km', amount: chf(36_00), source: { kind: 'reading', reading: 'mileage', quantity: 120, photoCount: 2 } } })
+  })
+
+  it('is refused when there is nothing to charge, or the count is not a whole number', () => {
+    expect(readingLine({ priceEntryId: 'per-km', unit: perKm, reading: 'mileage', quantity: 0, photoCount: 2 })).toEqual({ ok: false, error: 'nothing_to_charge' })
+    expect(readingLine({ priceEntryId: 'per-km', unit: perKm, reading: 'mileage', quantity: 1.5, photoCount: 2 })).toEqual({ ok: false, error: 'nothing_to_charge' })
+  })
+
+  it('needs both dashboard photographs, like any line that rests on evidence', () => {
+    const line = readingLine({ priceEntryId: 'per-eighth', unit: chf(12_00), reading: 'fuel', quantity: 3, photoCount: 1 })
+    expect(line.ok && checkClaimLines([line.value])).toEqual({ ok: false, error: { kind: 'line_without_evidence', lineIndex: 0 } })
+    const whole = readingLine({ priceEntryId: 'per-eighth', unit: chf(12_00), reading: 'fuel', quantity: 3, photoCount: 2 })
+    expect(whole.ok && checkClaimLines([whole.value]).ok).toBe(true)
+  })
+
+  it('is always the unit price times the count, to the cent', () => {
+    fc.assert(fc.property(fc.integer({ min: 1, max: 100_000 }), fc.integer({ min: 1, max: 5_000 }), (cents, quantity) => {
+      const line = readingLine({ priceEntryId: 'per-km', unit: chf(cents), reading: 'mileage', quantity, photoCount: 2 })
+      expect(line.ok && line.value.amount.cents).toBe(cents * quantity)
+    }))
   })
 })
 

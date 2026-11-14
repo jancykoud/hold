@@ -1,5 +1,6 @@
 'use client'
 
+import type { PriceCategory } from '@hold/domain'
 import { NextIntlClientProvider, useTimeZone, useTranslations } from 'next-intl'
 import { Eye } from 'lucide-react'
 import { useId, useState } from 'react'
@@ -13,7 +14,7 @@ export type TermsMessages = { readonly prices: string; readonly pricesLead: stri
 
 type TermsPreviewProps = {
   currency: string
-  prices: readonly { readonly description: string; readonly category: 'damage' | 'loss' | 'lateness' | 'cleaning'; readonly amountCents: number }[]
+  prices: readonly { readonly description: string; readonly category: PriceCategory; readonly amountCents: number }[]
   wearPolicy: string
   terms: Readonly<Record<Locale, TermsMessages>>
 }
