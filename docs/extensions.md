@@ -1,6 +1,6 @@
 # Hold: extensions
 
-Six additions built on top of the spine, in build order. PayPal AI Hackathon 2026. Draft 1, 13 October 2026.
+Six additions built on top of the spine, in build order. Draft 1, 13 October 2026, written for the PayPal AI Hackathon 2026. Hold is now a company's product for every kind of rental (`project-description.md`, draft 6); what this document says of the hackathon is the record of how the current build was made.
 
 Read `project-description.md` for what Hold is, `architecture.md` for how it is built and `tech-stack.md` for the tools. This document specifies what is added once the spine works: what each addition does, what it changes in the design, which PayPal calls it makes, how its agent is contained, and how to tell that it is finished.
 

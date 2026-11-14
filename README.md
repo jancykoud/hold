@@ -19,11 +19,11 @@
 
 <p align="center">
   <strong>Live demo: <a href="https://p99faar3kp.us-east-1.awsapprunner.com">p99faar3kp.us-east-1.awsapprunner.com</a></strong>
-  · <strong>Video: <a href="https://youtu.be/CXARDN_l2H8">watch on YouTube</a></strong> · Built for the PayPal AI Hackathon 2026<br>
+  · <strong>Video: <a href="https://youtu.be/CXARDN_l2H8">watch on YouTube</a></strong> · First built for the PayPal AI Hackathon 2026<br>
   One tap builds a demo shop of your own in about 25 seconds, with nothing to type.
 </p>
 
-A small rental shop takes a cash deposit and hands it back later. A tourist paying with a foreign card can lose on the
+A rental business takes a cash deposit and hands it back later, whether it rents a bike, a camera, a car or a room. A tourist paying with a foreign card can lose on the
 exchange twice, and every scratch becomes an argument at the counter.
 
 Hold replaces the deposit with a PayPal hold the renter approves in their own account. A clean return releases it
@@ -230,6 +230,10 @@ worker sends it to PayPal with an idempotency key. A hold counts as placed, capt
 webhook is verified and the resource is read back. The full design is in [`docs/architecture.md`](docs/architecture.md).
 
 ## Hackathon requirements
+
+Hold was submitted to the PayPal AI Hackathon 2026 on 12 November 2026. It is now built as a company's product for every
+kind of rental; [`docs/project-description.md`](docs/project-description.md) sections 3 and 15 say for whom and what
+comes next. This table is the record of that submission.
 
 | The rules ask for | Where Hold meets it |
 |---|---|

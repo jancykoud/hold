@@ -1,6 +1,6 @@
 # Hold: instructions for coding agents
 
-Hold is a deposit and damage system for small rental shops. A PayPal authorization hold replaces the cash deposit. Photographs are compared at return. A person approves every charge. It is built for the PayPal AI Hackathon 2026, and submissions close on Thursday 12 November 2026 at 12:00 pm Pacific Time.
+Hold is a deposit and damage system for rental businesses of every kind and size, from one bike shop to a group renting cars. A PayPal authorization hold replaces the cash deposit. Photographs are compared at return. A person approves every charge. It began as an entry to the PayPal AI Hackathon 2026, submitted on 12 November 2026, and is now built as a company's product. The build still runs in PayPal's sandbox, and `project-description.md` section 15 says what real money needs first.
 
 These rules apply to every change in this repository. The design lives in `docs/`. This file says how to work, not what to build.
 

@@ -2,7 +2,7 @@
 
 **The deposit that never leaves your account.**
 
-Product description. PayPal AI Hackathon 2026. Draft 5, 3 November 2026.
+Product description. Draft 6, 13 November 2026.
 
 This document describes the product: the problem, the audience, the features, the business value and the impact. It does not describe the implementation.
 
@@ -14,15 +14,17 @@ Draft 4 names the model, marks what has since been built, says plainly what real
 
 Draft 5 says what is new against what already exists. A card hold as a deposit, AI photo comparison and a person approving a charge each exist; the summary and section 10 now lead with what Hold adds to them, and claim nothing as a first.
 
+Draft 6 describes a company's product, not a hackathon entry. Hold began as an entry to the PayPal AI Hackathon 2026, submitted on 12 November 2026, and section 14 says what that build shows. From this draft on it is written for every kind of rental and every size of business: section 3 names thirty kinds of item, from a bike to a car to a room, section 11 adds the plan for a rental group, and sections 15 and 16 say what stands between this build and real money.
+
 ---
 
 ## 1. Summary
 
-Hold is a deposit and damage system for small rental businesses.
+Hold is a deposit and damage system for rental businesses, whatever they rent and whatever their size: one bike shop, a chain of branches renting cars and vans, or a platform that lets strangers rent from each other.
 
 Instead of charging a security deposit and refunding it later, the shop places a PayPal hold. The money is reserved but never moves. When the item comes back, an AI compares photographs taken at handover with photographs taken at return. If nothing changed, the hold is released on the spot. If something is damaged, the shop reviews an itemized claim, approves it, and only that amount is taken. The rest is released immediately. Renter and shop receive the same evidence.
 
-**In one sentence:** Hold lets a rental shop protect its equipment without taking its customers' money, and settles every damage claim with evidence both sides can see.
+**In one sentence:** Hold lets a rental business protect what it rents without taking its customers' money, and settles every damage claim with evidence both sides can see.
 
 **The three ideas that make Hold work:**
 
@@ -80,22 +82,28 @@ That last row matters. It shows that AI damage detection without human review an
 | **The renter** | Priya is visiting for four days and wants an e-bike for three of them. | To keep her travel money, to know exactly what she could be charged and why, and to be treated fairly. |
 | **The remote renter** | Daniel rents a camera lens that is shipped to him. | To prove the condition the item arrived in and the condition he sent it back in. |
 
-### 3.2 The first audience
+### 3.2 What is rented
 
-Hold's first customers are independent rental shops with one to five locations whose items are worth protecting but cheap enough to rent casually. The item value is typically between a few hundred and a few thousand dollars.
+Hold fits anything that is handed over, used and handed back, where a mark can be photographed and priced. A shop gives each type of item one of thirty kinds. A kind brings a suggested photo plan, which the shop adjusts, and the hold is set per type, so a helmet and a car are not protected alike. The kinds live in one place, `packages/domain/src/photo-plan.ts`.
 
-- Bike, e-bike and scooter rental
-- Camera, lens and audio equipment rental
-- Ski, surf, kayak and camping gear rental
-- Party and event equipment
-- Tool and small equipment rental
-- Baby equipment rental for travelling families
-- Musical instruments, costumes and formalwear
+| Family | Kinds |
+|---|---|
+| Cycles and small wheels | Bikes, e-bikes, scooters |
+| Vehicles | Cars, vans and trucks, motorhomes and caravans, motorbikes and mopeds, trailers |
+| Water and snow | Kayaks and boards, motorboats and sailing boats, skis and snowboards |
+| Work | Tools, construction machines and lifts, garden equipment |
+| Image, sound and screens | Cameras and lenses, drones, sound, lighting and projection, computers, phones and consoles |
+| Events and home | Party and event equipment, furniture and appliances, tents and camping gear |
+| People | Baby equipment, wheelchairs and mobility aids, clothing and costumes, jewellery, watches and bags, musical instruments, sports equipment, luggage and roof boxes |
+| Places | Rooms, venues and holiday homes |
+| Anything else | A kind of its own, with a plain four-sided plan |
 
-These shops share three traits. Their customers are often visitors paying with foreign cards. Their staff are often seasonal. And a single damaged item can erase a week's earnings.
+**What Hold is for a vehicle or a place, and what it is not.** Hold is the deposit and the evidence. For a car it holds the insurance excess, not the value of the car, and it records the walk around the car and the dashboard, where the mileage and the fuel are read. It does not check a driving licence, sell insurance, price mileage or fuel by itself, or chase a fine that arrives after the hold is released; those stay with the rental business and its partners, and section 15 says which of them Hold plans to connect. For a place it records each room at arrival and at departure. In both, the limits of a PayPal hold in section 7 apply, and so does the rule in section 6.11: Hold states an accuracy for a kind only once that kind has been measured.
 
-### 3.3 The wider audience
+### 3.3 Who rents it out
 
+- **Independent shops**, with one to five locations. Their customers are often visitors paying with foreign cards, their staff are often seasonal, and one damaged item can erase a week's earnings. Hold began here, and nothing built for larger businesses may make it harder for them.
+- **Chains, franchises and rental groups**, with many branches and many kinds of item. They need the same routine at every counter, limits on who may approve what, and one record a head office, an insurer and an auditor can read.
 - **Online and mail-order rental businesses**, where the item is shipped and nobody is present at handover.
 - **Rental marketplaces and peer-to-peer lending platforms**, which need a neutral way to settle damage between strangers.
 - **Community tool libraries and lending schemes**, which want accountability without charging members.
@@ -318,7 +326,7 @@ PayPal is the mechanism that makes the product possible. The whole idea rests on
 
 PayPal also brings two advantages over the card holds found in rental software today. A PayPal hold can last up to 29 days, where many card holds expire in about a week. And a renter paying from a PayPal wallet does not need to hand a card to a shop they have never visited.
 
-For the hackathon, all of this runs in the PayPal sandbox with test money.
+Today all of this runs in the PayPal sandbox with test money. Section 15 says what taking real money needs.
 
 **What real shops still need from PayPal.** Two things stand between this build and a shop taking real money.
 
@@ -380,8 +388,8 @@ What already exists, and what Hold adds to it:
 |---|---|---|
 | A card hold as a deposit | Small-shop rental software, mostly through Stripe, where a hold lasts about a week and is captured once | A PayPal authorization the renter approves for the exact amount, open for up to 29 days, renewed once when a charge comes late, with a partial final capture that releases the rest at once |
 | AI that compares condition photographs | Equipment rental (Texada, March 2026) and condition-report apps | Plain code finds every change before the model is asked, an independent second look checks each damage finding, and nothing is missed when the model is down. Accuracy is counted on photographs the comparison is never tuned on, and every pair is published |
-| A person who approves a charge | Common practice, and in about a quarter of this hackathon's entries | It is a rule here, not the idea: the person approves against the published price list, the renter sees the same photographs, and the approval is kept in an append-only record with the claim |
-| An AI that mediates a dispute | Several hackathon entries use one model as judge or mediator | Two advocates, one for each side, each in its own call with its own limit; a referee in plain code bounds every offer; the agreement can only lower the claim and both people confirm it |
+| A person who approves a charge | Common practice, and in about a quarter of the entries to the PayPal AI Hackathon 2026 | It is a rule here, not the idea: the person approves against the published price list, the renter sees the same photographs, and the approval is kept in an append-only record with the claim |
+| An AI that mediates a dispute | Several entries to that hackathon use one model as judge or mediator | Two advocates, one for each side, each in its own call with its own limit; a referee in plain code bounds every offer; the agreement can only lower the claim and both people confirm it |
 
 What no part does alone:
 
@@ -390,7 +398,7 @@ What no part does alone:
 - **It lets AI work on both sides without letting it take money.** A renter's assistant can book through Hold's MCP server, an operations agent reads PayPal overnight with read-only tools, and the advocates negotiate. Each acts inside limits a person wrote, and none can charge.
 - **Its evidence can be checked without trusting Hold.** The sealed handover photographs come with a signed statement anyone can verify against a published key.
 - **It shows its accuracy.** The comparison's results are public, with their counts and every pair behind them, and until a run is accepted it says so.
-- **It works for the small shop.** No hardware beyond the phone the staff already carry, priced and designed for an owner with forty bikes.
+- **It works from the smallest shop up.** No hardware beyond the phone the staff already carry, so an owner with forty bikes can start in an afternoon, and a group adds a branch without installing anything.
 - **It rewards careful renters.** A Clean Record lowers the next hold, at any shop that uses Hold.
 
 ## 11. Business model
@@ -402,11 +410,12 @@ These are proposals to be tested with real shops.
 | **Starter** | A single small shop trying Hold | A limited number of protected rentals each month | Free |
 | **Shop** | An independent rental shop | Unlimited rentals at one location, item passports, the owner's assistant | A flat monthly fee per location |
 | **Multi-location** | A rental business with several branches | Everything in Shop, plus staff roles, cross-location reporting and owner approvals | A monthly fee per location, reducing with volume |
+| **Group** | A chain, a franchise or a rental group, across branches and kinds of item | Everything in Multi-location under one agreement. Planned: group-wide reporting, single sign-on, a programming interface to the booking system the group already runs, and a service agreement | By agreement, on volume |
 | **Platform** | Rental marketplaces and peer-to-peer lending platforms | Hold built into their own booking flow | A small fee per protected rental |
 
-**Why shops will pay.** Hold pays for itself in three ways: bookings no longer lost at the mention of a deposit, damage costs actually recovered, and staff time no longer spent on refunds and disputes.
+**Why a rental business will pay.** Hold pays for itself in three ways: bookings no longer lost at the mention of a deposit, damage costs actually recovered, and staff time no longer spent on refunds and disputes.
 
-**Why this is good business for PayPal.** Hold gives small rental shops a reason to make PayPal their main way of being paid. It brings authorization volume from a category that today prefers cash and cards at the counter. It reduces disputes by resolving disagreements before they become disputes. And it shows AI being used to make a payment fairer, not just faster.
+**Why this is good business for PayPal.** Hold gives rental businesses a reason to make PayPal their main way of being paid. It brings authorization volume from an industry that today prefers cash and cards at the counter, and the amounts grow with what is rented: the hold on a car is several times the hold on a bike. It reduces disputes by resolving disagreements before they become disputes. And it shows AI being used to make a payment fairer, not just faster.
 
 ---
 
@@ -449,9 +458,9 @@ These are proposals to be tested with real shops.
 
 ---
 
-## 14. What the hackathon version shows
+## 14. What the current build shows
 
-The submission demonstrates one shop and three rentals, end to end, in the PayPal sandbox:
+The build is the one submitted to the PayPal AI Hackathon 2026 on 12 November 2026, with the thirty kinds of item added the day after. It demonstrates one shop and three rentals, end to end, in the PayPal sandbox:
 
 1. The owner sets up items, a damage price list and a wear policy in plain language.
 2. A renter books, pays the rental fee and has a hold placed.
@@ -475,7 +484,7 @@ On top of those eight steps, in this order, each only once the one before it wor
 
 **The story in the video** follows Tomás, Jonas and Priya. It opens on the moment a customer hears the word "deposit" and hesitates, and closes on a clean return where nothing was ever charged.
 
-**How it answers the judging criteria:**
+**How it answered the hackathon's judging criteria:**
 
 - **Technological implementation.** The fullest use of PayPal's authorize, capture, renew and release flow, supported by checkout with PayPal's own button, invoicing, refunds, disputes with evidence, verified webhooks and PayPal's MCP server, each doing a necessary job. The Agent Toolkit was considered for the assistant's payment step and not used, because its order tool takes an amount from the model. AI agents on both sides of the rental, all behind the same checks, with PayPal's MCP server as working plumbing and the comparison's accuracy measured in public.
 - **Design.** A complete product for owner, staff and renter, with a counter routine that takes under a minute.
@@ -487,25 +496,35 @@ On top of those eight steps, in this order, each only once the one before it wor
 
 ## 15. Roadmap
 
-- **Next.** Pilot with a small number of real rental shops through one season. Tune the photo plans for the most common item types.
-- **Then.** A version for rental marketplaces and peer-to-peer lending. Connections to the booking tools shops already use.
-- **Later.** Repair partners who quote directly from the evidence. Listing Hold shops in the places where AI assistants look for things to rent, as those services open to rentals. An independent party to run the renter's advocate.
+Hold is now built as a company's product. The order below is the order of what blocks real customers, not of what is most interesting to build.
 
-Two items that stood under "Later" in the first draft are now part of the hackathon version: booking through an AI assistant, and a record that lets a careful renter be trusted by a shop they have never visited.
+- **First: real money.** Nothing else matters until a rental business can take a real hold.
+  - PayPal's partner onboarding, so a business connects with a PayPal sign-in and Hold never sees a secret (section 7). PayPal has to approve Hold as a partner.
+  - Partial capture switched on for each live PayPal account, and the trial of a hold funded by a card, which may last about ten days and may not renew (`tech-stack.md` section 16, items 19 and 20).
+  - A registered company behind Hold, with terms and a privacy notice written for it and for each country it sells in. The public pages still describe a hackathon project in the sandbox, and stay that way until this is true.
+  - An accepted run of the evaluation set, so Hold can state an accuracy at all (section 6.11).
+- **Next: pilots, one kind at a time.** A season with real businesses in three families: cycles and outdoor gear, cameras and electronics, and vehicles with one or two independent agencies. Each pilot adds that kind's measured pairs of photographs to the evaluation set and tunes its photo plan.
+- **Then: what vehicles and groups need.**
+  - For vehicles: mileage and fuel read at handover and return and priced from the list, more than twelve views in a plan, charges that arrive after the return, and the driving licence and the insurance through partners, not built by Hold.
+  - For groups: reporting across branches, single sign-on, a programming interface, and connections to the booking tools a business already runs.
+  - For rentals longer than 29 days: the renter's saved PayPal wallet, with their consent, so the next hold is placed without asking again.
+- **Later.** A version for rental marketplaces and peer-to-peer lending. A routine of its own for places, where a room is not photographed like an object. Repair partners who quote directly from the evidence. Listing Hold businesses where AI assistants look for things to rent. An independent party to run the renter's advocate.
 
 ---
 
 ## 16. Open questions
 
-These need answers before Hold goes to real shops. None of them blocks the hackathon version.
+These are the work between this build and real customers.
 
-- **How accurate is the comparison in real shop conditions?** Outdoor light, wet or dirty items and hurried photographs will all test it.
-- **What is the right hold for each item type?** Too small protects nothing. Too large brings back the original problem.
+- **How accurate is the comparison in real conditions, kind by kind?** Outdoor light, wet or dirty items and hurried photographs will all test it. Car paint, fabric, a screen and a wall each fail in their own way, and each kind needs its own measured pairs before Hold states a figure for it.
+- **What is the right hold for each kind?** Too small protects nothing. Too large brings back the original problem. For a vehicle the natural amount is the insurance excess.
+- **What does a vehicle need that a photograph cannot show?** Mechanical damage, a fine or a toll that arrives weeks later, and fuel.
 - **How should very long rentals be protected** once a hold has reached the end of its life?
-- **What do consumer protection rules require** in each country for holds, damage charges and the renter's right to reply?
-- **How long may photographs be kept**, and where?
-- **What will shops pay?** The pricing in section 11 is a proposal.
-- **Who should run the renter's advocate?** In the first version Hold runs both. An independent party may be the right answer for real shops.
+- **What do consumer protection rules require** in each country, and for each kind, for holds, damage charges and the renter's right to reply? Vehicles and homes have rules of their own.
+- **How long may photographs be kept**, and where? A photograph of a room or of a car's interior can show more of a person than one of a bike.
+- **What will a business pay?** The pricing in section 11 is a proposal.
+- **What does a rental group need before it signs?** Security review, where its data is kept, a service agreement and who answers at night.
+- **Who should run the renter's advocate?** In the first version Hold runs both. An independent party may be the right answer for real customers.
 - **What must a renter be told before an agent acts for them?** The wording of that consent will differ by country.
 
 ---

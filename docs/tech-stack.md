@@ -1,6 +1,6 @@
 # Hold: technology stack
 
-Recommended tools and services for building Hold for the PayPal AI Hackathon 2026. Draft 2, 13 October 2026.
+Tools and services Hold is built with. Draft 2, 13 October 2026, written for the PayPal AI Hackathon 2026. Hold is now a company's product for every kind of rental (`project-description.md`, draft 6); what this document says of the hackathon is the record of how the current build was made.
 
 This document says what to build with and why. It is not a design or an implementation plan. See `project-description.md` for the product. The architecture document will follow this one. The extensions specified in `extensions.md` add a few tools, which are included below.
 
