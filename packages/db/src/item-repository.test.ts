@@ -1,6 +1,6 @@
-import { money } from '@hold/domain'
+import { ITEM_CATEGORIES, money } from '@hold/domain'
 import type { ItemTypeDraft } from '@hold/domain'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { registerOwner } from './accounts.ts'
 import { addItems, changeStatus, editItem, itemCatalog, itemPassport, saveItemType } from './item-repository.ts'
@@ -63,6 +63,20 @@ describe('an item type', () => {
       { key: 'frame-left-side', label: 'Frame, left side', outline: 'whole_side', required: true },
       { key: 'display', label: 'Display', outline: 'detail', required: false },
     ])
+  })
+
+  it('is saved under each kind the code names, a car as well as a room, since the database knows the same kinds', async () => {
+    for (const category of ITEM_CATEGORIES) {
+      const typeId = await newType({ ...ebike, name: `One ${category}`, category })
+      const catalog = await act(owner, itemCatalog)
+      expect(catalog.types.find((candidate) => candidate.id === typeId)?.category).toBe(category)
+    }
+  })
+
+  it('counts a rental’s outcome under each kind too', async () => {
+    const constraint = await database.execute<{ definition: string }>(sql`select pg_get_constraintdef(oid) as definition from pg_constraint where conname = 'itemCategory_allowed'`)
+    const definition = constraint.rows[0]?.definition ?? ''
+    for (const category of ITEM_CATEGORIES) expect(definition, category).toContain(`'${category}'`)
   })
 
   it('refuses a second type with the same name', async () => {

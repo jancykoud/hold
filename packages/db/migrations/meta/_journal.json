@@ -358,6 +358,13 @@
       "when": 1793681000000,
       "tag": "0050_amount_checks",
       "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
+      "when": 1794595124936,
+      "tag": "0051_item_kinds_for_every_rental",
+      "breakpoints": true
     }
   ]
 }

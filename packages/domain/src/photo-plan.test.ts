@@ -36,6 +36,23 @@ describe('a photo plan', () => {
     }
   })
 
+  it('keeps every kind a shop already uses, and ends on the one for anything else', () => {
+    expect(ITEM_CATEGORIES.slice(0, 9)).toEqual(['bike', 'e_bike', 'scooter', 'water', 'snow', 'camera', 'camping', 'event', 'tool'])
+    expect(ITEM_CATEGORIES.at(-1)).toBe('other')
+    expect(new Set(ITEM_CATEGORIES).size).toBe(ITEM_CATEGORIES.length)
+  })
+
+  it('names the kinds a large rental business offers, from vehicles to places', () => {
+    const kinds: readonly string[] = ITEM_CATEGORIES
+    for (const kind of ['car', 'van', 'motorhome', 'motorbike', 'trailer', 'boat', 'machinery', 'garden', 'mobility', 'baby', 'instrument', 'clothing', 'luxury', 'electronics', 'drone', 'stage', 'sport', 'furniture', 'travel', 'space']) {
+      expect(kinds).toContain(kind)
+    }
+  })
+
+  it('suggests a walk around a car that ends on the dashboard, where the mileage and the fuel are read', () => {
+    expect(suggestedPhotoPlan('car').map((suggested) => suggested.key)).toEqual(['front', 'rear', 'side_left', 'side_right', 'front_left_corner', 'front_right_corner', 'rear_left_corner', 'rear_right_corner', 'windscreen', 'wheels', 'interior', 'dashboard'])
+  })
+
   it('suggests the six e-bike views the guided handover shows', () => {
     expect(suggestedPhotoPlan('e_bike').map((suggested) => suggested.key)).toEqual(['frame_left', 'frame_right', 'front_wheel', 'rear_wheel', 'display', 'battery'])
   })
