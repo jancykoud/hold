@@ -4,7 +4,7 @@ const sliderName = 'Slide between the handover photograph and the return photogr
 
 test('both photographs load', async ({ page }) => {
   await page.goto('/')
-  for (const alt of ['A blue bicycle frame photographed at handover', 'The same bicycle frame photographed at return']) {
+  for (const alt of ['The rear door and wheel of a white car, photographed at handover', 'The same door, photographed at return']) {
     const image = page.getByAltText(alt)
     await expect(image).toBeVisible()
     await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBeGreaterThan(0)

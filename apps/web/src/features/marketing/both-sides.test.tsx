@@ -10,7 +10,7 @@ describe('BothSides', () => {
   it('shows the shop and the renter the same finding at the same price', () => {
     renderWithIntl(<BothSides />)
     for (const side of [shop(), renter()]) {
-      expect(side.getByText('Scratched frame')).toBeInTheDocument()
+      expect(side.getByText('Scratched door')).toBeInTheDocument()
       expect(side.getByText('€35')).toBeInTheDocument()
     }
   })
@@ -18,7 +18,7 @@ describe('BothSides', () => {
   it('shows both sides that the old scuff costs nothing', () => {
     renderWithIntl(<BothSides />)
     for (const side of [shop(), renter()]) {
-      expect(side.getByText('Down tube scuff')).toBeInTheDocument()
+      expect(side.getByText('Scuff low on the door')).toBeInTheDocument()
       expect(side.getByText('€0')).toBeInTheDocument()
     }
   })

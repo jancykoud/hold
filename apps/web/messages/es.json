@@ -169,15 +169,15 @@
     "handover": "Entrega",
     "return": "Devolución",
     "slider": "Desliza entre la fotografía de la entrega y la fotografía de la devolución",
-    "handoverAlt": "Un cuadro de bicicleta azul fotografiado en la entrega",
-    "returnAlt": "El mismo cuadro de bicicleta fotografiado en la devolución",
+    "handoverAlt": "La puerta trasera y la rueda de un coche blanco, fotografiadas en la entrega",
+    "returnAlt": "La misma puerta, fotografiada en la devolución",
     "outcome": "Resultado de la devolución",
-    "damage": "Cuadro arañado",
+    "damage": "Puerta arañada",
     "clean": "Devolución limpia",
     "newTag": "Nueva",
     "findings": {
       "new": {
-        "title": "Cuadro arañado, {amount}",
+        "title": "Puerta arañada, {amount}",
         "note": "Nueva desde la entrega. Precio de la lista publicada."
       },
       "none": {
@@ -185,7 +185,7 @@
         "note": "Nada que cobrar. La retención se libera en el mostrador."
       },
       "old": {
-        "title": "Roce en el tubo diagonal, sin cargo",
+        "title": "Roce en la parte baja de la puerta, sin cargo",
         "note": "Ya estaba en la entrega."
       }
     },
@@ -200,8 +200,8 @@
       "return": "Devolución"
     },
     "finding": {
-      "scratch": "Cuadro arañado",
-      "scuff": "Roce en el tubo diagonal"
+      "scratch": "Puerta arañada",
+      "scuff": "Roce en la parte baja de la puerta"
     },
     "shop": {
       "caption": "Jonas, en el mostrador",
@@ -406,7 +406,7 @@
     "about": "Sobre esta versión",
     "aboutBody": "Creado para el PayPal AI Hackathon 2026. Hold no es una aseguradora y no guarda el dinero de los clientes. Los fondos permanecen en la cuenta del cliente hasta que se aprueba una reclamación.",
     "rights": "© {year} Hold",
-    "credits": "Fotografías de Unsplash, de Florian, Nuno Alves y Krzysztof Kowalik. Las marcas del cuadro son ilustrativas.",
+    "credits": "Fotografías de Unsplash de Nuno Alves y Krzysztof Kowalik, y de Wikimedia Commons de Retired electrician. Las marcas en la puerta son ilustrativas.",
     "legal": "Privacidad y condiciones"
   },
   "pages": {

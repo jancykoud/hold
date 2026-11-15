@@ -169,15 +169,15 @@
     "handover": "Remise",
     "return": "Retour",
     "slider": "Faites glisser entre la photographie de la remise et la photographie du retour",
-    "handoverAlt": "Un cadre de vélo bleu photographié à la remise",
-    "returnAlt": "Le même cadre de vélo photographié au retour",
+    "handoverAlt": "La portière arrière et la roue d’une voiture blanche, photographiées à la remise",
+    "returnAlt": "La même portière, photographiée au retour",
     "outcome": "Résultat du retour",
-    "damage": "Cadre rayé",
+    "damage": "Portière rayée",
     "clean": "Retour sans dommage",
     "newTag": "Nouveau",
     "findings": {
       "new": {
-        "title": "Cadre rayé, {amount}",
+        "title": "Portière rayée, {amount}",
         "note": "Nouveau depuis la remise. Prix de la liste publiée."
       },
       "none": {
@@ -185,7 +185,7 @@
         "note": "Rien à facturer. L'autorisation est libérée au comptoir."
       },
       "old": {
-        "title": "Éraflure sur le tube diagonal, non facturée",
+        "title": "Éraflure au bas de la portière, non facturée",
         "note": "Déjà présente à la remise."
       }
     },
@@ -200,8 +200,8 @@
       "return": "Retour"
     },
     "finding": {
-      "scratch": "Cadre rayé",
-      "scuff": "Éraflure du tube diagonal"
+      "scratch": "Portière rayée",
+      "scuff": "Éraflure au bas de la portière"
     },
     "shop": {
       "caption": "Jonas, au comptoir",
@@ -406,7 +406,7 @@
     "about": "À propos de cette version",
     "aboutBody": "Conçu pour le PayPal AI Hackathon 2026. Hold n'est pas un assureur et ne détient pas l'argent des clients. Les fonds restent sur le compte du client jusqu'à l'approbation d'une réclamation.",
     "rights": "© {year} Hold",
-    "credits": "Photographies Unsplash de Florian, Nuno Alves et Krzysztof Kowalik. Les marques sur le cadre sont illustratives.",
+    "credits": "Photographies d’Unsplash par Nuno Alves et Krzysztof Kowalik, et de Wikimedia Commons par Retired electrician. Les marques sur la portière sont illustratives.",
     "legal": "Confidentialité et conditions"
   },
   "pages": {

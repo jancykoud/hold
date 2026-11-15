@@ -45,7 +45,7 @@ describe('who took a photograph', () => {
 
 describe('a seal short enough to read aloud', () => {
   it('is the fingerprint’s first sixteen characters in groups of four', () => {
-    expect(shortSeal(SAMPLE_PHOTO_SHA256.handover)).toBe('7ac3 9bad b505 d60e')
+    expect(shortSeal(SAMPLE_PHOTO_SHA256.handover)).toBe('f515 0fdf ec12 ae14')
   })
 
   it('always begins the full fingerprint, so a person can match it by eye', () => {

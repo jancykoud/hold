@@ -7,9 +7,9 @@ import { EvidenceViewer } from './evidence-viewer'
 const slider = () => screen.getByRole('slider', { name: 'Slide between the handover photograph and the return photograph' })
 
 describe('EvidenceViewer', () => {
-  it('opens on the scratched frame, priced from the list', () => {
+  it('opens on the scratched door, priced from the list', () => {
     renderWithIntl(<EvidenceViewer />)
-    expect(screen.getByText('Scratched frame, €35')).toBeInTheDocument()
+    expect(screen.getByText('Scratched door, €35')).toBeInTheDocument()
     expect(screen.getByText('€300 reserved · €35 taken · €265 released')).toBeInTheDocument()
   })
 
@@ -18,7 +18,7 @@ describe('EvidenceViewer', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Clean return' }))
     expect(screen.getByText('No new marks')).toBeInTheDocument()
     expect(screen.getByText('€300 reserved · €0 taken · €300 released')).toBeInTheDocument()
-    expect(screen.queryByText('Scratched frame, €35')).not.toBeInTheDocument()
+    expect(screen.queryByText('Scratched door, €35')).not.toBeInTheDocument()
   })
 
   it('removes the outline of the new mark on a clean return', async () => {
@@ -30,17 +30,17 @@ describe('EvidenceViewer', () => {
 
   it('says which outcome is showing without relying on colour', async () => {
     renderWithIntl(<EvidenceViewer />)
-    expect(screen.getByRole('button', { name: 'Scratched frame' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: 'Scratched door' })).toHaveAttribute('aria-pressed', 'true')
     await userEvent.click(screen.getByRole('button', { name: 'Clean return' }))
     expect(screen.getByRole('button', { name: 'Clean return' })).toHaveAttribute('aria-pressed', 'true')
-    expect(screen.getByRole('button', { name: 'Scratched frame' })).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByRole('button', { name: 'Scratched door' })).toHaveAttribute('aria-pressed', 'false')
   })
 
   it('keeps the old scuff uncharged in both outcomes', async () => {
     renderWithIntl(<EvidenceViewer />)
-    expect(screen.getByText('Down tube scuff, not charged')).toBeInTheDocument()
+    expect(screen.getByText('Scuff low on the door, not charged')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Clean return' }))
-    expect(screen.getByText('Down tube scuff, not charged')).toBeInTheDocument()
+    expect(screen.getByText('Scuff low on the door, not charged')).toBeInTheDocument()
   })
 
   it('moves the divider with the slider', () => {
@@ -58,8 +58,8 @@ describe('EvidenceViewer', () => {
 
   it('describes both photographs for readers who cannot see them', () => {
     renderWithIntl(<EvidenceViewer />)
-    expect(screen.getByAltText('A blue bicycle frame photographed at handover')).toBeInTheDocument()
-    expect(screen.getByAltText('The same bicycle frame photographed at return')).toBeInTheDocument()
+    expect(screen.getByAltText('The rear door and wheel of a white car, photographed at handover')).toBeInTheDocument()
+    expect(screen.getByAltText('The same door, photographed at return')).toBeInTheDocument()
   })
 
   it('says the photographs are illustrative', () => {

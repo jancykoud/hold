@@ -88,10 +88,10 @@ export function manifestText(session: SealedSession): string {
 // The demonstration's own sample photographs, by fingerprint (architecture.md section 20.3). Only the server decides a
 // photograph is a sample, from this list: whatever a phone says, any other photograph is evidence, and is checked as such.
 export const SAMPLE_PHOTO_SHA256 = {
-  handover: '7ac39badb505d60e5c4c92018f9ae4410ffb80912d2c7fbbc9cd9202990e8080',
-  damage: '74072fc7d4f92e0398252661a83c83eb2427a99039f8ffcac9cc62a66a41cd39',
-  contested: 'abce9d89fa86d8ec3e90d169c55f1ee7a045319caee508e5920d66b33aaa0995',
-  dropPoint: '7a12eaa48257d6988674aa9c18ba8c6dc6f8a8bc80a205fd37a622ff503a6869',
+  handover: 'f5150fdfec12ae1415ef6e07fe5de09fa8744589ad0156444b412ef76faeb10d',
+  damage: 'f98edc83d613ea116fb657eacb3941ab86f87e04ee46bc35890ffc5548e2c898',
+  contested: '05f7803c98b53a5618b471c3e055b32fed8834d072927720d2d93a6b5d069a60',
+  dropPoint: '32124aff9b95a24ea0498f429507ff8d168e408f32161e0532e1fd6df1c264ac',
 } as const
 
 export function isSamplePhoto(sha256: string): boolean {

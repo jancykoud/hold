@@ -61,8 +61,8 @@ function samplePlan(category: ItemCategory) {
   return views.map((view, index) => ({ ...view, key: keys[index] ?? view.label }))
 }
 
-// The sample photographs, one frame taken at the handover and again at the return with a chip in the paint, and an
-// e-bike left at a drop point. Their display keys are reserved: the web app serves them from its own sample images, so
+// The sample photographs, one car's flank taken at the handover and again at the return with a chip in the paint, and
+// the car left at a drop point (apps/web/scripts/sample-photos.ts). Their display keys are reserved: the web app serves them from its own sample images, so
 // no shop's bucket holds them.
 export const SAMPLE_PHOTOS = { handover: 'sample/sample-handover.jpg', damage: 'sample/sample-return-damage.jpg', dropPoint: 'sample/sample-drop-point.jpg' } as const
 
@@ -463,7 +463,7 @@ async function photographSample(transaction: Transaction, sample: PhotographedSa
   const returned = await session('return', sample.endsAt, byRenter ? [[view, 'damage'], [DROP_POINT_VIEW, 'dropPoint']] : [[view, 'damage']])
   const [scuff] = await transaction
     .insert(marks)
-    .values({ shopId, itemId: item.itemId, view, region: SCUFF, description: 'A faint scuff on the down tube.', firstSeenSessionId: handover })
+    .values({ shopId, itemId: item.itemId, view, region: SCUFF, description: 'A faint scuff low on the rear door.', firstSeenSessionId: handover })
     .returning({ id: marks.id })
   if (scuff === undefined) throw new Error('A sample mark was not created.')
   if (sample.compared === false) {
@@ -482,7 +482,7 @@ async function photographSample(transaction: Transaction, sample: PhotographedSa
     region: SCUFF,
     class: 'known_mark',
     confidence: 0.9,
-    description: 'The faint scuff on the down tube, recorded at the handover. It is not charged again.',
+    description: 'The faint scuff low on the rear door, recorded at the handover. It is not charged again.',
     matchedMarkId: scuff.id,
   })
   const [chip] = await transaction
@@ -494,7 +494,7 @@ async function photographSample(transaction: Transaction, sample: PhotographedSa
       region: CHIP,
       class: 'new_damage',
       confidence: 0.93,
-      description: 'A chip in the paint on the down tube, through to the bare metal. It was not there at the handover.',
+      description: 'A chip in the paint of the rear door, through to the bare metal. It was not there at the handover.',
       secondLookConfirmed: true,
       suggestedPriceEntryId: sample.priceEntryId,
     })

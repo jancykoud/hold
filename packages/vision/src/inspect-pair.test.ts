@@ -6,8 +6,11 @@ import { mapPoint } from './homography.ts'
 import type { Homography, Point } from './homography.ts'
 import { inspectPair } from './inspect-pair.ts'
 
-// The demonstration's handover photograph: a real bike frame on a dark background, 1600 by 685 pixels.
-const SAMPLE = join(import.meta.dirname, '../../../apps/web/public/images/sample-handover.jpg')
+// A real bike frame on a dark background, 1600 by 685 pixels: the demonstration's handover photograph until 15 November
+// 2026, kept here because the limits below were set on it. The demonstration's own pair, a car's flank, is checked at
+// the end of this file.
+const SAMPLE = join(import.meta.dirname, 'testing/bike-frame.jpg')
+const DEMONSTRATION = join(import.meta.dirname, '../../../apps/web/public/images')
 const OTHER = join(import.meta.dirname, '../../../apps/web/public/images/renter.jpg')
 const WIDTH = 1600
 const HEIGHT = 685
@@ -133,3 +136,23 @@ describe('preparing a comparison pair', () => {
     expect(await inspectPair(Buffer.from('invalid'), dark)).toMatchObject({ ok: false, reason: 'unreadable' })
   })
 })
+
+// The demonstration's own photographs (apps/web/scripts/sample-photos.ts): the flank of a white car at the handover,
+// and the same frame at the return with a chip drawn in the rear door.
+describe('the demonstration’s pair', () => {
+  it('finds the chip in the rear door, where the sample finding says it is, and nothing else', async () => {
+    const [before, after] = await Promise.all([readFile(join(DEMONSTRATION, 'sample-handover.jpg')), readFile(join(DEMONSTRATION, 'sample-return-damage.jpg'))])
+    const result = await inspectPair(before, after)
+    expect(result.ok, result.ok ? 'prepared' : result.reason).toBe(true)
+    if (!result.ok) return
+    expect(result.candidates).toHaveLength(1)
+    // The middle of the sample finding's region (packages/db/src/sample-rentals.ts).
+    expect(contains(result.candidates[0] ?? { x: 0, y: 0, width: 0, height: 0 }, { x: 0.3975, y: 0.585 })).toBe(true)
+  })
+
+  it('finds nothing between the handover photograph and itself', async () => {
+    const before = await readFile(join(DEMONSTRATION, 'sample-handover.jpg'))
+    expect(await inspectPair(before, before)).toMatchObject({ ok: true, candidates: [] })
+  })
+})
+

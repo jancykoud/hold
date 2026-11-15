@@ -169,15 +169,15 @@
     "handover": "Handover",
     "return": "Return",
     "slider": "Slide between the handover photograph and the return photograph",
-    "handoverAlt": "A blue bicycle frame photographed at handover",
-    "returnAlt": "The same bicycle frame photographed at return",
+    "handoverAlt": "The rear door and wheel of a white car, photographed at handover",
+    "returnAlt": "The same door, photographed at return",
     "outcome": "Return outcome",
-    "damage": "Scratched frame",
+    "damage": "Scratched door",
     "clean": "Clean return",
     "newTag": "New",
     "findings": {
       "new": {
-        "title": "Scratched frame, {amount}",
+        "title": "Scratched door, {amount}",
         "note": "New since handover. Priced from the published list."
       },
       "none": {
@@ -185,7 +185,7 @@
         "note": "Nothing to charge. The hold is released at the counter."
       },
       "old": {
-        "title": "Down tube scuff, not charged",
+        "title": "Scuff low on the door, not charged",
         "note": "Already there at handover."
       }
     },
@@ -200,8 +200,8 @@
       "return": "Return"
     },
     "finding": {
-      "scratch": "Scratched frame",
-      "scuff": "Down tube scuff"
+      "scratch": "Scratched door",
+      "scuff": "Scuff low on the door"
     },
     "shop": {
       "caption": "Jonas, at the counter",
@@ -406,7 +406,7 @@
     "about": "About this build",
     "aboutBody": "Built for the PayPal AI Hackathon 2026. Hold is not an insurer and does not hold customers' money. Funds stay in the renter's own account until a claim is approved.",
     "rights": "© {year} Hold",
-    "credits": "Photographs from Unsplash by Florian, Nuno Alves and Krzysztof Kowalik. The marks on the frame are illustrative.",
+    "credits": "Photographs from Unsplash by Nuno Alves and Krzysztof Kowalik, and from Wikimedia Commons by Retired electrician. The marks on the door are illustrative.",
     "legal": "Privacy and terms"
   },
   "pages": {

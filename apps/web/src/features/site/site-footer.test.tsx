@@ -36,7 +36,7 @@ describe('SiteFooter', () => {
 
   it('credits the photographs and says the marks are illustrative', () => {
     renderWithIntl(<SiteFooter year={2026} />)
-    expect(screen.getByText(/The marks on the frame are illustrative/)).toBeInTheDocument()
+    expect(screen.getByText(/The marks on the door are illustrative/)).toBeInTheDocument()
   })
 
   it('shows the year it is given', () => {

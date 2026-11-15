@@ -169,15 +169,15 @@
     "handover": "Übergabe",
     "return": "Rückgabe",
     "slider": "Zwischen dem Foto der Übergabe und dem Foto der Rückgabe schieben",
-    "handoverAlt": "Ein blauer Fahrradrahmen, fotografiert bei der Übergabe",
-    "returnAlt": "Derselbe Fahrradrahmen, fotografiert bei der Rückgabe",
+    "handoverAlt": "Hintere Tür und Rad eines weißen Autos, fotografiert bei der Übergabe",
+    "returnAlt": "Dieselbe Tür, fotografiert bei der Rückgabe",
     "outcome": "Ergebnis der Rückgabe",
-    "damage": "Zerkratzter Rahmen",
+    "damage": "Zerkratzte Tür",
     "clean": "Saubere Rückgabe",
     "newTag": "Neu",
     "findings": {
       "new": {
-        "title": "Zerkratzter Rahmen, {amount}",
+        "title": "Zerkratzte Tür, {amount}",
         "note": "Neu seit der Übergabe. Preis aus der veröffentlichten Liste."
       },
       "none": {
@@ -185,7 +185,7 @@
         "note": "Nichts zu berechnen. Die Reservierung wird am Tresen freigegeben."
       },
       "old": {
-        "title": "Schramme am Unterrohr, nicht berechnet",
+        "title": "Schramme unten an der Tür, nicht berechnet",
         "note": "War schon bei der Übergabe da."
       }
     },
@@ -200,8 +200,8 @@
       "return": "Rückgabe"
     },
     "finding": {
-      "scratch": "Zerkratzter Rahmen",
-      "scuff": "Schramme am Unterrohr"
+      "scratch": "Zerkratzte Tür",
+      "scuff": "Schramme unten an der Tür"
     },
     "shop": {
       "caption": "Jonas, am Tresen",
@@ -406,7 +406,7 @@
     "about": "Über diese Version",
     "aboutBody": "Entwickelt für den PayPal AI Hackathon 2026. Hold ist kein Versicherer und verwahrt kein Kundengeld. Das Geld bleibt auf dem eigenen Konto der mietenden Person, bis eine Forderung genehmigt ist.",
     "rights": "© {year} Hold",
-    "credits": "Fotos von Unsplash: Florian, Nuno Alves und Krzysztof Kowalik. Die Spuren am Rahmen dienen der Veranschaulichung.",
+    "credits": "Fotos von Unsplash von Nuno Alves und Krzysztof Kowalik sowie von Wikimedia Commons von Retired electrician. Die Spuren an der Tür dienen der Veranschaulichung.",
     "legal": "Datenschutz und Bedingungen"
   },
   "pages": {
