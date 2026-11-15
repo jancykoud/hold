@@ -1,4 +1,4 @@
-import { BadgeCheck, Banknote, Bike, ChartColumn, CalendarDays, CalendarRange, Gauge, Handshake, Inbox, LayoutDashboard, ListChecks, MapPin, ShieldCheck, Siren, Tag, Users, Wallet } from 'lucide-react'
+import { BadgeCheck, Banknote, CalendarDays, CalendarRange, ChartColumn, Gauge, Handshake, Inbox, LayoutDashboard, ListChecks, MapPin, Package, ShieldCheck, Siren, Tag, Users, Wallet } from 'lucide-react'
 import type { StaffRole } from '@hold/domain'
 import type { LucideIcon } from 'lucide-react'
 import { shopRoutes } from '@/lib/routes'
@@ -24,7 +24,7 @@ export const shopNavGroups: readonly ShopNavGroup[] = [
       { key: 'calendar', icon: CalendarDays },
       { key: 'money', icon: Banknote },
       { key: 'insights', icon: ChartColumn, roles: ['owner', 'manager'] },
-      { key: 'items', icon: Bike },
+      { key: 'items', icon: Package },
       { key: 'incidents', icon: Siren },
       { key: 'scorecard', icon: Gauge },
     ],

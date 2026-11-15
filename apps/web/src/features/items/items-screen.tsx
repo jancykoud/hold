@@ -1,5 +1,5 @@
 import type { ItemCatalog } from '@hold/db'
-import { Bike, Plus, ReceiptText } from 'lucide-react'
+import { Package, Plus, ReceiptText } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { buttonVariants } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -64,7 +64,7 @@ export function ItemsScreen({ shopName, clock, catalog, fleet, show, canManage }
         {!canManage ? <p className="text-muted-foreground">{t('readOnly')}</p> : null}
         {empty ? (
           <div className="surface max-w-2xl">
-            <EmptyState icon={Bike} title={t('empty.title')} body={t('empty.body')} action={canManage ? <NewTypeLink /> : undefined} />
+            <EmptyState icon={Package} title={t('empty.title')} body={t('empty.body')} action={canManage ? <NewTypeLink /> : undefined} />
           </div>
         ) : (
           <>

@@ -2,7 +2,7 @@
 
 import type { ShopCalendar } from '@hold/db'
 import { cn } from 'cn'
-import { Bike, CalendarRange, GanttChart, List } from 'lucide-react'
+import { CalendarRange, GanttChart, List, Package } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 import { buttonVariants } from '@/components/ui/button'
@@ -57,7 +57,7 @@ export function CalendarScreen({ shopName, clock, window, calendar }: CalendarSc
       {model.resources.length === 0 ? (
         <div className="surface max-w-2xl">
           <EmptyState
-            icon={Bike}
+            icon={Package}
             title={t('noItemsTitle')}
             body={t('noItemsBody')}
             action={<Link href={shopRoutes.items} className={buttonVariants()}>{t('noItemsAction')}</Link>}
