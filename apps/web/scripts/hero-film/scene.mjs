@@ -7,10 +7,10 @@ export const FRAMES = 360
 export const FRAMES_PER_SECOND = 30
 
 // Hold's own colours, as the site's tokens name them.
-const RUST = 0xd9541e
-const PAPER = 0xf3f1ec
+export const RUST = 0xd9541e
+export const PAPER = 0xf3f1ec
 const PAINT = 0x1437c8
-const NIGHT = 0x0b0a09
+export const NIGHT = 0x0b0a09
 
 // The car, in metres: x runs from the tail to the nose, y up from the ground, z across.
 const HALF_LENGTH = 2.32
@@ -22,7 +22,7 @@ const TRACK = 0.835
 const ARCH_RADIUS = WHEEL_RADIUS + 0.062
 const ARCH_DEPTH = TRACK - 0.165
 
-const smooth = (edge0, edge1, x) => {
+export const smooth = (edge0, edge1, x) => {
   const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)))
   return t * t * (3 - 2 * t)
 }
@@ -93,7 +93,7 @@ const endRound = (x) => {
 
 // A point of the body's skin: where along the car, and how far round its section, from the keel (-90 degrees) up the
 // near flank, over the top and down the far one. `out` lifts the point off the skin, for what is laid on it.
-function bodyPoint(x, angle, out = 0) {
+export function bodyPoint(x, angle, out = 0) {
   const round = endRound(x)
   const top = bodyTop(x)
   const keel = bodyKeel(x)
@@ -172,7 +172,7 @@ function wheel(materials) {
 }
 
 // A soft-edged picture drawn on a canvas, for the floor, the shadow and the label.
-function drawn(width, height, draw) {
+export function drawn(width, height, draw) {
   const canvas = document.createElement('canvas')
   canvas.width = width
   canvas.height = height
@@ -272,8 +272,8 @@ function paints() {
   }
 }
 
-export function createFilm(canvas, { width, height }) {
-  const tall = height > width
+// The dark set every film is shot on: the renderer, the night, the dotted floor, the stars and the lights.
+export function openSet(canvas, { width, height }) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true })
   renderer.setPixelRatio(1)
   renderer.setSize(width, height, false)
@@ -286,10 +286,6 @@ export function createFilm(canvas, { width, height }) {
   scene.fog = new THREE.Fog(NIGHT, 9, 26)
   scene.environment = studio(renderer)
   scene.environmentIntensity = 1
-
-  const materials = paints()
-  const coupe = car(materials)
-  scene.add(coupe)
 
   // The floor: dark and unlit, with the dot grid of the site, so the words laid over the film stay readable.
   const floorMap = drawn(1024, 1024, (context, w, h) => {
@@ -307,6 +303,39 @@ export function createFilm(canvas, { width, height }) {
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.MeshBasicMaterial({ map: floorMap }))
   floor.rotation.x = -Math.PI / 2
   scene.add(floor)
+
+  // A still night behind it.
+  const stars = new THREE.BufferGeometry()
+  const scatter = []
+  let seed = 7
+  const random = () => {
+    seed = (seed * 16807) % 2147483647
+    return seed / 2147483647
+  }
+  for (let star = 0; star < 520; star += 1) {
+    const turn = random() * Math.PI * 2
+    const rise = 0.06 + random() * 0.9
+    const far = 30 + random() * 14
+    scatter.push(Math.cos(turn) * far, rise * 20, Math.sin(turn) * far)
+  }
+  stars.setAttribute('position', new THREE.Float32BufferAttribute(scatter, 3))
+  scene.add(new THREE.Points(stars, new THREE.PointsMaterial({ color: 0xbfc6d4, size: 0.085, sizeAttenuation: true, transparent: true, opacity: 0.75, fog: false })))
+
+  scene.add(new THREE.HemisphereLight(0x9fb0d8, 0x120c08, 0.6))
+  const key = new THREE.DirectionalLight(0xffffff, 1.1)
+  key.position.set(4, 7, 6)
+  scene.add(key)
+  const rim = new THREE.DirectionalLight(0xff8a50, 1.2)
+  rim.position.set(-6, 3, -5)
+  scene.add(rim)
+  return { renderer, scene }
+}
+
+// The coupé parked on the set, with its shadow, the warm light under its sill and the light of its lamps.
+export function parkCar(scene) {
+  const materials = paints()
+  const coupe = car(materials)
+  scene.add(coupe)
 
   // What the car stands on: a soft shadow, and the warm pool of light under its sill.
   const shadow = new THREE.Mesh(
@@ -346,30 +375,6 @@ export function createFilm(canvas, { width, height }) {
   glow.position.set(-0.2, 0.006, 1.5)
   scene.add(glow)
 
-  // A still night behind it.
-  const stars = new THREE.BufferGeometry()
-  const scatter = []
-  let seed = 7
-  const random = () => {
-    seed = (seed * 16807) % 2147483647
-    return seed / 2147483647
-  }
-  for (let star = 0; star < 520; star += 1) {
-    const turn = random() * Math.PI * 2
-    const rise = 0.06 + random() * 0.9
-    const far = 30 + random() * 14
-    scatter.push(Math.cos(turn) * far, rise * 20, Math.sin(turn) * far)
-  }
-  stars.setAttribute('position', new THREE.Float32BufferAttribute(scatter, 3))
-  scene.add(new THREE.Points(stars, new THREE.PointsMaterial({ color: 0xbfc6d4, size: 0.085, sizeAttenuation: true, transparent: true, opacity: 0.75, fog: false })))
-
-  scene.add(new THREE.HemisphereLight(0x9fb0d8, 0x120c08, 0.6))
-  const key = new THREE.DirectionalLight(0xffffff, 1.1)
-  key.position.set(4, 7, 6)
-  scene.add(key)
-  const rim = new THREE.DirectionalLight(0xff8a50, 1.2)
-  rim.position.set(-6, 3, -5)
-  scene.add(rim)
   // The lamps' own light: a halo at each, and a faint pool on the floor ahead of the nose.
   const halo = drawn(128, 128, (context, w, h) => {
     const fade = context.createRadialGradient(w / 2, h / 2, 2, w / 2, h / 2, w / 2)
@@ -390,7 +395,11 @@ export function createFilm(canvas, { width, height }) {
   pool.position.set(4.4, 0.007, 0)
   scene.add(pool)
 
-  // The sheet of light that reads the car from nose to tail.
+  return coupe
+}
+
+// The sheet of light that reads the car from nose to tail, and the light it throws on the paint.
+export function scanSheet(scene) {
   const sheet = new THREE.Mesh(
     new THREE.PlaneGeometry(3.3, 1.75),
     new THREE.MeshBasicMaterial({
@@ -423,6 +432,15 @@ export function createFilm(canvas, { width, height }) {
   scene.add(sheet)
   const sweep = new THREE.PointLight(0xffb48a, 0, 4.5, 1.6)
   scene.add(sweep)
+
+  return { sheet, sweep }
+}
+
+export function createFilm(canvas, { width, height }) {
+  const tall = height > width
+  const { renderer, scene } = openSet(canvas, { width, height })
+  const coupe = parkCar(scene)
+  const { sheet, sweep } = scanSheet(scene)
 
   // The scratch in the driver's door, and what closes on it: four corners, a ring, and a card with the finding.
   const door = bodyPoint(0.24, 0.16, 0.003)

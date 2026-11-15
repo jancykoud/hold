@@ -21,8 +21,8 @@ export const films = {
   // A coupé of Hold's own drawing scanned by a sheet of light, and brackets that close on a scratch in its door
   // (scripts/hero-film).
   home: { wide: '/video/hero-wide.mp4', tall: '/video/hero-tall.mp4', still: { wide: '/images/hero/hero-wide-still.webp', tall: '/images/hero/hero-tall-still.webp' } },
-  // Priya's assistant books through Hold's MCP server; then Priya, Jonas and Tomás take the rental through its hold, six
-  // photographs, comparison and settlement, with each call to PayPal travelling to a PayPal record that fills as it goes.
-  // Rendered before the example became a car: it still shows an e-bike, six photographs and a 300 euro hold.
+  // Priya's assistant books through Hold's MCP server; then Priya, Jonas and Tomás take the rental of a car through its
+  // hold, nineteen photographs, comparison and settlement, with each call to PayPal filling PayPal's record
+  // (scripts/hero-film/how.mjs).
   howItWorks: { wide: '/video/how-wide.mp4', tall: '/video/how-tall.mp4', still: { wide: '/images/hero/how-wide-still.webp', tall: '/images/hero/how-tall-still.webp' } },
 } as const satisfies Record<string, Film>

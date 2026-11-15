@@ -36,4 +36,11 @@ cwebp -q 82 /tmp/wide/frame-0210.png -o public/images/hero/hero-wide-still.webp
 cwebp -q 82 /tmp/tall/frame-0210.png -o public/images/hero/hero-tall-still.webp
 ```
 
-`public/video/how-wide.mp4`, `public/video/how-tall.mp4`, `hero/how-wide-still.webp` and `hero/how-tall-still.webp` are made the same way: three people modelled in code (Priya, Jonas and Tomás), the e-bike, the counter and the owner's desk, Hold's MCP server and PayPal's sandbox as two panels at the back, with every screen drawn in Hold's own type and colours and every photograph on them rendered from the 3D e-bike. The still is frame 335 of the 1,185, the hold just authorized.
+`public/video/how-wide.mp4`, `public/video/how-tall.mp4`, `hero/how-wide-still.webp` and `hero/how-tall-still.webp` are made the same way, from `apps/web/scripts/hero-film/how.mjs`, and were remade on 15 November 2026 with the car where an e-bike stood: three people modelled in code (Priya, Jonas and Tomás), the same coupé, the counter and the owner's desk, Hold's MCP server and PayPal's sandbox as two panels at the back, and every screen drawn in code in Hold's colours, in the type of the machine that renders it. The still is frame 372 of the 1,185, the hold just authorized.
+
+```sh
+node scripts/hero-film/render.mjs --film how --three <folder of the three package> --out /tmp/how-wide
+node scripts/hero-film/render.mjs --film how --three <folder of the three package> --out /tmp/how-tall --size 720x1280
+```
+
+Then ffmpeg and cwebp as above, with `how-` in place of `hero-` and frame 372 for the stills.
