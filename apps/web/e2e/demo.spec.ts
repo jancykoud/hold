@@ -108,6 +108,52 @@ test('as Jonas, a judge takes a damaged return to a PayPal capture without addin
   await expect(page.getByRole('region', { name: 'Settlement amounts' })).toContainText('€35.00')
 })
 
+// The demonstration a vehicle rental business is shown: the demo shop's own car, walked round in the views its plan
+// needs, its dashboard read at the handover and at the return, and a scratch charged at the price the renter accepted.
+test('as Jonas, a scratched car goes from its walk round to a PayPal capture of the published price', async ({ page, browser }) => {
+  test.setTimeout(420000)
+  await startDemo(page, 'Jonas, at the counter')
+  await bookAtTheCounter(page, 'Compact car')
+  await feePaidAndHoldPlaced(page, browser)
+  await page.getByRole('region', { name: 'Handover' }).getByRole('button', { name: /^Photograph / }).click()
+  const views = page.getByRole('list', { name: 'Views' })
+  const dashboard = page.getByRole('region', { name: 'Dashboard', exact: true })
+  const walk = async (sample: string, kilometres: string) => {
+    await expect(views.getByRole('listitem')).toHaveCount(19)
+    const needed = await views.getByText('Needed').count()
+    for (let taken = 1; taken <= needed; taken += 1) {
+      await page.getByRole('button', { name: sample }).click()
+      await expect(views.getByText('Photographed')).toHaveCount(taken, { timeout: 30000 })
+    }
+    await dashboard.getByLabel('Kilometres on the odometer').fill(kilometres)
+    await dashboard.getByLabel('Fuel in the tank').selectOption({ label: 'Full' })
+    await dashboard.getByRole('button', { name: 'Save the reading' }).click()
+    await expect(page.getByText('Reading saved.')).toBeVisible()
+  }
+  await walk('Use the sample photograph', '48210')
+  await page.getByRole('button', { name: 'Seal the photographs', exact: true }).click()
+  await expect(page.getByText('The rental is out.')).toBeVisible()
+  await page.getByRole('link', { name: 'Back to the rental' }).last().click()
+  await page.getByRole('button', { name: /^Start return for / }).click()
+  await walk('Use the sample with damage', '48330')
+  await page.getByRole('button', { name: 'Seal return photographs', exact: true }).click()
+  await expect(page.getByText('These return photographs are sealed.', { exact: false })).toBeVisible({ timeout: 60000 })
+  await page.getByRole('link', { name: 'Back to the rental', exact: true }).first().click()
+  await page.getByRole('link', { name: 'Claim and settlement', exact: true }).click()
+  await page.getByRole('checkbox', { name: /^Simulated: code found a change in this area/ }).first().check()
+  await page.getByLabel('Agreed price for this finding').selectOption({ label: 'Scratch on the bodywork, through the paint · €180.00' })
+  await page.getByRole('button', { name: 'Prepare claim for review', exact: true }).click()
+  await page.getByRole('button', { name: 'Approve and show renter link', exact: true }).click()
+  const renter = await renterBrowser(browser)
+  await renter.goto((await page.getByTestId('renter-link').textContent()) ?? '')
+  await expect(renter.getByText('Type of damage: Scratch')).toBeVisible()
+  await acceptClaim(renter)
+  await renter.context().close()
+  await page.reload()
+  await expect(page.getByText('Settlement confirmed', { exact: true })).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Settlement amounts' })).toContainText('€180.00')
+})
+
 // architecture.md section 8.2: staff let a walk-in pay the fee and approve the hold in one PayPal approval.
 test('as Jonas, a judge books a walk-in whose renter approves the fee and the hold at once', async ({ page, browser }) => {
   await startDemo(page, 'Jonas, at the counter')

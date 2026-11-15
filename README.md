@@ -122,6 +122,13 @@ instructions](#testing-instructions) and an email address of your own to hand.
    rent you a bike and accept its quote. It books from your demo shop through Hold's MCP server and hands you PayPal's
    approval link.
 
+**The same with a car.** Book one **Compact car** in place of the bike. Its hold is €1,200 and its plan has nineteen
+views, twelve of them needed: take each with the sample photograph, enter the kilometres and the fuel under
+**Dashboard**, and seal. At the return do the same with **Use the sample with damage** and an odometer that reads more.
+On **Claim and settlement** choose **Scratch on the bodywork, through the paint · €180.00**; the renter reads "Type of
+damage: Scratch" beside the price, and PayPal captures €180 and releases €1,020. Kilometres beyond the 200 a day the
+booking includes are offered as a line of their own. `apps/web/e2e/demo.spec.ts` walks this path on every push.
+
 **As the owner.** Sign out and tap **Continue as Tomás, the owner**. **Calendar** shows every bike as a row and every
 rental as a bar marked by its PayPal hold. Open **Rentals**, **Elena Duarte**, her contested claim, and tap **Let the
 advocates argue it**; a run takes about two minutes, so reload to see its moves. The sample moves no money. Live model
