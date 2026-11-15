@@ -6,6 +6,7 @@ import { publicShops } from './assistant-repository.ts'
 import { demoAccountForRental, openDemoSession } from './demo-session.ts'
 import { DEMO_SHOP } from './demo-shop.ts'
 import { addItems, saveItemType } from './item-repository.ts'
+import { currentPriceList } from './price-list-repository.ts'
 import { bookableTypes } from './booking-repository.ts'
 import { auditLog, claims, itemTypes, paypalAccounts, photoPlans, rentals, shops } from './schema/index.ts'
 import { inShop } from './scope.ts'
@@ -62,11 +63,34 @@ describe('a demo session', () => {
 
     const bookable = await inShop(database, scope, (transaction) => bookableTypes(transaction, tomorrow, NOW))
 
-    expect(bookable).toEqual([expect.objectContaining({ name: DEMO_SHOP.bookable.name, currency: 'EUR', available: DEMO_SHOP.bookable.count })])
+    expect(bookable).toEqual(expect.arrayContaining([expect.objectContaining({ name: DEMO_SHOP.bookable.name, currency: 'EUR', available: DEMO_SHOP.bookable.count })]))
     const [type] = await database.select({ simulated: itemTypes.simulated, views: photoPlans.views }).from(itemTypes).innerJoin(photoPlans, eq(photoPlans.id, itemTypes.photoPlanId)).where(and(eq(itemTypes.shopId, opened.shopId), eq(itemTypes.name, DEMO_SHOP.bookable.name)))
     expect(type?.simulated).toBe(false)
     // One photograph a side of the frame is all a judge must take; the sample photograph is of that view.
     expect(type?.views.filter((view: { readonly required: boolean }) => view.required)).toHaveLength(1)
+  })
+
+  // docs/vehicle-plan.md: the condition report of a vehicle is what Hold is built for first, so the demo shows one.
+  it('offers a car to book beside the bikes, with its walk around, its kilometres and the prices its dashboard needs', async () => {
+    const opened = await openDemoSession(database, { ...people('car001'), slug: 'ribeira-bikes-car001', paypal: PAYPAL, now: NOW })
+    const owner = await findPerson(database, 'owner-car001')
+    const scope = { role: 'hold_app' as const, shopId: opened.shopId, userId: owner?.userId ?? '' }
+    const tomorrow = { startsAt: new Date('2026-12-02T09:00:00Z'), endsAt: new Date('2026-12-05T09:00:00Z') }
+
+    const bookable = await inShop(database, scope, (transaction) => bookableTypes(transaction, tomorrow, NOW))
+    expect(bookable.map((type) => [type.name, type.category, type.available])).toEqual(expect.arrayContaining([['City bike', 'bike', 4], ['Compact car', 'car', 2]]))
+    expect(bookable).toHaveLength(2)
+
+    const [car] = await database.select({ simulated: itemTypes.simulated, includedKmPerDay: itemTypes.includedKmPerDay, views: photoPlans.views }).from(itemTypes).innerJoin(photoPlans, eq(photoPlans.id, itemTypes.photoPlanId)).where(and(eq(itemTypes.shopId, opened.shopId), eq(itemTypes.name, 'Compact car')))
+    expect(car).toMatchObject({ simulated: false, includedKmPerDay: 200 })
+    expect(car?.views).toHaveLength(19)
+    expect(car?.views.at(-1)).toMatchObject({ label: 'Dashboard, with mileage and fuel', required: true })
+
+    const prices = await inShop(database, scope, currentPriceList)
+    // One price of a kilometre and one of an eighth of a tank, and damage named by its type.
+    expect(prices?.entries.filter((entry) => entry.category === 'mileage')).toHaveLength(1)
+    expect(prices?.entries.filter((entry) => entry.category === 'fuel')).toHaveLength(1)
+    expect(prices?.entries.map((entry) => entry.damageType).filter((type) => type !== null).sort()).toEqual(['broken_glass', 'dent', 'impact', 'scratch', 'scratch'])
   })
 
   it('opens without a PayPal connection when the demo has none', async () => {

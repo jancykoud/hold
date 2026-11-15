@@ -10,7 +10,7 @@ import { staffRoles } from './schema/index.ts'
 import type { Transaction } from './scope.ts'
 
 // The shop every demo session starts with (architecture.md section 20.3): Tomás's bike shop in Lisbon, with Jonas at
-// the counter, a published price list, four real bikes to book, the twelve sample rentals and returns after hours. Every sample is marked simulated.
+// the counter, a published price list, four real bikes and two cars to book, the twelve sample rentals and returns after hours. Every sample is marked simulated.
 export const DEMO_SHOP = {
   name: 'Ribeira Bikes',
   timeZone: 'Europe/Lisbon',
@@ -21,13 +21,20 @@ export const DEMO_SHOP = {
   ownerApprovalThresholdCents: 150_00,
   staffApprovalLimitCents: 100_00,
   priceList: [
-    { description: 'Scratch on the frame, through the paint', category: 'damage', amount: money(35_00, 'EUR') },
+    { description: 'Scratch on the frame, through the paint', category: 'damage', amount: money(35_00, 'EUR'), damageType: 'scratch' },
     { description: 'Bent rear derailleur hanger', category: 'damage', amount: money(25_00, 'EUR') },
     { description: 'Cracked e-bike display', category: 'damage', amount: money(120_00, 'EUR') },
     { description: 'Lost lock', category: 'loss', amount: money(45_00, 'EUR') },
     { description: 'Lost front light', category: 'loss', amount: money(20_00, 'EUR') },
     { description: 'Late return, per started day', category: 'lateness', amount: money(30_00, 'EUR') },
     { description: 'Cleaning after a muddy ride', category: 'cleaning', amount: money(15_00, 'EUR') },
+    // The car's prices: damage named by its type, and what its dashboard is charged by (docs/vehicle-plan.md).
+    { description: 'Scratch on the bodywork, through the paint', category: 'damage', amount: money(180_00, 'EUR'), damageType: 'scratch' },
+    { description: 'Dent in a body panel', category: 'damage', amount: money(320_00, 'EUR'), damageType: 'dent' },
+    { description: 'Stone chip in the windscreen', category: 'damage', amount: money(90_00, 'EUR'), damageType: 'impact' },
+    { description: 'Cracked or broken glass', category: 'damage', amount: money(450_00, 'EUR'), damageType: 'broken_glass' },
+    { description: 'Each kilometre beyond those included', category: 'mileage', amount: money(30, 'EUR') },
+    { description: 'Each eighth of a tank missing', category: 'fuel', amount: money(12_00, 'EUR') },
   ] satisfies readonly PriceEntryDraft[],
   // Real bikes beside the samples, so a judge can book one at the counter, on the shop page or through an assistant
   // and take it through a live sandbox hold. Only the frame must be photographed: the sample photographs are of it.
@@ -42,6 +49,39 @@ export const DEMO_SHOP = {
       { label: 'Frame, drive side', outline: 'whole_side', required: true },
       { label: 'Front wheel', outline: 'front', required: false },
       { label: 'Rear wheel', outline: 'rear', required: false },
+    ],
+  },
+  // A car beside the bikes: the condition report of a vehicle is what Hold is built for first. Its plan is the walk
+  // around a car in full, in English as the demo is, and each day includes 200 kilometres. The sample photographs are
+  // of a bike's frame, so a car's comparison is shown with them until real photographs of a vehicle exist.
+  vehicle: {
+    name: 'Compact car',
+    category: 'car',
+    count: 2,
+    valueCents: 18_000_00,
+    holdCents: 1_200_00,
+    dayRateCents: 60_00,
+    includedKmPerDay: 200,
+    views: [
+      { label: 'Front', outline: 'front', required: true },
+      { label: 'Rear', outline: 'rear', required: true },
+      { label: 'Left side', outline: 'whole_side', required: true },
+      { label: 'Right side', outline: 'whole_side', required: true },
+      { label: 'Front left corner', outline: 'front', required: false },
+      { label: 'Front right corner', outline: 'front', required: false },
+      { label: 'Rear left corner', outline: 'rear', required: false },
+      { label: 'Rear right corner', outline: 'rear', required: false },
+      { label: 'Front left wheel', outline: 'detail', required: true },
+      { label: 'Front right wheel', outline: 'detail', required: true },
+      { label: 'Rear left wheel', outline: 'detail', required: true },
+      { label: 'Rear right wheel', outline: 'detail', required: true },
+      { label: 'Windscreen', outline: 'detail', required: true },
+      { label: 'Rear window', outline: 'detail', required: false },
+      { label: 'Roof', outline: 'top', required: false },
+      { label: 'Front seats', outline: 'detail', required: true },
+      { label: 'Back seats', outline: 'detail', required: false },
+      { label: 'Boot', outline: 'detail', required: false },
+      { label: 'Dashboard, with mileage and fuel', outline: 'detail', required: true },
     ],
   },
   // Returns with nobody at the counter (architecture.md section 6.13), in Tomás's words and hours.
@@ -85,6 +125,16 @@ export async function furnishDemoShop(transaction: Transaction, shopId: string, 
   if (!saved.ok) throw new Error(`The demo item type was refused: ${saved.reason}.`)
   const added = await addItems(transaction, { itemTypeId: saved.id, count: bike.count, size: '', serial: '' }, now)
   if (!added.ok) throw new Error(`The demo bikes were refused: ${added.reason}.`)
+  const car = DEMO_SHOP.vehicle
+  const savedCar = await saveItemType(
+    transaction,
+    shopId,
+    { draft: { name: car.name, category: car.category, currency: DEMO_SHOP.currency, value: eur(car.valueCents), hold: eur(car.holdCents), dayRate: eur(car.dayRateCents), accessories: [], views: car.views, includedKmPerDay: car.includedKmPerDay } },
+    now,
+  )
+  if (!savedCar.ok) throw new Error(`The demo car was refused: ${savedCar.reason}.`)
+  const addedCars = await addItems(transaction, { itemTypeId: savedCar.id, count: car.count, size: '', serial: '' }, now)
+  if (!addedCars.ok) throw new Error(`The demo cars were refused: ${addedCars.reason}.`)
   await saveSelfReturnSettings(transaction, shopId, { allowed: true, dropPoint: DEMO_SHOP.dropPoint, hours: { opens: DEMO_SHOP.opensAt, closes: DEMO_SHOP.closesAt } })
   const samples = await addSampleRentals(transaction, { shopId, userId: ownerUserId, raisedByUserId: staff.userId, timeZone: DEMO_SHOP.timeZone, now })
   if (!samples.ok) throw new Error(`The sample rentals were refused: ${samples.reason}.`)
