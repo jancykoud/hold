@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 import { holdStanding, money, shopDay } from '@hold/domain'
+import { eq } from 'drizzle-orm'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { registerOwner } from './accounts.ts'
 import { publishPriceList } from './price-list-repository.ts'
@@ -8,6 +9,8 @@ import { inShop } from './scope.ts'
 import type { Scope } from './scope.ts'
 import { recordPhoto, sealSession, startCaptureSession } from './capture-repository.ts'
 import { shopToday } from './shop-today.ts'
+import { claimReplies, claims } from './schema/index.ts'
+import { presentedClaim, twoLinePrices } from './testing/presented-claim.ts'
 import { readyRentalShop, VIEWS } from './testing/ready-rental.ts'
 import { createTestDatabase } from './testing/test-database.ts'
 import type { TestDatabase } from './testing/test-database.ts'
@@ -59,6 +62,7 @@ describe('a shop with no rentals', () => {
       counter: [],
       month: { feesCents: 0, releasedCents: 0, claimedCents: 0, recoveredCents: 0 },
       routine: { handover: { medianSeconds: null, count: 0 }, return: { medianSeconds: null, count: 0 } },
+      measures: { retakes: { inspections: 0, retakes: 0, withRetake: 0 }, contests: { presented: 0, contested: 0, decision: { medianSeconds: null, count: 0 } } },
       // Signing up is the shop's first line.
       activity: [expect.objectContaining({ action: 'shop.created', actorName: 'Douro Kayaks', simulated: false })],
       rentals: { total: 0, simulated: 0 },
@@ -177,5 +181,41 @@ describe('the counter routine', () => {
     if (!sealed.ok) throw new Error(sealed.reason)
     const { routine } = await shop.act((transaction) => shopToday(transaction, window))
     expect(routine.handover).toEqual({ medianSeconds: 48, count: 1 })
+  })
+})
+
+// What an inspection costs to take and to settle (domain inspection-measures.ts), for the month, beside how long it takes.
+describe('the month’s inspection measures', () => {
+  it('measure nothing from sample rentals, and say so with counts of zero', async () => {
+    const { measures } = await inShop(database, shopA, (transaction) => shopToday(transaction, window))
+    expect(measures).toEqual({ retakes: { inspections: 0, retakes: 0, withRetake: 0 }, contests: { presented: 0, contested: 0, decision: { medianSeconds: null, count: 0 } } })
+  })
+
+  it('count a photograph taken again, over the handovers and returns sealed', async () => {
+    const shop = await readyRentalShop(database, 'retakes', new Date(NOW.getTime() - 86_400_000))
+    const rental = await shop.readyRental()
+    const started = await shop.act((transaction) => startCaptureSession(transaction, { rentalId: rental.rentalId, rentalItemId: rental.rentalItemIds[0] ?? '', kind: 'handover', actorUserId: shop.scope.userId ?? null }, new Date(NOW.getTime() - 60_000)))
+    if (!started.ok) throw new Error(started.reason)
+    const take = (view: string, tag: string) => shop.act((transaction) => recordPhoto(transaction, started.sessionId, { view, evidenceKey: `evidence/retakes-${tag}.jpg`, sha256: createHash('sha256').update(tag).digest('hex'), quality: { sharpness: 120, shadows: 20, highlights: 220, filled: 0.6 } }, NOW))
+    for (const view of VIEWS) await take(view, view)
+    // The left side was blurred, so it is taken again.
+    await take('left-side', 'left-side-again')
+    await shop.act((transaction) => sealSession(transaction, started.sessionId, NOW))
+    const { measures } = await shop.act((transaction) => shopToday(transaction, window))
+    expect(measures.retakes).toEqual({ inspections: 1, retakes: 1, withRetake: 1 })
+  })
+
+  it('count the claims shown to a renter, those contested, and the time to the shop’s decision', async () => {
+    const shop = await readyRentalShop(database, 'contests', new Date(NOW.getTime() - 86_400_000))
+    const prices = await twoLinePrices(shop, NOW)
+    const first = await presentedClaim(shop, prices, shop.scope.userId ?? '', NOW)
+    await presentedClaim(shop, prices, shop.scope.userId ?? '', NOW)
+    // The first is contested ten minutes on, and decided half an hour after that.
+    const contestedAt = new Date(NOW.getTime() + 10 * 60_000)
+    await shop.act((transaction) => transaction.insert(claimReplies).values({ shopId: shop.scope.shopId, claimId: first.claimId, decision: 'contest', comment: 'That mark was there before.', createdAt: contestedAt }))
+    await shop.act((transaction) => transaction.update(claims).set({ decidedAt: new Date(contestedAt.getTime() + 30 * 60_000) }).where(eq(claims.id, first.claimId)))
+    const later = { ...window, now: new Date(NOW.getTime() + 3_600_000) }
+    const { measures } = await shop.act((transaction) => shopToday(transaction, later))
+    expect(measures.contests).toEqual({ presented: 2, contested: 1, decision: { medianSeconds: 30 * 60, count: 1 } })
   })
 })

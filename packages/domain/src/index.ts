@@ -129,6 +129,8 @@ export { AGENT_SCOPES, agentSessionLive, agentTokenExpiry, ASSISTANT_LIMITS, ass
 export type { AgentScope, AssistantBooking, AssistantBookingStatus, QuoteState } from './assistant.ts'
 export { counterRoutine } from './counter-routine.ts'
 export type { RoutineSession, RoutineTime } from './counter-routine.ts'
+export { contestsOf, retakesOf } from './inspection-measures.ts'
+export type { ContestMeasure, MeasuredClaim, MeasuredSession, RetakeMeasure } from './inspection-measures.ts'
 export { checkRepairClose, priceRepairStanding, REPAIR_LIMITS, REPAIR_OUTCOMES, REPAIR_STATES, REPAIR_TRANSITIONS, repairViews } from './repair.ts'
 export type { RepairClose, RepairCloseProblem, RepairOutcome, RepairState } from './repair.ts'
 

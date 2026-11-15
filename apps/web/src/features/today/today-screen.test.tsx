@@ -21,6 +21,7 @@ const empty: ShopToday = {
   counter: [],
   month: { feesCents: 0, releasedCents: 0, claimedCents: 0, recoveredCents: 0 },
   routine: { handover: { medianSeconds: null, count: 0 }, return: { medianSeconds: null, count: 0 } },
+  measures: { retakes: { inspections: 0, retakes: 0, withRetake: 0 }, contests: { presented: 0, contested: 0, decision: { medianSeconds: null, count: 0 } } },
   activity: [{ at: at('2026-10-14T08:00:00Z'), action: 'shop.created', actorName: 'Tomás', renterName: null, simulated: false }],
   rentals: { total: 0, simulated: 0 },
 }
@@ -51,6 +52,7 @@ const busy: ShopToday = {
   ],
   month: { feesCents: 488_00, releasedCents: 515_00, claimedCents: 115_00, recoveredCents: 35_00 },
   routine: { handover: { medianSeconds: 48, count: 12 }, return: { medianSeconds: 65, count: 10 } },
+  measures: { retakes: { inspections: 22, retakes: 9, withRetake: 6 }, contests: { presented: 8, contested: 2, decision: { medianSeconds: 7_500, count: 2 } } },
   activity: [{ at: at('2026-10-14T07:30:00Z'), action: 'handover.done', actorName: 'Tomás', renterName: 'Lukas Weber', simulated: true }],
   rentals: { total: 11, simulated: 11 },
 }
@@ -189,6 +191,22 @@ describe('the Today page', () => {
     unmount()
     show(empty)
     expect(within(screen.getByRole('region', { name: 'October so far' })).getByText('Handover and return: not timed yet this month')).toBeInTheDocument()
+  })
+
+  // What an inspection costs to take and to settle, each as a count over a count, so one way of working can be told
+  // from another on the same footing.
+  it('counts the photographs taken again and the claims contested, with the time to decide them, and says so when nothing was measured', () => {
+    const { unmount } = show(busy)
+    const month = within(screen.getByRole('region', { name: 'October so far' }))
+    expect(month.getByText('Photographs taken again: 9 in 22 inspections, 6 of which needed one')).toBeInTheDocument()
+    expect(month.getByText('Claims contested: 2 of 8 shown to a renter')).toBeInTheDocument()
+    expect(month.getByText('Contests decided in 2 h 05 min, the median of 2')).toBeInTheDocument()
+    unmount()
+    show(empty)
+    const quiet = within(screen.getByRole('region', { name: 'October so far' }))
+    expect(quiet.getByText('Photographs taken again: no inspection sealed yet this month')).toBeInTheDocument()
+    expect(quiet.getByText('Claims contested: none shown to a renter yet this month')).toBeInTheDocument()
+    expect(quiet.queryByText(/Contests decided/)).not.toBeInTheDocument()
   })
 
   it('says plainly that sample rentals are simulated, and marks each one', () => {

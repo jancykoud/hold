@@ -7,7 +7,8 @@ import type { CaptureSessionKind } from './capture-session.ts'
 export type RoutineSession = { readonly kind: CaptureSessionKind; readonly startedAt: Date; readonly sealedAt: Date | null; readonly simulated: boolean }
 export type RoutineTime = { readonly medianSeconds: number | null; readonly count: number }
 
-function median(values: readonly number[]): number | null {
+// The middle value, to the whole second; none of nothing.
+export function median(values: readonly number[]): number | null {
   if (values.length === 0) return null
   const sorted = [...values].sort((first, second) => first - second)
   const middle = Math.floor(sorted.length / 2)

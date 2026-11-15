@@ -3025,7 +3025,12 @@
       "routineReturn": "Devolución: {time}, la mediana de {count, plural, one {# sesión} other {# sesiones}}",
       "routineNone": "Entrega y devolución: sin medir aún este mes",
       "routineHandoverNone": "Entrega: sin medir aún este mes",
-      "routineReturnNone": "Devolución: sin medir aún este mes"
+      "routineReturnNone": "Devolución: sin medir aún este mes",
+      "retakes": "Fotos repetidas: {retakes} en {inspections, plural, one {# inspección} other {# inspecciones}}, de las cuales {withRetake} necesitaron una",
+      "retakesNone": "Fotos repetidas: ninguna inspección sellada este mes",
+      "contests": "Reclamaciones impugnadas: {contested} de {presented} mostradas a un cliente",
+      "contestsNone": "Reclamaciones impugnadas: ninguna mostrada a un cliente este mes",
+      "contestDecision": "Impugnaciones resueltas en {time}, mediana de {count}"
     },
     "activity": {
       "title": "Actividad",

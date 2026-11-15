@@ -1,5 +1,5 @@
-import { counterRoutine } from '@hold/domain'
-import type { ClaimState, HoldState, RentalState, RoutineTime } from '@hold/domain'
+import { contestsOf, counterRoutine, retakesOf } from '@hold/domain'
+import type { ClaimState, ContestMeasure, HoldState, RentalState, RetakeMeasure, RoutineTime } from '@hold/domain'
 import { and, asc, desc, eq, gte, inArray, isNotNull, lt, lte, ne, notInArray, or, sql } from 'drizzle-orm'
 import type { SQLWrapper } from 'drizzle-orm'
 import {
@@ -90,6 +90,9 @@ export type ShopToday = {
   readonly month: { readonly feesCents: number; readonly releasedCents: number; readonly claimedCents: number; readonly recoveredCents: number }
   // The month's handovers and returns, timed from opening to seal, each with its count (counterRoutine).
   readonly routine: { readonly handover: RoutineTime; readonly return: RoutineTime }
+  // The month's inspections: how often a photograph was taken again, and how many claims were contested and how long
+  // the shop took to decide them (domain inspection-measures.ts).
+  readonly measures: { readonly retakes: RetakeMeasure; readonly contests: ContestMeasure }
   readonly activity: readonly ActivityLine[]
   readonly rentals: { readonly total: number; readonly simulated: number }
 }
@@ -246,6 +249,32 @@ async function counter(transaction: Transaction, window: TodayWindow): Promise<C
   return visits.sort((a, b) => a.at.getTime() - b.at.getTime())
 }
 
+// The month's inspections as measured: each sealed handover and return with the photographs a later one of the same
+// view replaced, and each claim shown to a renter in the month with when it was first contested and when the shop
+// decided it. The demonstration's are marked, and the domain leaves them out.
+async function measures(transaction: Transaction, window: TodayWindow) {
+  const sessions = await transaction
+    .select({
+      kind: captureSessions.kind,
+      simulated: sql<boolean>`(${rentals.simulated} or exists (select 1 from ${photos} where ${photos.sessionId} = ${captureSessions.id} and (${photos.quality} ->> 'simulated') = '1'))`,
+      retakes: sql<number>`(select count(*)::int from ${photos} where ${photos.sessionId} = ${captureSessions.id} and ${photos.supersededAt} is not null)`,
+    })
+    .from(captureSessions)
+    .innerJoin(rentalItems, eq(rentalItems.id, captureSessions.rentalItemId))
+    .innerJoin(rentals, eq(rentals.id, rentalItems.rentalId))
+    .where(and(gte(captureSessions.sealedAt, window.day.monthStart), lte(captureSessions.sealedAt, window.now), inArray(captureSessions.kind, ['handover', 'return'])))
+  const shown = await transaction
+    .select({ id: claims.id, simulated: rentals.simulated, presentedAt: claims.presentedAt, decidedAt: claims.decidedAt })
+    .from(claims)
+    .innerJoin(rentals, eq(rentals.id, claims.rentalId))
+    .where(and(gte(claims.presentedAt, window.day.monthStart), lte(claims.presentedAt, window.now)))
+  // Each claim's contests, the earliest first, read as the column they are, so every driver gives the same moment.
+  const contests = shown.length === 0 ? [] : await transaction.select({ claimId: claimReplies.claimId, at: claimReplies.createdAt }).from(claimReplies)
+    .where(and(inArray(claimReplies.claimId, shown.map((claim) => claim.id)), eq(claimReplies.decision, 'contest'))).orderBy(asc(claimReplies.createdAt))
+  const contested = (claimId: string) => contests.find((contest) => contest.claimId === claimId)?.at ?? null
+  return { retakes: retakesOf(sessions.map((session) => ({ ...session, sealed: true }))), contests: contestsOf(shown.map((claim) => ({ ...claim, contestedAt: contested(claim.id) }))) }
+}
+
 // The month's sealed sessions. One of a sample rental, or holding a sample photograph, is the demonstration's, and
 // counterRoutine leaves it out.
 async function routine(transaction: Transaction, window: TodayWindow) {
@@ -294,6 +323,7 @@ export async function shopToday(transaction: Transaction, window: TodayWindow): 
     counter: await counter(transaction, window),
     month,
     routine: await routine(transaction, window),
+    measures: await measures(transaction, window),
     activity: await activity(transaction),
     rentals: { total, simulated },
   }

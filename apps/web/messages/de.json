@@ -3025,7 +3025,12 @@
       "routineReturn": "Rückgabe: {time}, der Median aus {count, plural, one {# Vorgang} other {# Vorgängen}}",
       "routineNone": "Übergabe und Rückgabe: diesen Monat noch nicht gemessen",
       "routineHandoverNone": "Übergabe: diesen Monat noch nicht gemessen",
-      "routineReturnNone": "Rückgabe: diesen Monat noch nicht gemessen"
+      "routineReturnNone": "Rückgabe: diesen Monat noch nicht gemessen",
+      "retakes": "Wiederholte Fotos: {retakes} bei {inspections, plural, one {# Inspektion} other {# Inspektionen}}, davon brauchten {withRetake} eines",
+      "retakesNone": "Wiederholte Fotos: diesen Monat noch keine Inspektion versiegelt",
+      "contests": "Angefochtene Forderungen: {contested} von {presented}, die einem Mieter gezeigt wurden",
+      "contestsNone": "Angefochtene Forderungen: diesen Monat noch keine einem Mieter gezeigt",
+      "contestDecision": "Anfechtungen entschieden in {time}, Median von {count}"
     },
     "activity": {
       "title": "Aktivität",

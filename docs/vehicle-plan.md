@@ -62,13 +62,17 @@ Read from the code on 14 November 2026.
 
 **6. Video.** Done when a walk filmed on a phone yields every required view of the plan sharp enough to compare, a view the video missed is asked for again as a photograph, and the evidence kept is the frames compared, sealed as photographs are.
 
-## 5. What this needs from outside the code
+## 5. What is measured before more is built
+
+The value of the product is a loop: capture, analysis, a person's check, what the field says, improvement. Three things are worth proving before more is built for them, and each needs a figure to beat: fewer photographs taken again, claims that are better understood and less contested, and a lower cost of running each inspection. Hold measures all three on the capture it has today, with photographs, on the owner's Today page for the month (`counterRoutine` and `inspection-measures.ts` in `packages/domain`): the median time of a handover and of a return, the photographs taken again over the inspections sealed, and the claims contested over the claims shown to a renter, with the median time from a contest to the shop's decision. Each is a count over a count, and the demonstration's sample rentals are left out. A way of capturing by video, step 6, is judged against these figures, not against a promise.
+
+## 6. What this needs from outside the code
 
 - **Photographs of real vehicles**, at departure and at return, with damage and without, in the light and weather a rental business works in. Some hundreds of pairs, from one or two rental businesses willing to take them. Synthetic damage drawn on a clean photograph proves nothing about real bodywork.
 - **A decision on mileage.** Entered by hand from the dashboard photograph, which is the plan above, or read by the model and confirmed by a person, which is more comfortable and has to be measured first.
 - **More of the comparison model from AWS.** A vehicle's comparison looks at up to 24 pairs of photographs where a bike's looks at six, so it spends about four times the tokens. The account's daily limit for the comparison model was measured at about 940,000 tokens on 29 October 2026 (`tech-stack.md` section 18); what one vehicle's comparison spends is not measured yet, and at that limit a day holds few of them. A rental business needs the limit raised before its first day.
 - **A decision on step 5:** built after the first three steps, or when a first customer asks.
 
-## 6. What is not in this plan
+## 7. What is not in this plan
 
 Checking a driving licence, selling insurance, and fines or tolls that arrive after the return stay with the rental business and its partners (`project-description.md` section 3.2). What stands between any build of Hold and real money is in `project-description.md` section 15, and comes before every step here that touches a real customer.

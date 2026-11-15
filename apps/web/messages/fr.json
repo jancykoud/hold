@@ -3025,7 +3025,12 @@
       "routineReturn": "Retour : {time}, la médiane de {count, plural, one {# session} other {# sessions}}",
       "routineNone": "Remise et retour : pas encore mesurés ce mois-ci",
       "routineHandoverNone": "Remise : pas encore mesurée ce mois-ci",
-      "routineReturnNone": "Retour : pas encore mesuré ce mois-ci"
+      "routineReturnNone": "Retour : pas encore mesuré ce mois-ci",
+      "retakes": "Photos refaites : {retakes} sur {inspections, plural, one {# inspection} other {# inspections}}, dont {withRetake} en ont demandé une",
+      "retakesNone": "Photos refaites : aucune inspection scellée ce mois-ci",
+      "contests": "Réclamations contestées : {contested} sur {presented} montrées à un client",
+      "contestsNone": "Réclamations contestées : aucune montrée à un client ce mois-ci",
+      "contestDecision": "Contestations tranchées en {time}, médiane de {count}"
     },
     "activity": {
       "title": "Activité",

@@ -3025,7 +3025,12 @@
       "routineReturn": "Return: {time}, the median of {count, plural, one {# session} other {# sessions}}",
       "routineNone": "Handover and return: not timed yet this month",
       "routineHandoverNone": "Handover: not timed yet this month",
-      "routineReturnNone": "Return: not timed yet this month"
+      "routineReturnNone": "Return: not timed yet this month",
+      "retakes": "Photographs taken again: {retakes} in {inspections, plural, one {# inspection} other {# inspections}}, {withRetake} of which needed one",
+      "retakesNone": "Photographs taken again: no inspection sealed yet this month",
+      "contests": "Claims contested: {contested} of {presented} shown to a renter",
+      "contestsNone": "Claims contested: none shown to a renter yet this month",
+      "contestDecision": "Contests decided in {time}, the median of {count}"
     },
     "activity": {
       "title": "Activity",
