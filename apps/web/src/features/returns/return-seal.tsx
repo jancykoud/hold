@@ -10,8 +10,9 @@ import { rentalRoutes } from '@/lib/routes'
 import { sealReturn } from './actions'
 
 // Sealing the return photographs starts the comparison; once sealed, the way on is the comparison itself.
-export function ReturnSeal({ rentalId, sessionId, missing, sealed }: { rentalId: string; sessionId: string; missing: readonly string[]; sealed: boolean }) {
+export function ReturnSeal({ rentalId, sessionId, missing, sealed, readingMissing = false }: { rentalId: string; sessionId: string; missing: readonly string[]; sealed: boolean; readingMissing?: boolean }) {
   const t = useTranslations('shop.returns')
+  const readings = useTranslations('shop.readings')
   const locale = useLocale()
   const [result, seal, pending] = useActionState(sealReturn, null)
   if (sealed || result?.ok === true) {
@@ -33,8 +34,8 @@ export function ReturnSeal({ rentalId, sessionId, missing, sealed }: { rentalId:
   return (
     <form action={seal} className="surface flex flex-wrap items-center justify-between gap-x-6 gap-y-3 p-4 md:p-5">
       <input type="hidden" name="locale" value={locale} /><input type="hidden" name="sessionId" value={sessionId} />
-      <p className="max-w-prose min-w-0 flex-[1_1_16rem] text-pretty text-muted-foreground">{missing.length === 0 ? t('ready') : t('missing', { count: missing.length })}</p>
-      <Button type="submit" variant={missing.length === 0 ? 'default' : 'outline'} className="min-h-12 max-sm:w-full" disabled={pending || missing.length > 0}><Lock aria-hidden="true" />{t('seal')}</Button>
+      <p className="max-w-prose min-w-0 flex-[1_1_16rem] text-pretty text-muted-foreground">{missing.length > 0 ? t('missing', { count: missing.length }) : readingMissing ? readings('needed') : t('ready')}</p>
+      <Button type="submit" variant={missing.length === 0 && !readingMissing ? 'default' : 'outline'} className="min-h-12 max-sm:w-full" disabled={pending || missing.length > 0 || readingMissing}><Lock aria-hidden="true" />{t('seal')}</Button>
       <div className="basis-full empty:hidden"><ActionMessage result={result} success="" results="shop.returns.results" /></div>
     </form>
   )

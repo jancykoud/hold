@@ -44,7 +44,7 @@ export async function renterPage(token: string): Promise<RenterPage> {
   const { ownReturn } = loaded
   const selfReturn: SelfReturnOffer = ownReturn === undefined ? { offered: false, shopClosed: false, droppedOffAt: null }
     : {
-        offered: access.link.scopes.includes('return_item') && maySelfReturn({ allowed: ownReturn.settings.allowed, rentalState: ownReturn.state, handedOver: ownReturn.handedOver }),
+        offered: access.link.scopes.includes('return_item') && maySelfReturn({ allowed: ownReturn.settings.allowed, rentalState: ownReturn.state, handedOver: ownReturn.handedOver, read: ownReturn.read }),
         shopClosed: shopOpening(ownReturn.settings.hours, ownReturn.timeZone, now)?.open === false,
         droppedOffAt: ownReturn.droppedOffAt,
       }
@@ -95,6 +95,7 @@ export async function conditionPage(token: string): Promise<ConditionPage> {
       return {
         itemId: loaded.sessions[index]?.itemId ?? item.rentalItemId,
         label: item.label,
+        reading: item.reading,
         // In the plan's order, as staff took them.
         photos: await Promise.all(
           [...item.photos]

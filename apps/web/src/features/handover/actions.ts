@@ -1,7 +1,7 @@
 'use server'
 
-import { addMark, captureSession, confirmMarks, rentalDetail, rentalItemFor, sealSession, startCaptureSession } from '@hold/db'
-import { handoverMarkInput, knownMarksInput, rentalItemInput, sessionInput } from '@hold/mobile-api'
+import { addMark, captureSession, confirmMarks, recordReading, rentalDetail, rentalItemFor, sealSession, startCaptureSession } from '@hold/db'
+import { handoverMarkInput, knownMarksInput, readingInput, rentalItemInput, sessionInput } from '@hold/mobile-api'
 import { conditionLink } from '@/server/condition-link'
 import { CAPTURE_STAFF, staffPhotoActions } from '@/server/staff-photo'
 import { Refusal, shopAction } from '@/server/shop-access'
@@ -50,6 +50,18 @@ export const confirmKnownMarks = shopAction(
     if (session?.kind !== 'handover') return new Refusal('not_found')
     const confirmed = await confirmMarks(transaction, input.sessionId, input.markId)
     return confirmed.ok ? {} : new Refusal(confirmed.reason)
+  },
+)
+
+// The dashboard as staff read it from its photograph, kept until the photographs are sealed, when it is sealed with them.
+export const recordHandoverReading = shopAction(
+  { name: 'handover.reading_recorded', roles: STAFF, needsPasskey: false, input: readingInput },
+  async (_context, input, transaction) => {
+    const session = await captureSession(transaction, input.sessionId)
+    if (session?.kind !== 'handover') return new Refusal('not_found')
+    const recorded = await recordReading(transaction, input.sessionId, { odometerKm: input.odometerKm, fuelEighths: input.fuelEighths })
+    if (recorded.ok) return {}
+    return new Refusal(recorded.reason === 'reading_invalid' ? (recorded.problems[0] ?? 'odometer_invalid') : recorded.reason)
   },
 )
 

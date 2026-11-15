@@ -40,6 +40,18 @@ describe('the renter’s condition report', () => {
     expect(screen.getByText(/until Oct 17/)).toBeInTheDocument()
   })
 
+  it('shows a vehicle’s dashboard as staff read it at the handover, and nothing of the kind for an item that is not driven', () => {
+    const car = report()
+    const first = car.items[0]
+    if (first === undefined) throw new Error('The report has no item.')
+    const { unmount } = renderWithIntl(<ConditionScreen token="token" report={{ ...car, items: [{ ...first, label: 'Compact car 1', reading: { odometerKm: 48_210, fuelEighths: 8 } }] }} />)
+    expect(screen.getByText('Dashboard at handover')).toBeInTheDocument()
+    expect(screen.getByText('48,210 km, full tank')).toBeInTheDocument()
+    unmount()
+    renderWithIntl(<ConditionScreen token="token" report={report()} />)
+    expect(screen.queryByText('Dashboard at handover')).not.toBeInTheDocument()
+  })
+
   it('takes the renter’s confirmation that everything is as shown', async () => {
     confirmCondition.mockResolvedValue({ ok: true, value: {} })
     renderWithIntl(<ConditionScreen token="token" report={report()} />)

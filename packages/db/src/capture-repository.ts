@@ -1,8 +1,8 @@
 import { reserveEvidencePack } from './evidence-repository.ts'
 import { repairSessionViews } from './repair-repository.ts'
 import { createHash } from 'node:crypto'
-import { checkRegion, conditionReplyOpen, isSamplePhoto, CONDITION_REPLY_HOURS, manifestText, mayHandOver, MISSED_VIEWS, missingViews, photoSource, RENTAL_TRANSITIONS, selfReturnViews, transition } from '@hold/domain'
-import type { CaptureSessionKind, ConditionReply, DeclaredPhotoSource, PhotoMeasures, Region } from '@hold/domain'
+import { checkReading, checkRegion, checkReturnReading, conditionReplyOpen, isSamplePhoto, CONDITION_REPLY_HOURS, manifestText, mayHandOver, MISSED_VIEWS, missingViews, photoSource, RENTAL_TRANSITIONS, selfReturnViews, takesReadings, transition } from '@hold/domain'
+import type { CaptureSessionKind, ConditionReply, DeclaredPhotoSource, ItemCategory, PhotoMeasures, Reading, Region, ReturnReadingProblem } from '@hold/domain'
 import { and, asc, eq, inArray, isNotNull, isNull, sql } from 'drizzle-orm'
 import type { PhotoPlanView } from './schema/catalog.ts'
 import { captureSessions, holds, incidents, items, itemTypes, marks, outbox, photoPlans, photos, rentalItems, rentals } from './schema/index.ts'
@@ -83,6 +83,9 @@ type SessionRow = {
   readonly manifestFingerprint: string | null
   readonly previousManifestFingerprint: string | null
   readonly confirmedMarkIds: readonly string[]
+  readonly category: ItemCategory
+  readonly odometerKm: number | null
+  readonly fuelEighths: number | null
 }
 
 async function sessionRow(transaction: Transaction, sessionId: string, lock = false): Promise<SessionRow | undefined> {
@@ -101,10 +104,14 @@ async function sessionRow(transaction: Transaction, sessionId: string, lock = fa
       manifestFingerprint: captureSessions.manifestFingerprint,
       previousManifestFingerprint: captureSessions.previousManifestFingerprint,
       confirmedMarkIds: captureSessions.confirmedMarkIds,
+      category: itemTypes.category,
+      odometerKm: captureSessions.odometerKm,
+      fuelEighths: captureSessions.fuelEighths,
     })
     .from(captureSessions)
     .innerJoin(rentalItems, eq(rentalItems.id, captureSessions.rentalItemId))
     .innerJoin(items, eq(items.id, rentalItems.itemId))
+    .innerJoin(itemTypes, eq(itemTypes.id, items.itemTypeId))
     .innerJoin(photoPlans, eq(photoPlans.id, captureSessions.photoPlanId))
     .where(eq(captureSessions.id, sessionId))
   const [row] = lock ? await query.for('update', { of: captureSessions }) : await query
@@ -125,6 +132,17 @@ function viewsOf(session: Pick<SessionRow, 'kind' | 'planViews'>): readonly Phot
   if (session.kind === 'incident') return session.planViews.map((view) => ({ ...view, required: false }))
   if (session.kind !== 'condition') return session.planViews
   return MISSED_VIEWS.map((key) => ({ key, label: key, outline: 'detail', required: false }))
+}
+
+// A handover or a return of a kind of item that is driven is read: its odometer and its tank (domain readings.ts).
+const isRead = (session: Pick<SessionRow, 'kind' | 'category'>) => (session.kind === 'handover' || session.kind === 'return') && takesReadings(session.category)
+const readingOf = (session: Pick<SessionRow, 'odometerKm' | 'fuelEighths'>): Reading | null => (session.odometerKm === null || session.fuelEighths === null ? null : { odometerKm: session.odometerKm, fuelEighths: session.fuelEighths })
+
+// What the item's sealed handover read, which its return is checked against and shown beside.
+async function handoverReading(transaction: Transaction, rentalItemId: string): Promise<Reading | null> {
+  const [handover] = await transaction.select({ odometerKm: captureSessions.odometerKm, fuelEighths: captureSessions.fuelEighths }).from(captureSessions)
+    .where(and(eq(captureSessions.rentalItemId, rentalItemId), eq(captureSessions.kind, 'handover'), isNotNull(captureSessions.sealedAt)))
+  return handover === undefined ? null : readingOf(handover)
 }
 
 export type SessionMark = { readonly id: string; readonly view: string; readonly region: Region; readonly description: string; readonly confirmed: boolean; readonly new: boolean }
@@ -168,6 +186,10 @@ export type CaptureSession = {
   readonly missing: readonly string[]
   readonly sealedAt: Date | null
   readonly previousManifestFingerprint: string | null
+  // Whether this session's dashboard is read, what was read, and at a return, what the handover read.
+  readonly takesReadings: boolean
+  readonly reading: Reading | null
+  readonly handoverReading: Reading | null
 }
 
 export async function captureSession(transaction: Transaction, sessionId: string): Promise<CaptureSession | undefined> {
@@ -189,6 +211,9 @@ export async function captureSession(transaction: Transaction, sessionId: string
     missing: missingViews(plan, taken.map((photo) => photo.view)),
     sealedAt: row.sealedAt,
     previousManifestFingerprint: row.previousManifestFingerprint,
+    takesReadings: isRead(row),
+    reading: readingOf(row),
+    handoverReading: row.kind === 'return' && isRead(row) ? await handoverReading(transaction, row.rentalItemId) : null,
   }
 }
 
@@ -258,7 +283,22 @@ export async function confirmMarks(transaction: Transaction, sessionId: string, 
   return { ok: true }
 }
 
-export type SealResult = { readonly ok: true; readonly manifestFingerprint: string; readonly rentalOut: boolean } | Refused<'not_found'> | { readonly ok: false; readonly reason: 'views_missing'; readonly views: readonly string[] }
+export type RecordReadingResult = { readonly ok: true } | Refused<'not_found' | 'sealed' | 'not_read'> | { readonly ok: false; readonly reason: 'reading_invalid'; readonly problems: readonly ReturnReadingProblem[] }
+
+// The dashboard as a person read it, kept on the open session until it is sealed with the photographs. Entered again,
+// it replaces the one before. A return's odometer never reads less than its handover's.
+export async function recordReading(transaction: Transaction, sessionId: string, reading: Reading): Promise<RecordReadingResult> {
+  const session = await openSession(transaction, sessionId)
+  if ('ok' in session) return session
+  if (!isRead(session)) return { ok: false, reason: 'not_read' }
+  const before = session.kind === 'return' ? await handoverReading(transaction, session.rentalItemId) : null
+  const problems = before === null ? checkReading(reading) : checkReturnReading(before, reading)
+  if (problems.length > 0) return { ok: false, reason: 'reading_invalid', problems }
+  await transaction.update(captureSessions).set({ odometerKm: reading.odometerKm, fuelEighths: reading.fuelEighths }).where(eq(captureSessions.id, sessionId))
+  return { ok: true }
+}
+
+export type SealResult = { readonly ok: true; readonly manifestFingerprint: string; readonly rentalOut: boolean } | Refused<'not_found' | 'reading_missing'> | { readonly ok: false; readonly reason: 'views_missing'; readonly views: readonly string[] }
 
 // Seals a session once every required view is photographed: its manifest names each photograph's fingerprint and the
 // item's previous manifest, and becomes the item's chain head. A handover sealed for every item hands the rental over.
@@ -272,10 +312,12 @@ export async function sealSession(transaction: Transaction, sessionId: string, n
   const taken = await transaction.select({ view: photos.view, sha256: photos.sha256, receivedAt: photos.receivedAt }).from(photos).where(and(eq(photos.sessionId, sessionId), isNull(photos.supersededAt)))
   const missing = missingViews(viewsOf(session), taken.map((photo) => photo.view))
   if (missing.length > 0 || taken.length === 0) return { ok: false, reason: 'views_missing', views: missing }
+  const reading = readingOf(session)
+  if (isRead(session) && reading === null) return { ok: false, reason: 'reading_missing' }
 
   const [item] = await transaction.select({ head: items.chainHeadFingerprint }).from(items).where(eq(items.id, session.itemId)).for('update')
   const previous = item?.head ?? null
-  const manifest = manifestText({ sessionId, itemId: session.itemId, kind: session.kind, sealedAt: now, previousManifestFingerprint: previous, photos: taken })
+  const manifest = manifestText({ sessionId, itemId: session.itemId, kind: session.kind, sealedAt: now, previousManifestFingerprint: previous, photos: taken, ...(reading === null ? {} : { reading }) })
   const fingerprint = fingerprintOf(manifest)
   await transaction.update(captureSessions).set({ sealedAt: now, manifest, manifestFingerprint: fingerprint, previousManifestFingerprint: previous }).where(eq(captureSessions.id, sessionId))
   await transaction.update(items).set({ chainHeadFingerprint: fingerprint }).where(eq(items.id, session.itemId))
@@ -305,6 +347,8 @@ export type ConditionReport = {
     readonly label: string
     readonly sessionId: string
     readonly sealedAt: Date
+    // A vehicle's dashboard as staff read it at the handover; none for an item that is not driven.
+    readonly reading: Reading | null
     readonly photos: readonly SessionPhoto[]
     // The marks staff recorded at the handover: new ones, and known ones they confirmed.
     readonly marks: readonly SessionMark[]
@@ -333,7 +377,7 @@ export async function conditionReport(transaction: Transaction, rentalId: string
     if (row === undefined || row.sealedAt === null) continue
     const added = []
     for (const condition of sessions.filter((session) => session.kind === 'condition' && session.rentalItemId === handover.rentalItemId)) added.push(...(await currentPhotos(transaction, condition.id)))
-    reportItems.push({ rentalItemId: row.rentalItemId, label: row.itemLabel, sessionId: row.id, sealedAt: row.sealedAt, photos: await currentPhotos(transaction, row.id), marks: (await marksFor(transaction, row)).filter((mark) => mark.confirmed), added })
+    reportItems.push({ rentalItemId: row.rentalItemId, label: row.itemLabel, sessionId: row.id, sealedAt: row.sealedAt, reading: readingOf(row), photos: await currentPhotos(transaction, row.id), marks: (await marksFor(transaction, row)).filter((mark) => mark.confirmed), added })
   }
   return { open: rental.reply === null && conditionReplyOpen(last, now), reply: rental.reply, closesAt: new Date(last.getTime() + CONDITION_REPLY_HOURS * 3_600_000), items: reportItems }
 }

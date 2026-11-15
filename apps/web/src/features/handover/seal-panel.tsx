@@ -12,7 +12,8 @@ import { sealHandover } from './actions'
 
 // Sealing fixes the item's photographs and chains them to its history (architecture.md section 9.2). When the last
 // item is sealed, the rental is out and the renter's condition report is shown as a code.
-export function SealPanel({ sessionId, rentalId, missing, sealed: alreadySealed }: { sessionId: string; rentalId: string; missing: readonly string[]; sealed: boolean }) {
+export function SealPanel({ sessionId, rentalId, missing, sealed: alreadySealed, readingMissing = false }: { sessionId: string; rentalId: string; missing: readonly string[]; sealed: boolean; readingMissing?: boolean }) {
+  const readings = useTranslations('shop.readings')
   const t = useTranslations('shop.handover.seal')
   const locale = useLocale()
   const [sealed, seal, sealing] = useActionState(sealHandover, null)
@@ -47,8 +48,8 @@ export function SealPanel({ sessionId, rentalId, missing, sealed: alreadySealed 
     <form action={seal} className="surface flex flex-wrap items-center justify-between gap-x-6 gap-y-3 p-4 md:p-5">
       <input type="hidden" name="locale" value={locale} />
       <input type="hidden" name="sessionId" value={sessionId} />
-      <p className="max-w-prose min-w-0 flex-[1_1_16rem] text-pretty text-muted-foreground">{missing.length === 0 ? t('ready') : t('missing', { count: missing.length })}</p>
-      <Button type="submit" variant={missing.length === 0 ? 'default' : 'outline'} className="min-h-12 max-sm:w-full" disabled={sealing || missing.length > 0}>
+      <p className="max-w-prose min-w-0 flex-[1_1_16rem] text-pretty text-muted-foreground">{missing.length > 0 ? t('missing', { count: missing.length }) : readingMissing ? readings('needed') : t('ready')}</p>
+      <Button type="submit" variant={missing.length === 0 && !readingMissing ? 'default' : 'outline'} className="min-h-12 max-sm:w-full" disabled={sealing || missing.length > 0 || readingMissing}>
         <Lock aria-hidden="true" />
         {t('seal')}
       </Button>

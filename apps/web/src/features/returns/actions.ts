@@ -1,7 +1,7 @@
 'use server'
 
-import { auditLog, captureSession, comparisonReport, rentalDetail, rentalItemFor, rentalReturns, sealSession, startCaptureSession, startSampleComparison } from '@hold/db'
-import { rentalItemInput, reviewInput, sessionInput } from '@hold/mobile-api'
+import { auditLog, captureSession, comparisonReport, recordReading, rentalDetail, rentalItemFor, rentalReturns, sealSession, startCaptureSession, startSampleComparison } from '@hold/db'
+import { readingInput, rentalItemInput, reviewInput, sessionInput } from '@hold/mobile-api'
 import { z } from 'zod'
 import { takeDailyShares } from '@/server/daily-shares'
 import { Refusal, shopAction, withLocale } from '@/server/shop-access'
@@ -22,6 +22,18 @@ export const startReturn = shopAction(
 const photos = staffPhotoActions('return')
 export const requestPhotoUpload = photos.request
 export const confirmPhotoUpload = photos.confirm
+
+// The dashboard as staff read it from its photograph, kept until the photographs are sealed, when it is sealed with them.
+export const recordReturnReading = shopAction(
+  { name: 'return.reading_recorded', roles: CAPTURE_STAFF, needsPasskey: false, input: readingInput },
+  async (_context, input, transaction) => {
+    const session = await captureSession(transaction, input.sessionId)
+    if (session?.kind !== 'return') return new Refusal('not_found')
+    const recorded = await recordReading(transaction, input.sessionId, { odometerKm: input.odometerKm, fuelEighths: input.fuelEighths })
+    if (recorded.ok) return {}
+    return new Refusal(recorded.reason === 'reading_invalid' ? (recorded.problems[0] ?? 'odometer_invalid') : recorded.reason)
+  },
+)
 
 export const sealReturn = shopAction(
   { name: 'return.sealed', roles: CAPTURE_STAFF, needsPasskey: false, input: sessionInput },

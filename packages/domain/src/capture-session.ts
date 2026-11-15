@@ -1,4 +1,5 @@
 import { addDays } from './hold-clocks.ts'
+import type { Reading } from './readings.ts'
 
 // A capture session: one guided set of photographs of one item (architecture.md section 9). The phone measures each
 // photograph; these rules decide what is good enough, what is still missing, and what a sealed session's manifest
@@ -69,6 +70,8 @@ export type SealedSession = {
   // The fingerprint of the item's previous sealed manifest, or null for its first session.
   readonly previousManifestFingerprint: string | null
   readonly photos: readonly { readonly view: string; readonly sha256: string; readonly receivedAt: Date }[]
+  // A vehicle's dashboard as a person read it at this session (readings.ts). Sealed with the photographs it was read from.
+  readonly reading?: Reading | undefined
 }
 
 // The manifest's exact text, whose SHA-256 is the session's fingerprint. Its keys and photographs are in a fixed
@@ -77,7 +80,9 @@ export function manifestText(session: SealedSession): string {
   const photos = [...session.photos]
     .sort((first, second) => (first.view < second.view ? -1 : first.view > second.view ? 1 : 0))
     .map((photo) => ({ view: photo.view, sha256: photo.sha256, receivedAt: photo.receivedAt.toISOString() }))
-  return JSON.stringify({ session: session.sessionId, item: session.itemId, kind: session.kind, sealedAt: session.sealedAt.toISOString(), previous: session.previousManifestFingerprint, photos })
+  // The reading comes last and only when there is one, so a session without one has the text it always had.
+  const reading = session.reading === undefined ? {} : { reading: { odometerKm: session.reading.odometerKm, fuelEighths: session.reading.fuelEighths } }
+  return JSON.stringify({ session: session.sessionId, item: session.itemId, kind: session.kind, sealedAt: session.sealedAt.toISOString(), previous: session.previousManifestFingerprint, photos, ...reading })
 }
 
 // The demonstration's own sample photographs, by fingerprint (architecture.md section 20.3). Only the server decides a

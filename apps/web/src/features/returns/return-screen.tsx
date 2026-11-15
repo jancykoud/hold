@@ -16,6 +16,8 @@ import { ShopFrame } from '@/features/shop/shop-frame'
 import { useLookAgain } from '@/hooks/use-look-again'
 import { useRouter } from '@/i18n/navigation'
 import { rentalRoutes } from '@/lib/routes'
+import { ReadingPanel } from '@/features/handover/reading-panel'
+import { recordReturnReading } from './actions'
 import { ReturnSeal } from './return-seal'
 import { useReturnUpload } from './return-upload'
 
@@ -62,7 +64,8 @@ export function ReturnScreen({ shopName, rentalId, session, canAct }: { shopName
             </Panel>
           )}
         </div>
-        {session.sealed || canAct ? <ReturnSeal rentalId={rentalId} sessionId={session.id} missing={session.missing} sealed={session.sealed} /> : null}
+        {session.takesReadings === true ? <ReadingPanel sessionId={session.id} reading={session.reading ?? null} handoverReading={session.handoverReading ?? null} sealed={session.sealed || !canAct} record={recordReturnReading} /> : null}
+        {session.sealed || canAct ? <ReturnSeal rentalId={rentalId} sessionId={session.id} missing={session.missing} sealed={session.sealed} readingMissing={session.takesReadings === true && (session.reading ?? null) === null} /> : null}
       </div>
     </ShopFrame>
   )

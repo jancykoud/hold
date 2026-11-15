@@ -1,4 +1,4 @@
-import { DECLARED_PHOTO_SOURCES } from '@hold/domain'
+import { DECLARED_PHOTO_SOURCES, READING_LIMITS } from '@hold/domain'
 import { z } from 'zod'
 import { answerSchema } from './envelope'
 import type { Failed } from './envelope'
@@ -40,6 +40,8 @@ const photoFields = { sessionId: z.uuid(), view: z.string().min(1).max(64) }
 
 export const rentalItemInput = withLocale({ rentalId: z.uuid(), itemId: z.uuid() })
 export const sessionInput = withLocale({ sessionId: z.uuid() })
+// A vehicle's dashboard as a person read it: whole kilometres and a tank in eighths (domain readings.ts).
+export const readingInput = withLocale({ sessionId: z.uuid(), odometerKm: z.coerce.number().int().min(0).max(READING_LIMITS.odometerKm), fuelEighths: z.coerce.number().int().min(0).max(READING_LIMITS.fuelEighths) })
 export const rentalInput = withLocale({ rentalId: z.uuid() })
 // The largest photograph the evidence store takes is checked by the server, which knows it.
 export const photoLinkInput = withLocale({ ...photoFields, sha256: z.string().regex(/^[0-9a-f]{64}$/), bytes: z.coerce.number().int().min(1) })

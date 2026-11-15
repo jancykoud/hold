@@ -1,7 +1,8 @@
+import { READING_LIMITS } from '@hold/domain'
 import type { Region } from '@hold/domain'
 import type { EvidenceSnapshot } from '../evidence-snapshot-schema.ts'
 import { sql } from 'drizzle-orm'
-import { boolean, integer, jsonb, pgTable, real, text, unique, uniqueIndex } from 'drizzle-orm/pg-core'
+import { boolean, check, integer, jsonb, pgTable, real, text, unique, uniqueIndex } from 'drizzle-orm/pg-core'
 import { shopIsolation } from './access.ts'
 import { items, photoPlans, priceEntries } from './catalog.ts'
 import { at, createdAt, id, reference } from './columns.ts'
@@ -38,8 +39,17 @@ export const captureSessions = pgTable(
     previousManifestFingerprint: text(),
     // The item's known marks staff confirmed were still there at this session.
     confirmedMarkIds: jsonb().$type<readonly string[]>().notNull().default([]),
+    // A vehicle's dashboard as a person read it at a handover or a return: the kilometres on its odometer and the fuel
+    // in its tank, in eighths (packages/domain readings.ts). Both or neither; in the sealed manifest once sealed.
+    odometerKm: integer(),
+    fuelEighths: integer(),
   },
-  (table) => [allowed(table.kind, CAPTURE_SESSION_KINDS), shopIsolation(table.shopId)],
+  (table) => [
+    allowed(table.kind, CAPTURE_SESSION_KINDS),
+    check('reading_whole', sql`(${table.odometerKm} is null) = (${table.fuelEighths} is null)`),
+    check('reading_in_range', sql`${table.odometerKm} >= 0 and ${table.fuelEighths} between 0 and ${sql.raw(String(READING_LIMITS.fuelEighths))}`),
+    shopIsolation(table.shopId),
+  ],
 )
 
 export const photos = pgTable(

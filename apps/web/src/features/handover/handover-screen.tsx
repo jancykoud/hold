@@ -1,7 +1,7 @@
 'use client'
 
 import type { SessionMark } from '@hold/db'
-import type { ViewOutline } from '@hold/domain'
+import type { Reading, ViewOutline } from '@hold/domain'
 import { Aperture, LoaderCircle, RotateCcw } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
@@ -13,8 +13,10 @@ import { useLookAgain } from '@/hooks/use-look-again'
 import { useRouter } from '@/i18n/navigation'
 import { rentalRoutes } from '@/lib/routes'
 import { CaptureProgress } from './capture-progress'
+import { recordHandoverReading } from './actions'
 import { MarkEditor } from './mark-editor'
 import { PhotoTaker } from './photo-taker'
+import { ReadingPanel } from './reading-panel'
 import { SealPanel } from './seal-panel'
 import { useStaffUpload } from './staff-upload'
 import { ViewList } from './view-list'
@@ -28,6 +30,11 @@ export type HandoverView = {
   readonly photos: readonly { readonly view: string; readonly url: string | null; readonly simulated?: boolean }[]
   readonly marks: readonly SessionMark[]
   readonly missing: readonly string[]
+  // For a kind of item that is driven: what its dashboard read, and at a return, what the handover read.
+  // Left out by a session that is never read, such as a repair's.
+  readonly takesReadings?: boolean
+  readonly reading?: Reading | null
+  readonly handoverReading?: Reading | null
 }
 
 // One item's guided handover (architecture.md section 11.2): each view photographed in turn, its marks boxed and
@@ -85,7 +92,8 @@ export function HandoverScreen({ shopName, rentalId, session }: { shopName: stri
           )}
         </div>
         {/* Kept on the page once sealed, so the renter's code it shows stays when the page is drawn again. */}
-        <SealPanel sessionId={session.id} rentalId={rentalId} missing={session.missing} sealed={session.sealed} />
+        {session.takesReadings === true ? <ReadingPanel sessionId={session.id} reading={session.reading ?? null} handoverReading={null} sealed={session.sealed} record={recordHandoverReading} /> : null}
+        <SealPanel sessionId={session.id} rentalId={rentalId} missing={session.missing} sealed={session.sealed} readingMissing={session.takesReadings === true && (session.reading ?? null) === null} />
       </div>
     </ShopFrame>
   )

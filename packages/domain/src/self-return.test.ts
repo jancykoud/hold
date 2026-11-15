@@ -9,6 +9,9 @@ describe('who may return an item themselves', () => {
     expect(maySelfReturn({ allowed: true, rentalState: 'out', handedOver: true })).toBe(true)
     expect(maySelfReturn({ allowed: true, rentalState: 'overdue', handedOver: true })).toBe(true)
     expect(maySelfReturn({ allowed: false, rentalState: 'out', handedOver: true })).toBe(false)
+    // A vehicle's dashboard is read by a person at the counter, so it is never left at the drop point.
+    expect(maySelfReturn({ allowed: true, rentalState: 'out', handedOver: true, read: true })).toBe(false)
+    expect(selfReturnStage({ allowed: true, rentalState: 'out', handedOver: true, read: true, started: false, droppedOffAt: null })).toBe('unavailable')
     expect(maySelfReturn({ allowed: true, rentalState: 'out', handedOver: false })).toBe(false)
     for (const rentalState of ['ready', 'dropped_off', 'returned', 'inspecting', 'settling', 'closed'] as const) {
       expect(maySelfReturn({ allowed: true, rentalState, handedOver: true })).toBe(false)

@@ -24,7 +24,7 @@ export default async function Page({ params }: { params: Promise<{ rentalId: str
     <HandoverScreen
       shopName={context.shop.name}
       rentalId={rentalId}
-      session={{ id: session.id, itemLabel: session.itemLabel, sealed: session.sealedAt !== null, plan: session.plan, photos, marks: session.marks, missing: session.missing }}
+      session={{ id: session.id, itemLabel: session.itemLabel, sealed: session.sealedAt !== null, plan: session.plan, photos, marks: session.marks, missing: session.missing, takesReadings: session.takesReadings, reading: session.reading, handoverReading: null }}
     />
   )
 }

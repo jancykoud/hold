@@ -87,6 +87,13 @@ describe('a sealed session’s manifest', () => {
     expect(manifestText({ ...session, photos: [...session.photos].reverse() })).toBe(text)
   })
 
+  it('seals a vehicle’s reading with its photographs, and is the same text as ever for a session with none', () => {
+    const read = manifestText({ ...session, reading: { odometerKm: 48_210, fuelEighths: 8 } })
+    expect(JSON.parse(read)).toMatchObject({ session: 's-1', reading: { odometerKm: 48_210, fuelEighths: 8 } })
+    expect(manifestText({ ...session, reading: { odometerKm: 48_211, fuelEighths: 8 } })).not.toBe(read)
+    expect(Object.keys(JSON.parse(manifestText(session)) as object)).toEqual(['session', 'item', 'kind', 'sealedAt', 'previous', 'photos'])
+  })
+
   it('changes when the previous manifest changes, which is what chains an item’s sessions', () => {
     expect(manifestText({ ...session, previousManifestFingerprint: 'c'.repeat(64) })).not.toBe(manifestText(session))
   })

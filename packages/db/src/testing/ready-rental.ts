@@ -1,4 +1,5 @@
 import { addDays, money } from '@hold/domain'
+import type { ItemCategory } from '@hold/domain'
 import { asc, eq } from 'drizzle-orm'
 import { registerOwner } from '../accounts.ts'
 import { createBooking } from '../booking-repository.ts'
@@ -28,7 +29,8 @@ export type ReadyRentalShop = {
   endedRental(payerId: string): Promise<string>
 }
 
-export async function readyRentalShop(database: Database, subject: string, now: Date): Promise<ReadyRentalShop> {
+// The type is an e-bike unless another kind is asked for, such as a car, whose handover and return take readings.
+export async function readyRentalShop(database: Database, subject: string, now: Date, category: ItemCategory = 'e_bike'): Promise<ReadyRentalShop> {
   const registered = await registerOwner(database, { subject, email: `${subject}@shop.example`, name: 'Ana', language: 'en', shop: { name: `Shop ${subject}`, timeZone: 'UTC' } })
   const scope: Scope = { role: 'hold_app', shopId: registered.shopId, userId: registered.userId }
   const act = <Result>(work: (transaction: Transaction) => Promise<Result>) => inShop(database, scope, work)
@@ -41,7 +43,7 @@ export async function readyRentalShop(database: Database, subject: string, now: 
     { label: 'Battery', outline: 'detail', required: false },
   ] as const
   const saved = await act((transaction) =>
-    saveItemType(transaction, scope.shopId, { draft: { name: 'City e-bike', category: 'e_bike', currency: 'EUR', value: eur(2400_00), hold: eur(300_00), dayRate: eur(40_00), accessories: [], views: [...views] } }, now),
+    saveItemType(transaction, scope.shopId, { draft: { name: 'City e-bike', category, currency: 'EUR', value: eur(2400_00), hold: eur(300_00), dayRate: eur(40_00), accessories: [], views: [...views] } }, now),
   )
   if (!saved.ok) throw new Error(saved.reason)
   const typeId = saved.id

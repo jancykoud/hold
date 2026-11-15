@@ -2450,7 +2450,8 @@
         "too_large": "The photograph is too large. Take it again.",
         "views_missing": "Some views still need a photograph.",
         "region_invalid": "Draw the box inside the photograph.",
-        "description_invalid": "Describe the mark in up to 200 characters."
+        "description_invalid": "Describe the mark in up to 200 characters.",
+        "reading_missing": "Read the dashboard before sealing."
       },
       "marks": {
         "photo": "The photograph of this view",
@@ -2552,7 +2553,8 @@
         "already_started": "This comparison has already started.",
         "nothing_to_compare": "This sample has no comparison waiting to run.",
         "not_a_sample": "Only a sample's comparison is started by hand. A real return is compared once its photographs are sealed.",
-        "daily_cap_network": "Your network has used its real comparisons on samples for today. They start again at midnight UTC; the photographs wait here."
+        "daily_cap_network": "Your network has used its real comparisons on samples for today. They start again at midnight UTC; the photographs wait here.",
+        "reading_missing": "Read the dashboard before sealing."
       },
       "sampleTitle": "Sample photographs",
       "sampleBody": "These photographs are for demonstration. The inspection record is marked as simulated.",
@@ -2813,6 +2815,30 @@
         "not_found": "That rental is not in this shop.",
         "rental_open": "A rental of this renter’s is still open here. Erase once it has ended.",
         "already_erased": "This renter’s personal details are already erased."
+      }
+    },
+    "readings": {
+      "title": "Dashboard",
+      "lead": "Read both from the dashboard photograph. The renter sees them on the condition report.",
+      "odometer": "Kilometres on the odometer",
+      "fuelLabel": "Fuel in the tank",
+      "choose": "Choose a level",
+      "fuelOption": "{eighths, select, 0 {Empty} 8 {Full} other {{eighths}/8}}",
+      "fuel": "{eighths, select, 0 {empty tank} 8 {full tank} other {{eighths}/8 of a tank}}",
+      "read": "{km} km, {fuel}",
+      "atHandover": "At handover: {reading}",
+      "none": "No reading was taken.",
+      "save": "Save the reading",
+      "saved": "Reading saved.",
+      "needed": "Read the dashboard before sealing.",
+      "results": {
+        "not_found": "That item is not in this rental.",
+        "sealed": "These photographs are sealed, and the reading with them.",
+        "not_read": "This kind of item has no dashboard to read.",
+        "odometer_invalid": "The kilometres must be a whole number.",
+        "fuel_invalid": "Choose the fuel level, from empty to full.",
+        "odometer_below_handover": "The odometer reads less than at handover. Check the figure against the photograph.",
+        "reading_missing": "Read the dashboard before sealing."
       }
     }
   },
@@ -3223,7 +3249,8 @@
       "which": "Which item?",
       "missedView": "Something missed",
       "send": "Send what I added",
-      "back": "See your rental"
+      "back": "See your rental",
+      "dashboard": "Dashboard at handover"
     },
     "somethingHappened": "Something happened",
     "keepLonger": "Keep it longer",

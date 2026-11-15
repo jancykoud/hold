@@ -2450,7 +2450,8 @@
         "too_large": "La photo est trop lourde. Reprenez-la.",
         "views_missing": "Certaines vues attendent encore une photo.",
         "region_invalid": "Tracez le cadre à l'intérieur de la photo.",
-        "description_invalid": "Décrivez la marque en 200 caractères au plus."
+        "description_invalid": "Décrivez la marque en 200 caractères au plus.",
+        "reading_missing": "Relevez le tableau de bord avant de sceller."
       },
       "marks": {
         "photo": "La photo de cette vue",
@@ -2552,7 +2553,8 @@
         "already_started": "Cette comparaison a déjà commencé.",
         "nothing_to_compare": "Aucune comparaison n'attend pour cet exemple.",
         "not_a_sample": "Seule la comparaison d'un exemple se lance à la main. Un vrai retour est comparé dès que ses photos sont scellées.",
-        "daily_cap_network": "Votre réseau a utilisé ses vraies comparaisons d’exemples pour aujourd’hui. Elles reprennent à minuit UTC ; les photos attendent ici."
+        "daily_cap_network": "Votre réseau a utilisé ses vraies comparaisons d’exemples pour aujourd’hui. Elles reprennent à minuit UTC ; les photos attendent ici.",
+        "reading_missing": "Relevez le tableau de bord avant de sceller."
       },
       "sampleTitle": "Photographies de démonstration",
       "sampleBody": "Ces photographies servent à la démonstration. Le dossier d’inspection est signalé comme simulé.",
@@ -2813,6 +2815,30 @@
         "not_found": "Cette location n'appartient pas à ce loueur.",
         "rental_open": "Une location de ce client est encore ouverte ici. Effacez une fois qu'elle est terminée.",
         "already_erased": "Les données personnelles de ce client sont déjà effacées."
+      }
+    },
+    "readings": {
+      "title": "Tableau de bord",
+      "lead": "Lisez les deux sur la photo du tableau de bord. Le client les voit sur l’état des lieux.",
+      "odometer": "Kilomètres au compteur",
+      "fuelLabel": "Carburant dans le réservoir",
+      "choose": "Choisissez un niveau",
+      "fuelOption": "{eighths, select, 0 {Vide} 8 {Plein} other {{eighths}/8}}",
+      "fuel": "{eighths, select, 0 {réservoir vide} 8 {réservoir plein} other {{eighths}/8 du réservoir}}",
+      "read": "{km} km, {fuel}",
+      "atHandover": "À la remise : {reading}",
+      "none": "Aucun relevé n’a été fait.",
+      "save": "Enregistrer le relevé",
+      "saved": "Relevé enregistré.",
+      "needed": "Relevez le tableau de bord avant de sceller.",
+      "results": {
+        "not_found": "Cet article ne fait pas partie de cette location.",
+        "sealed": "Ces photos sont scellées, et le relevé avec elles.",
+        "not_read": "Ce type d’article n’a pas de tableau de bord à relever.",
+        "odometer_invalid": "Les kilomètres doivent être un nombre entier.",
+        "fuel_invalid": "Choisissez le niveau de carburant, de vide à plein.",
+        "odometer_below_handover": "Le compteur indique moins qu’à la remise. Vérifiez le chiffre sur la photo.",
+        "reading_missing": "Relevez le tableau de bord avant de sceller."
       }
     }
   },
@@ -3223,7 +3249,8 @@
       "which": "Quel article ?",
       "missedView": "Quelque chose d'oublié",
       "send": "Envoyer ce que j'ai ajouté",
-      "back": "Voir votre location"
+      "back": "Voir votre location",
+      "dashboard": "Tableau de bord à la remise"
     },
     "somethingHappened": "Il s’est passé quelque chose",
     "keepLonger": "Le garder plus longtemps",

@@ -2450,7 +2450,8 @@
         "too_large": "La foto es demasiado grande. Hazla de nuevo.",
         "views_missing": "Aún faltan fotos de algunas vistas.",
         "region_invalid": "Dibuja el recuadro dentro de la foto.",
-        "description_invalid": "Describe la marca en hasta 200 caracteres."
+        "description_invalid": "Describe la marca en hasta 200 caracteres.",
+        "reading_missing": "Lee el salpicadero antes de sellar."
       },
       "marks": {
         "photo": "La foto de esta vista",
@@ -2552,7 +2553,8 @@
         "already_started": "Esta comparación ya ha empezado.",
         "nothing_to_compare": "Este ejemplo no tiene ninguna comparación pendiente.",
         "not_a_sample": "Solo la comparación de un ejemplo se inicia a mano. Una devolución real se compara en cuanto se sellan sus fotos.",
-        "daily_cap_network": "Su red ya ha usado sus comparaciones reales de ejemplos de hoy. Vuelven a empezar a medianoche UTC; las fotos esperan aquí."
+        "daily_cap_network": "Su red ya ha usado sus comparaciones reales de ejemplos de hoy. Vuelven a empezar a medianoche UTC; las fotos esperan aquí.",
+        "reading_missing": "Lee el salpicadero antes de sellar."
       },
       "sampleTitle": "Fotografías de demostración",
       "sampleBody": "Estas fotografías son de demostración. El registro de inspección está marcado como simulado.",
@@ -2813,6 +2815,30 @@
         "not_found": "Ese alquiler no es de esta tienda.",
         "rental_open": "Un alquiler de este cliente sigue abierto aquí. Borra cuando haya terminado.",
         "already_erased": "Los datos personales de este cliente ya están borrados."
+      }
+    },
+    "readings": {
+      "title": "Salpicadero",
+      "lead": "Lee ambos en la foto del salpicadero. El cliente los ve en el informe de estado.",
+      "odometer": "Kilómetros en el cuentakilómetros",
+      "fuelLabel": "Combustible en el depósito",
+      "choose": "Elige un nivel",
+      "fuelOption": "{eighths, select, 0 {Vacío} 8 {Lleno} other {{eighths}/8}}",
+      "fuel": "{eighths, select, 0 {depósito vacío} 8 {depósito lleno} other {{eighths}/8 del depósito}}",
+      "read": "{km} km, {fuel}",
+      "atHandover": "En la entrega: {reading}",
+      "none": "No se tomó ninguna lectura.",
+      "save": "Guardar la lectura",
+      "saved": "Lectura guardada.",
+      "needed": "Lee el salpicadero antes de sellar.",
+      "results": {
+        "not_found": "Ese artículo no está en este alquiler.",
+        "sealed": "Estas fotos están selladas, y la lectura con ellas.",
+        "not_read": "Este tipo de artículo no tiene salpicadero que leer.",
+        "odometer_invalid": "Los kilómetros deben ser un número entero.",
+        "fuel_invalid": "Elige el nivel de combustible, de vacío a lleno.",
+        "odometer_below_handover": "El cuentakilómetros marca menos que en la entrega. Comprueba la cifra en la foto.",
+        "reading_missing": "Lee el salpicadero antes de sellar."
       }
     }
   },
@@ -3223,7 +3249,8 @@
       "which": "¿Qué artículo?",
       "missedView": "Algo que se pasó por alto",
       "send": "Enviar lo que añadí",
-      "back": "Ver tu alquiler"
+      "back": "Ver tu alquiler",
+      "dashboard": "Salpicadero en la entrega"
     },
     "somethingHappened": "Ha pasado algo",
     "keepLonger": "Quedártelo más tiempo",
