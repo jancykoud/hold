@@ -124,6 +124,27 @@ describe('photographing the return', () => {
     expect(await screen.findByText('Returned on time')).toBeOnTheScreen();
   });
 
+  it("asks the renter of a car for its kilometres and its fuel, and offers to send only once Hold has kept them", async () => {
+    const taken = [{ view: 'left', url: null, simulated: false }, { view: 'drop-point', url: null, simulated: false }];
+    let value = selfReturn({ stage: 'capture', items: [item({ label: 'Compact car 1', missing: [], photos: taken, takesReadings: true, handoverReading: { odometerKm: 48210, fuelEighths: 8 } })] });
+    const view = await show({
+      'renter/return': () => ({ ok: true, value }),
+      'renter/actions/save-self-return-reading': () => {
+        value = selfReturn({ stage: 'capture', items: [item({ label: 'Compact car 1', missing: [], photos: taken, takesReadings: true, handoverReading: { odometerKm: 48210, fuelEighths: 8 }, reading: { odometerKm: 48690, fuelEighths: 6 } })] });
+        return { ok: true, value: {} };
+      },
+    });
+    expect(await screen.findByText('When you took it: 48,210 km, full tank')).toBeOnTheScreen();
+    expect(screen.getByText('Read the dashboard before you send.')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Send my return' })).toBeDisabled();
+    await fireEvent.changeText(screen.getByLabelText('Kilometres on the odometer'), '48690');
+    await fireEvent.press(screen.getByText('6/8'));
+    await fireEvent.press(screen.getByRole('button', { name: 'Save the reading' }));
+    expect(bodyOf(view.api, 'renter/actions/save-self-return-reading')).toEqual({ sessionId: SESSION, odometerKm: 48690, fuelEighths: 6 });
+    expect(await screen.findByText('You read: 48,690 km, 6/8 of a tank')).toBeOnTheScreen();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Send my return' })).toBeEnabled());
+  });
+
   it('says plainly when the phone is offline while sending', async () => {
     await show({
       'renter/return': { ok: true, value: selfReturn({ stage: 'capture', items: [item({ missing: [] })] }) },

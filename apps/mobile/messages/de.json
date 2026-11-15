@@ -978,7 +978,8 @@
     "send": {
       "ready": "Alle Fotos sind gemacht. Mit dem Senden werden sie versiegelt, und Ihre Rückgabe zählt ab diesem Moment.",
       "missing": "{count, plural, one {Noch # Foto} other {Noch # Fotos}}",
-      "button": "Rückgabe senden"
+      "button": "Rückgabe senden",
+      "unread": "Lesen Sie das Armaturenbrett ab, bevor Sie senden."
     },
     "receipt": {
       "onTime": "Pünktlich zurückgegeben",
@@ -1013,6 +1014,12 @@
       "releasedDetail": "Es wurde nichts abgebucht.",
       "charged": "Abgebucht, nachdem eine Person eine Forderung freigegeben hat",
       "seeClaim": "Die Forderung ansehen"
+    },
+    "reading": {
+      "title": "Armaturenbrett",
+      "lead": "Fotografieren Sie das Armaturenbrett und tragen Sie ein, was es anzeigt. Der Verleih liest dieselben Werte von Ihrem Foto ab, sobald er öffnet.",
+      "atHandover": "Bei der Abholung: {reading}",
+      "read": "Sie haben abgelesen: {reading}"
     }
   },
   "claim": {

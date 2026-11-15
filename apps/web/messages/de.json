@@ -2840,6 +2840,7 @@
       "read": "{km} km, {fuel}",
       "atHandover": "Bei der Übergabe: {reading}",
       "none": "Es wurde nichts abgelesen.",
+      "byRenter": "Vom Mieter am Abstellort abgelesen. Prüfe es am Foto des Armaturenbretts.",
       "save": "Ablesung speichern",
       "saved": "Ablesung gespeichert.",
       "needed": "Lies das Armaturenbrett ab, bevor du versiegelst.",
@@ -3226,7 +3227,12 @@
       "photo_reused": "Dieses Foto wurde schon einmal verwendet. Machen Sie ein neues vom Artikel, wie er jetzt ist.",
       "views_missing": "Es fehlen noch Fotos.",
       "no_quote": "Wählen Sie zuerst die neue Rückgabezeit.",
-      "quote_stale": "Die Miete hat sich seit diesem Preis geändert. Wählen Sie die neue Zeit noch einmal."
+      "quote_stale": "Die Miete hat sich seit diesem Preis geändert. Wählen Sie die neue Zeit noch einmal.",
+      "not_read": "Dieser Artikel hat kein Armaturenbrett zum Ablesen.",
+      "odometer_invalid": "Der Kilometerstand muss eine ganze Zahl sein.",
+      "fuel_invalid": "Wählen Sie den Füllstand, von leer bis voll.",
+      "odometer_below_handover": "Der Kilometerstand ist niedriger als bei der Abholung. Prüfen Sie die Zahl am Armaturenbrett.",
+      "reading_missing": "Lesen Sie das Armaturenbrett ab, bevor Sie senden."
     },
     "orderDescription": "{shop}: {items}, {days, plural, one {# Tag} other {# Tage}}",
     "holdPage": {
@@ -4929,7 +4935,8 @@
       "send": {
         "ready": "Alle Fotos sind gemacht. Mit dem Senden werden sie versiegelt, und Ihre Rückgabe zählt ab diesem Moment.",
         "missing": "{count, plural, one {Noch # Foto} other {Noch # Fotos}}",
-        "button": "Rückgabe senden"
+        "button": "Rückgabe senden",
+        "unread": "Lesen Sie das Armaturenbrett ab, bevor Sie senden."
       },
       "receipt": {
         "onTime": "Pünktlich zurückgegeben",
@@ -4964,6 +4971,12 @@
         "releasedDetail": "Es wurde nichts abgebucht.",
         "charged": "Abgebucht, nachdem eine Person eine Forderung freigegeben hat",
         "seeClaim": "Die Forderung ansehen"
+      },
+      "reading": {
+        "title": "Armaturenbrett",
+        "lead": "Fotografieren Sie das Armaturenbrett und tragen Sie ein, was es anzeigt. Der Verleih liest dieselben Werte von Ihrem Foto ab, sobald er öffnet.",
+        "atHandover": "Bei der Abholung: {reading}",
+        "read": "Sie haben abgelesen: {reading}"
       }
     },
     "staff": {

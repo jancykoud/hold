@@ -4,8 +4,8 @@ import { and, eq } from 'drizzle-orm'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { rentalDetail } from './booking-repository.ts'
 import { beginComparison } from './comparison-repository.ts'
-import { captureSession, recordPhoto, sealSession, startCaptureSession } from './capture-repository.ts'
-import { confirmDropOff, dropOffNotice, dropOffsWaiting, photoRepeatsEvidence, reportDropOffMissing, saveSelfReturnSettings, selfReturnFor, selfReturnSettings, sendSelfReturn, startSelfReturn } from './self-return-repository.ts'
+import { captureSession, recordPhoto, recordReading, sealSession, startCaptureSession } from './capture-repository.ts'
+import { confirmDropOff, dropOffNotice, dropOffsWaiting, photoRepeatsEvidence, recordRenterReading, reportDropOffMissing, saveSelfReturnSettings, selfReturnFor, selfReturnSettings, sendSelfReturn, startSelfReturn } from './self-return-repository.ts'
 import { captureSessions, comparisons, holds, outbox, photos, rentals } from './schema/index.ts'
 import { inShop } from './scope.ts'
 import type { Transaction } from './scope.ts'
@@ -159,6 +159,62 @@ describe('a renter returning the item themselves', () => {
       missingAt: null,
       items: [{ sessionId: rental.sessionIds[0], sealed: true, missing: [] }],
     })
+  })
+})
+
+// A car is left at the car park like anything else (docs/vehicle-plan.md step 3): the renter photographs it, reads its
+// dashboard themselves, and the return is not sent without that reading.
+describe('a renter returning a car themselves', () => {
+  let cars: ReadyRentalShop
+  const asCarRenter = <Result>(work: (transaction: Transaction) => Promise<Result>) => inShop(database, { role: 'hold_app', shopId: cars.scope.shopId }, work)
+  beforeAll(async () => {
+    cars = await readyRentalShop(database, 'self-return-cars', NOW, 'car')
+    await cars.act((transaction) => saveSelfReturnSettings(transaction, cars.scope.shopId, SETTINGS))
+  })
+
+  async function carOut() {
+    const rental = await cars.readyRental(1)
+    const [rentalItemId = ''] = rental.rentalItemIds
+    const handover = await cars.act((transaction) => startCaptureSession(transaction, { rentalId: rental.rentalId, rentalItemId, kind: 'handover', actorUserId: cars.scope.userId ?? null }, NOW))
+    if (!handover.ok) throw new Error(handover.reason)
+    await photograph(handover.sessionId, ['left-side', 'right-side'], (work) => cars.act(work))
+    await cars.act((transaction) => recordReading(transaction, handover.sessionId, { odometerKm: 48_210, fuelEighths: 8 }))
+    const sealed = await cars.act((transaction) => sealSession(transaction, handover.sessionId, NOW))
+    if (!sealed.ok) throw new Error(sealed.reason)
+    const started = await asCarRenter((transaction) => startSelfReturn(transaction, rental.rentalId, NOW))
+    if (!started.ok) throw new Error(started.reason)
+    const [sessionId = ''] = started.sessionIds
+    await photograph(sessionId, ['left-side', 'right-side', DROP_POINT_VIEW], asCarRenter)
+    return { rentalId: rental.rentalId, sessionId }
+  }
+
+  it('is offered, and waits for the kilometres and the fuel the renter reads before it can be sent', async () => {
+    const car = await carOut()
+    const before = await asCarRenter((transaction) => selfReturnFor(transaction, car.rentalId))
+    expect(before?.items[0]).toMatchObject({ takesReadings: true, reading: null, handoverReading: { odometerKm: 48_210, fuelEighths: 8 } })
+    expect(await asCarRenter((transaction) => sendSelfReturn(transaction, car.rentalId, NOW))).toEqual({ ok: false, reason: 'reading_missing' })
+
+    // An odometer cannot read less than it did at the handover, whoever reads it.
+    expect(await asCarRenter((transaction) => recordRenterReading(transaction, car.rentalId, car.sessionId, { odometerKm: 48_000, fuelEighths: 8 }))).toMatchObject({ ok: false, reason: 'reading_invalid' })
+    expect(await asCarRenter((transaction) => recordRenterReading(transaction, car.rentalId, car.sessionId, { odometerKm: 48_690, fuelEighths: 6 }))).toEqual({ ok: true })
+    expect(await asCarRenter((transaction) => sendSelfReturn(transaction, car.rentalId, NOW))).toEqual({ ok: true })
+
+    const sent = await asCarRenter((transaction) => captureSession(transaction, car.sessionId))
+    expect(sent).toMatchObject({ byRenter: true, reading: { odometerKm: 48_690, fuelEighths: 6 } })
+    expect(sent?.sealedAt).not.toBeNull()
+    // Sealed with the photographs: it is not entered again.
+    expect(await asCarRenter((transaction) => recordRenterReading(transaction, car.rentalId, car.sessionId, { odometerKm: 49_000, fuelEighths: 6 }))).toEqual({ ok: false, reason: 'sealed' })
+  })
+
+  it('takes a reading only for the renter’s own return of that rental', async () => {
+    const car = await carOut()
+    const another = await carOut()
+    expect(await asCarRenter((transaction) => recordRenterReading(transaction, car.rentalId, another.sessionId, { odometerKm: 48_690, fuelEighths: 6 }))).toEqual({ ok: false, reason: 'not_found' })
+    // A bike's return has no dashboard to read.
+    const bike = await handedOver()
+    const started = await asRenter((transaction) => startSelfReturn(transaction, bike.rentalId, NOW))
+    if (!started.ok) throw new Error(started.reason)
+    expect(await asRenter((transaction) => recordRenterReading(transaction, bike.rentalId, started.sessionIds[0] ?? '', { odometerKm: 10, fuelEighths: 1 }))).toEqual({ ok: false, reason: 'not_read' })
   })
 })
 

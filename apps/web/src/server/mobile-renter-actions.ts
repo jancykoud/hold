@@ -44,6 +44,7 @@ export const MOBILE_RENTER_ACTIONS: Readonly<Record<RenterActionName, RenterForm
   'start-self-return': selfReturn.startSelfReturn,
   'request-self-return-upload': selfReturn.requestSelfReturnUpload,
   'confirm-self-return-upload': selfReturn.confirmSelfReturnUpload,
+  'save-self-return-reading': selfReturn.saveSelfReturnReading,
   'send-self-return': selfReturn.sendSelfReturn,
   'send-claim-code': claims.sendClaimCode,
   'accept-claim': claims.acceptClaim,

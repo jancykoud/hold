@@ -44,7 +44,7 @@ export async function renterPage(token: string): Promise<RenterPage> {
   const { ownReturn } = loaded
   const selfReturn: SelfReturnOffer = ownReturn === undefined ? { offered: false, shopClosed: false, droppedOffAt: null }
     : {
-        offered: access.link.scopes.includes('return_item') && maySelfReturn({ allowed: ownReturn.settings.allowed, rentalState: ownReturn.state, handedOver: ownReturn.handedOver, read: ownReturn.read }),
+        offered: access.link.scopes.includes('return_item') && maySelfReturn({ allowed: ownReturn.settings.allowed, rentalState: ownReturn.state, handedOver: ownReturn.handedOver }),
         shopClosed: shopOpening(ownReturn.settings.hours, ownReturn.timeZone, now)?.open === false,
         droppedOffAt: ownReturn.droppedOffAt,
       }

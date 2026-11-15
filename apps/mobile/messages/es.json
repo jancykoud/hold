@@ -978,7 +978,8 @@
     "send": {
       "ready": "Todas las fotos están hechas. Al enviarlas quedan selladas, y tu devolución cuenta desde ese momento.",
       "missing": "{count, plural, one {Falta # foto} other {Faltan # fotos}}",
-      "button": "Enviar mi devolución"
+      "button": "Enviar mi devolución",
+      "unread": "Lee el salpicadero antes de enviar."
     },
     "receipt": {
       "onTime": "Devuelto a tiempo",
@@ -1013,6 +1014,12 @@
       "releasedDetail": "No se cobró nada.",
       "charged": "Cobrado después de que una persona aprobara una reclamación",
       "seeClaim": "Ver la reclamación"
+    },
+    "reading": {
+      "title": "Salpicadero",
+      "lead": "Fotografía el salpicadero y anota lo que marca. La tienda leerá las mismas cifras en tu foto cuando abra.",
+      "atHandover": "Cuando lo recogiste: {reading}",
+      "read": "Has leído: {reading}"
     }
   },
   "claim": {

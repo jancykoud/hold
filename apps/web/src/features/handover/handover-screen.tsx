@@ -33,6 +33,8 @@ export type HandoverView = {
   // For a kind of item that is driven: what its dashboard read, and at a return, what the handover read.
   // Left out by a session that is never read, such as a repair's.
   readonly takesReadings?: boolean
+  // A return the renter made alone, so its dashboard was read by them.
+  readonly byRenter?: boolean
   readonly reading?: Reading | null
   readonly handoverReading?: Reading | null
 }

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { renderWithIntl } from '@/test/render'
 import { ReturnScreen } from './return-screen'
 
-vi.mock('./actions', () => ({ sealReturn: vi.fn(), requestPhotoUpload: vi.fn(), confirmPhotoUpload: vi.fn() }))
+vi.mock('./actions', () => ({ sealReturn: vi.fn(), requestPhotoUpload: vi.fn(), confirmPhotoUpload: vi.fn(), recordReturnReading: vi.fn() }))
 vi.mock('@/hooks/use-look-again', () => ({ useLookAgain: () => undefined }))
 vi.mock('@/i18n/navigation', async (original) => ({ ...(await original<object>()), useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }) }))
 
@@ -25,6 +25,15 @@ describe('guided return capture', () => {
     expect(screen.getByRole('button', { name: 'Use the sample photograph' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Use the sample with damage' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Use the sample for a contested claim' })).toBeInTheDocument()
+  })
+  it('tells staff that a car’s dashboard was read by the renter who left it, to check against its photograph', () => {
+    const left = { ...session, sealed: true, photos: [{ view: 'left-side', url: '/return.jpg' }], missing: [], takesReadings: true, reading: { odometerKm: 48690, fuelEighths: 6 }, handoverReading: { odometerKm: 48210, fuelEighths: 8 } }
+    const { unmount } = renderWithIntl(<ReturnScreen shopName="Ribeira Rentals" rentalId="rental" session={{ ...left, byRenter: true }} canAct />)
+    expect(screen.getByText('48,690 km, 6/8 of a tank')).toBeInTheDocument()
+    expect(screen.getByText('Read by the renter where they left it. Check it against the photograph of the dashboard.')).toBeInTheDocument()
+    unmount()
+    renderWithIntl(<ReturnScreen shopName="Ribeira Rentals" rentalId="rental" session={left} canAct />)
+    expect(screen.queryByText(/Read by the renter/)).not.toBeInTheDocument()
   })
   it('keeps sealed evidence read-only and explains that comparison follows', () => {
     renderWithIntl(<ReturnScreen shopName="Ribeira Bikes" rentalId="rental" session={{ ...session, sealed: true, photos: [{ view: 'left-side', url: '/return.jpg' }], missing: [] }} canAct />)

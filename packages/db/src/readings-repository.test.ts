@@ -93,20 +93,20 @@ describe('an item that is not driven', () => {
 })
 
 describe('a vehicle the renter would return alone', () => {
-  it('comes back to the counter, where a person reads its dashboard: the renter’s own return is not offered', async () => {
+  it('is offered the renter’s own return like anything else, and tells the page its dashboard is to be read', async () => {
     await cars.act((transaction) => saveSelfReturnSettings(transaction, cars.scope.shopId, { allowed: true, dropPoint: 'The marked bay behind the office', hours: null }))
     const handover = await started(cars, 'handover')
     await cars.act((transaction) => recordReading(transaction, handover.sessionId, FULL))
     await cars.act((transaction) => sealSession(transaction, handover.sessionId, NOW))
-    expect(await cars.act((transaction) => selfReturnFor(transaction, handover.rentalId))).toMatchObject({ read: true, handedOver: true })
-    expect(await cars.act((transaction) => startSelfReturn(transaction, handover.rentalId, NOW))).toEqual({ ok: false, reason: 'not_ready' })
+    expect(await cars.act((transaction) => startSelfReturn(transaction, handover.rentalId, NOW))).toMatchObject({ ok: true })
+    expect((await cars.act((transaction) => selfReturnFor(transaction, handover.rentalId)))?.items[0]).toMatchObject({ takesReadings: true, reading: null, handoverReading: FULL })
   })
 
-  it('is still offered for an item that is not driven', async () => {
+  it('asks no reading of the renter of an item that is not driven', async () => {
     await bikes.act((transaction) => saveSelfReturnSettings(transaction, bikes.scope.shopId, { allowed: true, dropPoint: 'The rack by the door', hours: null }))
     const handover = await started(bikes, 'handover')
     await bikes.act((transaction) => sealSession(transaction, handover.sessionId, NOW))
-    expect(await bikes.act((transaction) => selfReturnFor(transaction, handover.rentalId))).toMatchObject({ read: false })
     expect(await bikes.act((transaction) => startSelfReturn(transaction, handover.rentalId, NOW))).toMatchObject({ ok: true })
+    expect((await bikes.act((transaction) => selfReturnFor(transaction, handover.rentalId)))?.items[0]).toMatchObject({ takesReadings: false, reading: null })
   })
 })

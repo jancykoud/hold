@@ -215,6 +215,8 @@ const captureView = z.object({ key: z.string(), label: z.string(), outline: z.en
 const capturedPhoto = z.object({ view: z.string(), url: photoUrl, simulated: z.boolean() })
 // The handover photograph of each view, by view, shown faintly behind the camera to match the angle.
 const guides = z.record(z.string(), z.string())
+// A vehicle's dashboard as a person read it: whole kilometres and a tank in eighths.
+const dashboardReading = z.object({ odometerKm: z.number().int(), fuelEighths: z.number().int() })
 
 // One report: the renter's words, its photographs while it is written, then what the sorting found. offer: a price a
 // staff member confirmed, which the renter may agree with a one-time code.
@@ -256,7 +258,8 @@ export const renterReturnSchema = z.object({
   missingAt: instant.nullable(),
   hold: z.object({ reservedCents: cents, state: z.enum(HOLD_STATES) }).nullable(),
   paypal: z.object({ status: z.string(), amountCents: cents, checkedAt: instant }).nullable(),
-  items: z.array(z.object({ sessionId: z.string(), label: z.string(), views: z.array(captureView), missing: z.array(z.string()), photos: z.array(capturedPhoto), guides })),
+  // takesReadings: the item is a vehicle, whose dashboard its renter reads before sending (vehicle-plan.md step 3).
+  items: z.array(z.object({ sessionId: z.string(), label: z.string(), views: z.array(captureView), missing: z.array(z.string()), photos: z.array(capturedPhoto), guides, takesReadings: z.boolean(), reading: dashboardReading.nullable(), handoverReading: dashboardReading.nullable() })),
 })
 
 // The rental's record: each published version, and the receipts sent with them.

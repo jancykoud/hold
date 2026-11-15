@@ -978,7 +978,8 @@
     "send": {
       "ready": "Every photograph is taken. Sending seals them, and your return counts from that moment.",
       "missing": "{count, plural, one {# photograph still to take} other {# photographs still to take}}",
-      "button": "Send my return"
+      "button": "Send my return",
+      "unread": "Read the dashboard before you send."
     },
     "receipt": {
       "onTime": "Returned on time",
@@ -1013,6 +1014,12 @@
       "releasedDetail": "Nothing was charged.",
       "charged": "Charged after a person approved a claim",
       "seeClaim": "See the claim"
+    },
+    "reading": {
+      "title": "Dashboard",
+      "lead": "Photograph the dashboard, then enter what it shows. The shop reads the same figures from your photograph when it opens.",
+      "atHandover": "When you took it: {reading}",
+      "read": "You read: {reading}"
     }
   },
   "claim": {

@@ -1,7 +1,7 @@
 'use client'
 
 import { DROP_POINT_VIEW } from '@hold/domain'
-import type { ViewOutline } from '@hold/domain'
+import type { Reading, ViewOutline } from '@hold/domain'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { PhotoWithMarks } from '@/components/photo-with-marks'
@@ -12,10 +12,11 @@ import { PhotoTaker } from '@/features/handover/photo-taker'
 import { ViewList } from '@/features/handover/view-list'
 import { useLookAgain } from '@/hooks/use-look-again'
 import { useRouter } from '@/i18n/navigation'
+import { ReturnReadingForm } from './return-reading-form'
 import { SendReturnForm } from './send-return-form'
 import { useSelfReturnUpload } from './use-self-return-upload'
 
-// The demonstration's photograph of an e-bike left at a drop point, said to be a sample on screen and in the record.
+// The demonstration's photograph of a car left at a drop point, said to be a sample on screen and in the record.
 const DROP_POINT_SAMPLE = '/images/sample-drop-point.jpg'
 
 export type ReturnItem = {
@@ -26,6 +27,10 @@ export type ReturnItem = {
   readonly photos: readonly { readonly view: string; readonly url: string | null; readonly simulated: boolean }[]
   // The handover photograph of each view, shown faintly behind the camera to match the angle.
   readonly guides: Readonly<Record<string, string>>
+  // A vehicle's dashboard: whether the renter reads it here, what they read, and what was read at the handover.
+  readonly takesReadings: boolean
+  readonly reading: Reading | null
+  readonly handoverReading: Reading | null
 }
 
 // One item's photographs: each view of its handover with the handover photograph behind the camera, then where it was
@@ -69,6 +74,7 @@ function ItemCapture({ token, item, showLabel }: { token: string; item: ReturnIt
           </Panel>
         )}
       </div>
+      {item.takesReadings ? <ReturnReadingForm token={token} sessionId={item.sessionId} reading={item.reading} handoverReading={item.handoverReading} /> : null}
     </section>
   )
 }
@@ -78,12 +84,13 @@ export function ReturnCapture({ token, items }: { token: string; items: readonly
   const photos = items.flatMap((item) => item.photos)
   useLookAgain(photos.some((photo) => photo.url === null))
   const missing = items.reduce((count, item) => count + item.missing.length, 0)
+  const unread = items.some((item) => item.takesReadings && item.reading === null)
   return (
     <div className="grid gap-8">
       <p className="max-w-prose text-muted-foreground">{t('guidance')}</p>
       {photos.some((photo) => photo.simulated) ? <Notice title={t('sampleTitle')} body={t('sampleBody')} /> : null}
       {items.map((item) => <ItemCapture key={item.sessionId} token={token} item={item} showLabel={items.length > 1} />)}
-      <SendReturnForm token={token} missing={missing} />
+      <SendReturnForm token={token} missing={missing} unread={unread} />
     </div>
   )
 }

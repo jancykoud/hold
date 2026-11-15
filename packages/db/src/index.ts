@@ -70,7 +70,7 @@ export { contestRecord, latestContestSummary, recordContestSummary } from './con
 export type { ContestLine, ContestRecord, StoredContestSummary } from './contest-repository.ts'
 export { beginExtensionCapture, checkExtensionPayment, confirmExtensionCapture, expiredExtensionForCapture, extensionMaxDays, extensionPaymentHeld, extensionPaymentsToCheck, failExtensionCapture, flagExtensionCapture, flagLateExtensionPayment, openExtension, pendExtensionCapture, quoteExtension, rentalExtensionsOf, saveExtensionMaxDays, saveExtensionOrder } from './extension-repository.ts'
 export type { BeginExtension, CapturedExtension, ExtensionAttention, ExtensionPaymentToCheck, ExtensionQuote, RentalExtension } from './extension-repository.ts'
-export { confirmDropOff, dropOffNotice, dropOffsWaiting, photoRepeatsEvidence, reportDropOffMissing, saveSelfReturnSettings, selfReturnFor, selfReturnSettings, sendSelfReturn, startSelfReturn } from './self-return-repository.ts'
+export { confirmDropOff, dropOffNotice, dropOffsWaiting, photoRepeatsEvidence, reportDropOffMissing, saveSelfReturnSettings, selfReturnFor, selfReturnSettings, recordRenterReading, sendSelfReturn, startSelfReturn } from './self-return-repository.ts'
 export type { DropOffNotice, SelfReturnItem, SelfReturnStart, SelfReturnView, WaitingDropOff } from './self-return-repository.ts'
 export { beginComparison, comparisonReport, completeComparison } from './comparison-repository.ts'
 export { startSampleComparison } from './sample-comparison.ts'

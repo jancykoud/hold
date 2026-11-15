@@ -64,7 +64,7 @@ export function ReturnScreen({ shopName, rentalId, session, canAct }: { shopName
             </Panel>
           )}
         </div>
-        {session.takesReadings === true ? <ReadingPanel sessionId={session.id} reading={session.reading ?? null} handoverReading={session.handoverReading ?? null} sealed={session.sealed || !canAct} record={recordReturnReading} /> : null}
+        {session.takesReadings === true ? <ReadingPanel sessionId={session.id} reading={session.reading ?? null} handoverReading={session.handoverReading ?? null} sealed={session.sealed || !canAct} byRenter={session.byRenter === true} record={recordReturnReading} /> : null}
         {session.sealed || canAct ? <ReturnSeal rentalId={rentalId} sessionId={session.id} missing={session.missing} sealed={session.sealed} readingMissing={session.takesReadings === true && (session.reading ?? null) === null} /> : null}
       </div>
     </ShopFrame>

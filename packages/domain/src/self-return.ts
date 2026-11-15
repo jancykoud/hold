@@ -15,10 +15,10 @@ export const SELF_RETURN_LIMITS = { dropPointLength: 300 } as const
 
 const SELF_RETURN_STATES: ReadonlySet<RentalState> = new Set(['out', 'overdue'])
 
-// read: one of the rental's items is driven, so its dashboard is read at the return (readings.ts). A person reads it at
-// the counter, so such a rental is never left at the drop point.
-export function maySelfReturn(rental: { readonly allowed: boolean; readonly rentalState: RentalState; readonly handedOver: boolean; readonly read?: boolean }): boolean {
-  return rental.allowed && rental.read !== true && rental.handedOver && SELF_RETURN_STATES.has(rental.rentalState)
+// A vehicle is left like anything else: its renter reads the dashboard at the drop point (readings.ts), and the return
+// is not sent without that reading.
+export function maySelfReturn(rental: { readonly allowed: boolean; readonly rentalState: RentalState; readonly handedOver: boolean }): boolean {
+  return rental.allowed && rental.handedOver && SELF_RETURN_STATES.has(rental.rentalState)
 }
 
 type PlanView = { readonly key: string; readonly label: string; readonly outline: ViewOutline; readonly required: boolean }
@@ -26,7 +26,7 @@ type PlanView = { readonly key: string; readonly label: string; readonly outline
 export type SelfReturnStage = 'unavailable' | 'intro' | 'capture' | 'sent'
 
 // What the renter's return page shows. Once sent, the receipt stays, whatever the shop decides after.
-export function selfReturnStage(rental: { readonly allowed: boolean; readonly rentalState: RentalState; readonly handedOver: boolean; readonly read?: boolean; readonly started: boolean; readonly droppedOffAt: Date | null }): SelfReturnStage {
+export function selfReturnStage(rental: { readonly allowed: boolean; readonly rentalState: RentalState; readonly handedOver: boolean; readonly started: boolean; readonly droppedOffAt: Date | null }): SelfReturnStage {
   if (rental.droppedOffAt !== null) return 'sent'
   if (!maySelfReturn(rental)) return 'unavailable'
   return rental.started ? 'capture' : 'intro'

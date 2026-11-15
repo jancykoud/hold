@@ -1,9 +1,9 @@
 import 'server-only'
 import { randomUUID } from 'node:crypto'
-import { captureSession, photoRepeatsEvidence, recordPhoto, rentalReturns, sendSelfReturn, startSelfReturn } from '@hold/db'
+import { captureSession, photoRepeatsEvidence, recordPhoto, recordRenterReading, rentalReturns, sendSelfReturn, startSelfReturn } from '@hold/db'
 import type { RenterLink, Transaction } from '@hold/db'
 import { isSamplePhoto } from '@hold/domain'
-import type { DeclaredPhotoSource, PhotoMeasures } from '@hold/domain'
+import type { DeclaredPhotoSource, PhotoMeasures, Reading } from '@hold/domain'
 import { MAX_PHOTO_BYTES } from '@hold/evidence'
 import { Refusal } from './action'
 import { sendComparisons } from './comparison-queue'
@@ -63,6 +63,13 @@ export async function confirmReturnPhoto(link: RenterLink, inLinkShop: InLinkSho
     // Its outbox row hands it to the worker later.
   }
   return { photoId: recorded.photoId }
+}
+
+// The dashboard as the renter read it, kept on their open return until it is sent and sealed with the photographs.
+export async function saveRenterReading(link: RenterLink, inLinkShop: InLinkShop, input: { readonly sessionId: string } & Reading) {
+  const recorded = await inLinkShop((transaction) => recordRenterReading(transaction, link.rentalId, input.sessionId, { odometerKm: input.odometerKm, fuelEighths: input.fuelEighths }))
+  if (recorded.ok) return {}
+  return new Refusal(recorded.reason === 'reading_invalid' ? (recorded.problems[0] ?? 'odometer_invalid') : recorded.reason)
 }
 
 export async function sendRenterReturn(link: RenterLink, inLinkShop: InLinkShop) {

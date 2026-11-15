@@ -22,6 +22,8 @@ type ReadingPanelProps = {
   // At a return, what the handover read, shown beside what is entered now.
   handoverReading: Reading | null
   sealed: boolean
+  // The renter read it themselves, at a return with nobody at the counter.
+  byRenter?: boolean
   // The server function that keeps the reading: the handover's or the return's.
   record: (state: ShopActionResult<unknown> | null, form: FormData) => Promise<ShopActionResult<unknown>>
 }
@@ -29,7 +31,7 @@ type ReadingPanelProps = {
 // A vehicle's dashboard, read by a person from its photograph: the kilometres on the odometer and the fuel in the tank,
 // in eighths. Shown only for a kind of item that is driven. Once the photographs are sealed, the reading is sealed with
 // them and only read.
-export function ReadingPanel({ sessionId, reading, handoverReading, sealed, record }: ReadingPanelProps) {
+export function ReadingPanel({ sessionId, reading, handoverReading, sealed, byRenter = false, record }: ReadingPanelProps) {
   const t = useTranslations('shop.readings')
   const format = useFormatter()
   const locale = useLocale()
@@ -45,7 +47,10 @@ export function ReadingPanel({ sessionId, reading, handoverReading, sealed, reco
       <div className="grid gap-4 p-4 md:p-5">
         {handoverReading === null ? null : <p className="figures text-sm text-muted-foreground">{t('atHandover', { reading: words(handoverReading) })}</p>}
         {sealed ? (
-          <p className="figures font-semibold">{reading === null ? t('none') : words(reading)}</p>
+          <>
+            <p className="figures font-semibold">{reading === null ? t('none') : words(reading)}</p>
+            {byRenter && reading !== null ? <p className="text-pretty text-muted-foreground">{t('byRenter')}</p> : null}
+          </>
         ) : (
           <form action={save} className="grid gap-4">
             <input type="hidden" name="locale" value={locale} />

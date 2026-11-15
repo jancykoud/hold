@@ -4,6 +4,7 @@ import { useTranslations } from 'use-intl';
 import { DROP_POINT_VIEW } from '@hold/domain';
 import { Button, Notice, Screen, Text } from '@/components/ui';
 import { ActionFailure, CaptureSheet, useRenterAction, ViewChecklist } from '@/features/renter-common';
+import { ReturnReading } from './return-reading';
 import type { SelfReturn } from './return-screen';
 import { useReturnUpload } from './use-return-upload';
 
@@ -15,6 +16,9 @@ export function ReturnCapture({ token, view, top, refresh }: { token: string; vi
   const t = useTranslations('selfReturn');
   const send = useRenterAction(token, 'send-self-return');
   const missing = view.items.reduce((count, item) => count + item.missing.length, 0);
+  // A vehicle's dashboard is read before its return is sent.
+  const unread = view.items.some((item) => item.takesReadings && item.reading === null);
+  const ready = missing === 0 && !unread;
   const submit = async () => {
     if ((await send.run({}))?.ok) refresh();
   };
@@ -22,11 +26,11 @@ export function ReturnCapture({ token, view, top, refresh }: { token: string; vi
     <Screen
       footer={
         <>
-          <Text variant={missing === 0 ? 'bodyStrong' : 'body'} tone={missing === 0 ? 'default' : 'muted'}>
-            {missing === 0 ? t('send.ready') : t('send.missing', { count: missing })}
+          <Text variant={ready ? 'bodyStrong' : 'body'} tone={ready ? 'default' : 'muted'}>
+            {missing > 0 ? t('send.missing', { count: missing }) : unread ? t('send.unread') : t('send.ready')}
           </Text>
           <ActionFailure failed={send.failed} />
-          <Button label={t('send.button')} icon="send" onPress={() => void submit()} loading={send.pending} disabled={missing > 0} />
+          <Button label={t('send.button')} icon="send" onPress={() => void submit()} loading={send.pending} disabled={!ready} />
         </>
       }
     >
@@ -77,6 +81,7 @@ function ItemCapture({ token, item, showLabel, refresh }: { token: string; item:
         }}
         onClose={() => setTaking(undefined)}
       />
+      {item.takesReadings ? <ReturnReading token={token} item={item} refresh={refresh} /> : null}
     </View>
   );
 }

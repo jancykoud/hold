@@ -1,7 +1,7 @@
 'use server'
 
 import { renterAction, renterInput } from '@/server/renter-access'
-import { confirmReturnPhoto, requestReturnPhoto, sendRenterReturn, startRenterReturn } from '@/server/self-return'
+import { confirmReturnPhoto, requestReturnPhoto, saveRenterReading, sendRenterReturn, startRenterReturn } from '@/server/self-return'
 
 // What a renter does to return the item with nobody at the counter (architecture.md section 6.13). Each is built by
 // renterAction, which checks the link, its return_item scope and the network's rate first. None takes an amount, and
@@ -22,5 +22,7 @@ export const confirmSelfReturnUpload = renterAction(
   },
   (link, input, inLinkShop) => confirmReturnPhoto(link, inLinkShop, { sessionId: input.sessionId, view: input.view, key: input.key, measures: { sharpness: input.sharpness, shadows: input.shadows, highlights: input.highlights, filled: input.filled }, source: input.source }),
 )
+
+export const saveSelfReturnReading = renterAction({ name: 'renter.self_return_reading_recorded', scope: 'return_item', input: renterInput('save-self-return-reading') }, (link, input, inLinkShop) => saveRenterReading(link, inLinkShop, input))
 
 export const sendSelfReturn = renterAction({ name: 'renter.self_return_sent', scope: 'return_item', input: renterInput('send-self-return') }, (link, _input, inLinkShop) => sendRenterReturn(link, inLinkShop))

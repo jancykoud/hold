@@ -69,10 +69,13 @@ export async function selfReturnPage(token: string): Promise<SelfReturnPage> {
     label: item.itemLabel,
     views: item.plan.map((each) => ({ key: each.key, label: each.label, outline: each.outline })),
     missing: item.missing,
+    takesReadings: item.takesReadings,
+    reading: item.reading,
+    handoverReading: item.handoverReading,
     photos: await Promise.all(item.photos.map(async (photo) => ({ view: photo.view, url: await link(photo.displayKey), simulated: photo.simulated === true }))),
     guides: Object.fromEntries((await Promise.all((loaded.baselines[index] ?? []).map(async (photo) => [photo.view, await link(photo.displayKey)] as const))).filter((entry): entry is readonly [string, string] => entry[1] !== null)),
   })))
-  const stage = selfReturnStage({ allowed: ownReturn.settings.allowed, rentalState: ownReturn.state, handedOver: ownReturn.handedOver, read: ownReturn.read, started: items.length > 0, droppedOffAt: ownReturn.droppedOffAt })
+  const stage = selfReturnStage({ allowed: ownReturn.settings.allowed, rentalState: ownReturn.state, handedOver: ownReturn.handedOver, started: items.length > 0, droppedOffAt: ownReturn.droppedOffAt })
   return {
     ok: true,
     data: {

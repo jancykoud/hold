@@ -2840,6 +2840,7 @@
       "read": "{km} km, {fuel}",
       "atHandover": "À la remise : {reading}",
       "none": "Aucun relevé n’a été fait.",
+      "byRenter": "Relevé par le client là où il a laissé le véhicule. Vérifiez-le sur la photo du tableau de bord.",
       "save": "Enregistrer le relevé",
       "saved": "Relevé enregistré.",
       "needed": "Relevez le tableau de bord avant de sceller.",
@@ -3226,7 +3227,12 @@
       "photo_reused": "Cette photo a déjà servi. Prenez-en une nouvelle de l’article tel qu’il est maintenant.",
       "views_missing": "Il reste des photos à prendre.",
       "no_quote": "Choisissez d’abord la nouvelle heure de retour.",
-      "quote_stale": "La location a changé depuis ce prix. Choisissez de nouveau l’heure."
+      "quote_stale": "La location a changé depuis ce prix. Choisissez de nouveau l’heure.",
+      "not_read": "Cet article n’a pas de tableau de bord à relever.",
+      "odometer_invalid": "Les kilomètres doivent être un nombre entier.",
+      "fuel_invalid": "Choisissez le niveau de carburant, de vide à plein.",
+      "odometer_below_handover": "Le compteur indique moins qu’au départ. Vérifiez le chiffre au tableau de bord.",
+      "reading_missing": "Relevez le tableau de bord avant d’envoyer."
     },
     "orderDescription": "{shop} : {items}, {days, plural, one {# jour} other {# jours}}",
     "holdPage": {
@@ -4929,7 +4935,8 @@
       "send": {
         "ready": "Toutes les photos sont prises. L’envoi les scelle, et votre retour compte à partir de ce moment.",
         "missing": "{count, plural, one {Encore # photo à prendre} other {Encore # photos à prendre}}",
-        "button": "Envoyer mon retour"
+        "button": "Envoyer mon retour",
+        "unread": "Relevez le tableau de bord avant d’envoyer."
       },
       "receipt": {
         "onTime": "Rendu à l’heure",
@@ -4964,6 +4971,12 @@
         "releasedDetail": "Rien n’a été débité.",
         "charged": "Débité après qu’une personne a approuvé une réclamation",
         "seeClaim": "Voir la réclamation"
+      },
+      "reading": {
+        "title": "Tableau de bord",
+        "lead": "Photographiez le tableau de bord, puis saisissez ce qu’il indique. Le loueur lira les mêmes chiffres sur votre photo à l’ouverture.",
+        "atHandover": "Au départ : {reading}",
+        "read": "Vous avez relevé : {reading}"
       }
     },
     "staff": {

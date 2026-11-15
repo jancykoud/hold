@@ -2840,6 +2840,7 @@
       "read": "{km} km, {fuel}",
       "atHandover": "En la entrega: {reading}",
       "none": "No se tomó ninguna lectura.",
+      "byRenter": "Leído por el cliente donde dejó el vehículo. Compruébalo en la foto del salpicadero.",
       "save": "Guardar la lectura",
       "saved": "Lectura guardada.",
       "needed": "Lee el salpicadero antes de sellar.",
@@ -3226,7 +3227,12 @@
       "photo_reused": "Esta foto ya se usó. Haz una nueva del artículo tal como está ahora.",
       "views_missing": "Aún faltan fotos.",
       "no_quote": "Elige primero la nueva hora de devolución.",
-      "quote_stale": "El alquiler cambió desde este precio. Elige la hora otra vez."
+      "quote_stale": "El alquiler cambió desde este precio. Elige la hora otra vez.",
+      "not_read": "Este artículo no tiene salpicadero que leer.",
+      "odometer_invalid": "Los kilómetros deben ser un número entero.",
+      "fuel_invalid": "Elige el nivel de combustible, de vacío a lleno.",
+      "odometer_below_handover": "El cuentakilómetros marca menos que cuando recogiste el coche. Comprueba la cifra en el salpicadero.",
+      "reading_missing": "Lee el salpicadero antes de enviar."
     },
     "orderDescription": "{shop}: {items}, {days, plural, one {# día} other {# días}}",
     "holdPage": {
@@ -4929,7 +4935,8 @@
       "send": {
         "ready": "Todas las fotos están hechas. Al enviarlas quedan selladas, y tu devolución cuenta desde ese momento.",
         "missing": "{count, plural, one {Falta # foto} other {Faltan # fotos}}",
-        "button": "Enviar mi devolución"
+        "button": "Enviar mi devolución",
+        "unread": "Lee el salpicadero antes de enviar."
       },
       "receipt": {
         "onTime": "Devuelto a tiempo",
@@ -4964,6 +4971,12 @@
         "releasedDetail": "No se cobró nada.",
         "charged": "Cobrado después de que una persona aprobara una reclamación",
         "seeClaim": "Ver la reclamación"
+      },
+      "reading": {
+        "title": "Salpicadero",
+        "lead": "Fotografía el salpicadero y anota lo que marca. La tienda leerá las mismas cifras en tu foto cuando abra.",
+        "atHandover": "Cuando lo recogiste: {reading}",
+        "read": "Has leído: {reading}"
       }
     },
     "staff": {

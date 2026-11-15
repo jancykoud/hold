@@ -978,7 +978,8 @@
     "send": {
       "ready": "Toutes les photos sont prises. L’envoi les scelle, et votre retour compte à partir de ce moment.",
       "missing": "{count, plural, one {Encore # photo à prendre} other {Encore # photos à prendre}}",
-      "button": "Envoyer mon retour"
+      "button": "Envoyer mon retour",
+      "unread": "Relevez le tableau de bord avant d’envoyer."
     },
     "receipt": {
       "onTime": "Rendu à l’heure",
@@ -1013,6 +1014,12 @@
       "releasedDetail": "Rien n’a été débité.",
       "charged": "Débité après qu’une personne a approuvé une réclamation",
       "seeClaim": "Voir la réclamation"
+    },
+    "reading": {
+      "title": "Tableau de bord",
+      "lead": "Photographiez le tableau de bord, puis saisissez ce qu’il indique. Le loueur lira les mêmes chiffres sur votre photo à l’ouverture.",
+      "atHandover": "Au départ : {reading}",
+      "read": "Vous avez relevé : {reading}"
     }
   },
   "claim": {

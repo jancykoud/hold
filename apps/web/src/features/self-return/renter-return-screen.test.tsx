@@ -5,7 +5,7 @@ import { renderWithIntl } from '@/test/render'
 import type { SelfReturnData } from '@/server/self-return-page'
 import { RenterReturnScreen } from './renter-return-screen'
 
-vi.mock('./renter-actions', () => ({ startSelfReturn: vi.fn(), sendSelfReturn: vi.fn(), requestSelfReturnUpload: vi.fn(), confirmSelfReturnUpload: vi.fn() }))
+vi.mock('./renter-actions', () => ({ startSelfReturn: vi.fn(), sendSelfReturn: vi.fn(), requestSelfReturnUpload: vi.fn(), confirmSelfReturnUpload: vi.fn(), saveSelfReturnReading: vi.fn() }))
 
 // Lisbon is UTC+0 in November: the renter sends at 21:40 on Wednesday 4 November; the shop opens at 09:00.
 const sent = new Date('2026-11-04T21:40:00Z')
@@ -16,6 +16,9 @@ const item = {
   missing: ['left-side', DROP_POINT_VIEW],
   photos: [],
   guides: { 'left-side': '/images/sample-handover.jpg' },
+  takesReadings: false,
+  reading: null,
+  handoverReading: null,
 }
 const data: SelfReturnData = {
   shopName: 'Riverside Bikes',
@@ -51,6 +54,27 @@ describe('the renter’s return with nobody at the counter', () => {
     show({ canAct: false })
     expect(screen.queryByRole('button', { name: 'Start the photographs' })).not.toBeInTheDocument()
     expect(screen.getByRole('note')).toHaveTextContent('cannot return it')
+  })
+
+  it('asks the renter of a car for its kilometres and its fuel, and does not send without them', () => {
+    const car = { ...item, label: 'Compact car 1', missing: [], photos: [{ view: 'left-side', url: '/a.jpg', simulated: false }, { view: DROP_POINT_VIEW, url: '/b.jpg', simulated: false }], takesReadings: true, handoverReading: { odometerKm: 48210, fuelEighths: 8 } }
+    const { unmount } = show({ stage: 'capture', items: [car] })
+    const dashboard = within(screen.getByRole('region', { name: 'Dashboard' }))
+    expect(dashboard.getByText('When you took it: 48,210 km, full tank')).toBeInTheDocument()
+    expect(dashboard.getByLabelText('Kilometres on the odometer')).toHaveAttribute('min', '48210')
+    expect(dashboard.getByLabelText('Fuel in the tank')).toBeInTheDocument()
+    expect(screen.getByText('Read the dashboard before you send.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Send my return' })).toBeDisabled()
+    unmount()
+
+    show({ stage: 'capture', items: [{ ...car, reading: { odometerKm: 48690, fuelEighths: 6 } }] })
+    expect(within(screen.getByRole('region', { name: 'Dashboard' })).getByText('You read: 48,690 km, 6/8 of a tank')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Send my return' })).toBeEnabled()
+  })
+
+  it('shows no dashboard for an item that has none', () => {
+    show({ stage: 'capture', items: [item] })
+    expect(screen.queryByRole('region', { name: 'Dashboard' })).not.toBeInTheDocument()
   })
 
   it('asks for every view and where the item was left, and sends only when all are taken', () => {

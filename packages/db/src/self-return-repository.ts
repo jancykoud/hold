@@ -1,10 +1,12 @@
-import { DROP_POINT_VIEW, maySelfReturn, RENTAL_TRANSITIONS, returnedOnTime, takesReadings, transition } from '@hold/domain'
+import { DROP_POINT_VIEW, maySelfReturn, RENTAL_TRANSITIONS, returnedOnTime, transition } from '@hold/domain'
+import type { Reading } from '@hold/domain'
 import type { Region, RentalState, SelfReturnSettings } from '@hold/domain'
 import { and, asc, eq, inArray, isNotNull, isNull } from 'drizzle-orm'
-import { captureSession, sealSession, startCaptureSession } from './capture-repository.ts'
+import { captureSession, recordReading, sealSession, startCaptureSession } from './capture-repository.ts'
+import type { RecordReadingResult } from './capture-repository.ts'
 import type { SessionPhoto } from './capture-repository.ts'
 import type { PhotoPlanView } from './schema/catalog.ts'
-import { captureSessions, comparisons, findings, holds, items, itemTypes, photoPlans, photos, rentalItems, rentals, renters, shops, users } from './schema/index.ts'
+import { captureSessions, comparisons, findings, holds, items, photoPlans, photos, rentalItems, rentals, renters, shops, users } from './schema/index.ts'
 import type { Transaction } from './scope.ts'
 import { rentalName } from './rental-name.ts'
 
@@ -29,12 +31,6 @@ async function rentalLines(transaction: Transaction, rentalId: string) {
   return transaction.select({ id: rentalItems.id }).from(rentalItems).where(eq(rentalItems.rentalId, rentalId)).orderBy(asc(rentalItems.id))
 }
 
-// Whether one of the rental's items is of a kind that is driven, whose dashboard a person reads at the return.
-async function isRead(transaction: Transaction, rentalId: string): Promise<boolean> {
-  const kinds = await transaction.select({ category: itemTypes.category }).from(rentalItems).innerJoin(items, eq(items.id, rentalItems.itemId)).innerJoin(itemTypes, eq(itemTypes.id, items.itemTypeId)).where(eq(rentalItems.rentalId, rentalId))
-  return kinds.some((kind) => takesReadings(kind.category))
-}
-
 async function handedOver(transaction: Transaction, rentalItemIds: readonly string[]): Promise<boolean> {
   if (rentalItemIds.length === 0) return false
   const sealed = await transaction.select({ id: captureSessions.rentalItemId }).from(captureSessions)
@@ -50,7 +46,7 @@ export async function startSelfReturn(transaction: Transaction, rentalId: string
   if (rental === undefined) return { ok: false, reason: 'not_found' }
   if (!(await selfReturnSettings(transaction)).allowed) return { ok: false, reason: 'not_allowed' }
   const lines = await rentalLines(transaction, rentalId)
-  const open = maySelfReturn({ allowed: true, rentalState: rental.state, handedOver: await handedOver(transaction, lines.map((line) => line.id)), read: await isRead(transaction, rentalId) })
+  const open = maySelfReturn({ allowed: true, rentalState: rental.state, handedOver: await handedOver(transaction, lines.map((line) => line.id)) })
   if (!open && rental.state !== 'dropped_off') return { ok: false, reason: 'not_ready' }
   const sessionIds: string[] = []
   for (const line of lines) {
@@ -77,13 +73,22 @@ async function renterSessions(transaction: Transaction, rentalId: string) {
     .where(and(eq(rentalItems.rentalId, rentalId), eq(captureSessions.kind, 'return'), eq(captureSessions.byRenter, true))).orderBy(asc(rentalItems.id))
 }
 
+// The dashboard of a vehicle as its renter read it where they left it, kept on their own open return of this rental
+// until it is sent. The same checks as at the counter: whole kilometres, never fewer than at the handover.
+export async function recordRenterReading(transaction: Transaction, rentalId: string, sessionId: string, reading: Reading): Promise<RecordReadingResult> {
+  if (!(await renterSessions(transaction, rentalId)).some((session) => session.id === sessionId)) return { ok: false, reason: 'not_found' }
+  return recordReading(transaction, sessionId, reading)
+}
+
 // Seals every item's return at once, so the rental is dropped off from this moment. Sending again changes nothing.
-export async function sendSelfReturn(transaction: Transaction, rentalId: string, now: Date): Promise<{ readonly ok: true } | Refused<'not_found' | 'views_missing'>> {
+// A vehicle's return waits for its dashboard to be read, as it does at the counter.
+export async function sendSelfReturn(transaction: Transaction, rentalId: string, now: Date): Promise<{ readonly ok: true } | Refused<'not_found' | 'views_missing' | 'reading_missing'>> {
   const sessions = await renterSessions(transaction, rentalId)
   if (sessions.length === 0 || sessions.length !== (await rentalLines(transaction, rentalId)).length) return { ok: false, reason: 'not_found' }
   for (const session of sessions) {
     const loaded = await captureSession(transaction, session.id)
     if (loaded === undefined || (loaded.sealedAt === null && loaded.missing.length > 0)) return { ok: false, reason: 'views_missing' }
+    if (loaded.sealedAt === null && loaded.takesReadings && loaded.reading === null) return { ok: false, reason: 'reading_missing' }
   }
   for (const session of sessions) {
     const sealed = await sealSession(transaction, session.id, now)
@@ -92,7 +97,7 @@ export async function sendSelfReturn(transaction: Transaction, rentalId: string,
   return { ok: true }
 }
 
-export type SelfReturnItem = { readonly sessionId: string; readonly itemLabel: string; readonly plan: readonly PhotoPlanView[]; readonly photos: readonly SessionPhoto[]; readonly missing: readonly string[]; readonly sealed: boolean }
+export type SelfReturnItem = { readonly sessionId: string; readonly itemLabel: string; readonly plan: readonly PhotoPlanView[]; readonly photos: readonly SessionPhoto[]; readonly missing: readonly string[]; readonly sealed: boolean; readonly takesReadings: boolean; readonly reading: Reading | null; readonly handoverReading: Reading | null }
 
 export type SelfReturnView = {
   readonly settings: SelfReturnSettings
@@ -101,8 +106,6 @@ export type SelfReturnView = {
   readonly endsAt: Date
   // Every item handed over with sealed photographs, so a return can be compared.
   readonly handedOver: boolean
-  // One of its items is driven, so it comes back to the counter and is never offered the renter's own return.
-  readonly read: boolean
   readonly droppedOffAt: Date | null
   readonly missingAt: Date | null
   readonly items: readonly SelfReturnItem[]
@@ -116,10 +119,10 @@ export async function selfReturnFor(transaction: Transaction, rentalId: string):
   const sessionItems: SelfReturnItem[] = []
   for (const session of await renterSessions(transaction, rentalId)) {
     const loaded = await captureSession(transaction, session.id)
-    if (loaded !== undefined) sessionItems.push({ sessionId: loaded.id, itemLabel: loaded.itemLabel, plan: loaded.plan, photos: loaded.photos, missing: loaded.missing, sealed: loaded.sealedAt !== null })
+    if (loaded !== undefined) sessionItems.push({ sessionId: loaded.id, itemLabel: loaded.itemLabel, plan: loaded.plan, photos: loaded.photos, missing: loaded.missing, sealed: loaded.sealedAt !== null, takesReadings: loaded.takesReadings, reading: loaded.reading, handoverReading: loaded.handoverReading })
   }
   const lines = await rentalLines(transaction, rentalId)
-  return { settings: await selfReturnSettings(transaction), timeZone: rental.timeZone, state: rental.state, endsAt: rental.endsAt, handedOver: await handedOver(transaction, lines.map((line) => line.id)), read: await isRead(transaction, rentalId), droppedOffAt: rental.droppedOffAt, missingAt: rental.missingAt, items: sessionItems }
+  return { settings: await selfReturnSettings(transaction), timeZone: rental.timeZone, state: rental.state, endsAt: rental.endsAt, handedOver: await handedOver(transaction, lines.map((line) => line.id)), droppedOffAt: rental.droppedOffAt, missingAt: rental.missingAt, items: sessionItems }
 }
 
 // A person saw the item at the drop point. The rental is returned, and the ordinary review follows: a clean release or

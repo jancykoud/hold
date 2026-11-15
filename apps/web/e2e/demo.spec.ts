@@ -154,6 +154,67 @@ test('as Jonas, a scratched car goes from its walk round to a PayPal capture of 
   await expect(page.getByRole('region', { name: 'Settlement amounts' })).toContainText('€180.00')
 })
 
+// Decided on 15 November 2026 (docs/vehicle-plan.md step 3): a car is left at the car park with nobody at the counter.
+// Its renter photographs it and reads its dashboard, and the report waits for a person in the morning.
+test('a renter leaves the demo’s car at the car park, reads its dashboard, and the report waits in the morning queue', async ({ page, browser }) => {
+  test.setTimeout(420000)
+  await startDemo(page, 'Jonas, at the counter')
+  await bookAtTheCounter(page, 'Compact car')
+  await feePaidAndHoldPlaced(page, browser)
+  const rental = page.url()
+  await page.getByRole('region', { name: 'Handover' }).getByRole('button', { name: /^Photograph / }).click()
+  const views = page.getByRole('list', { name: 'Views' })
+  await expect(views.getByRole('listitem')).toHaveCount(19)
+  const needed = await views.getByText('Needed').count()
+  for (let taken = 1; taken <= needed; taken += 1) {
+    await page.getByRole('button', { name: 'Use the sample photograph' }).click()
+    await expect(views.getByText('Photographed')).toHaveCount(taken, { timeout: 30000 })
+  }
+  const counter = page.getByRole('region', { name: 'Dashboard', exact: true })
+  await counter.getByLabel('Kilometres on the odometer').fill('48210')
+  await counter.getByLabel('Fuel in the tank').selectOption({ label: 'Full' })
+  await counter.getByRole('button', { name: 'Save the reading' }).click()
+  await expect(page.getByText('Reading saved.')).toBeVisible()
+  await page.getByRole('button', { name: 'Seal the photographs', exact: true }).click()
+  await expect(page.getByText('The rental is out.')).toBeVisible()
+
+  await page.goto(rental)
+  await page.getByRole('button', { name: 'Show the link' }).click()
+  const renter = await renterBrowser(browser)
+  await renter.goto((await page.getByTestId('renter-link').textContent()) ?? '')
+  await renter.getByRole('link', { name: 'Return it myself' }).click()
+  await renter.getByRole('button', { name: 'Start the photographs' }).click()
+  const renterViews = renter.getByRole('list', { name: 'Views' })
+  // Every view of the handover again, and where the car was left.
+  await expect(renterViews.getByRole('listitem')).toHaveCount(needed + 1)
+  const toTake = await renterViews.getByText('Needed').count()
+  for (let taken = 1; taken <= toTake; taken += 1) {
+    await renter.getByRole('button', { name: 'Use the sample photograph' }).click()
+    await expect(renterViews.getByText('Photographed')).toHaveCount(taken, { timeout: 30000 })
+  }
+  // Every photograph is taken, and the return still waits for the dashboard.
+  const send = renter.getByRole('button', { name: 'Send my return' })
+  await expect(renter.getByText('Read the dashboard before you send.')).toBeVisible()
+  await expect(send).toBeDisabled()
+  const dashboard = renter.getByRole('region', { name: 'Dashboard' })
+  await expect(dashboard.getByText('When you took it: 48,210 km, full tank')).toBeVisible()
+  await dashboard.getByLabel('Kilometres on the odometer').fill('48330')
+  await dashboard.getByLabel('Fuel in the tank').selectOption({ label: '6/8' })
+  await dashboard.getByRole('button', { name: 'Save the reading' }).click()
+  await expect(dashboard.getByText('You read: 48,330 km, 6/8 of a tank')).toBeVisible()
+  await renter.setViewportSize({ width: 360, height: 780 })
+  await expectFitsEveryWidth(renter)
+  await send.click()
+  await expect(renter.getByRole('heading', { level: 1 })).toHaveText('Your return')
+  await expect(renter.getByText('Reserved, not taken')).toBeVisible()
+  await renter.context().close()
+
+  await page.getByRole('navigation', { name: 'Shop pages' }).getByRole('link', { name: 'Morning queue' }).click()
+  const waiting = page.getByRole('article', { name: /^Compact car/ })
+  await expect(waiting).toContainText('Returned by the renter')
+  await expect(waiting).toContainText('Hold €1,200.00 reserved')
+})
+
 // architecture.md section 8.2: staff let a walk-in pay the fee and approve the hold in one PayPal approval.
 test('as Jonas, a judge books a walk-in whose renter approves the fee and the hold at once', async ({ page, browser }) => {
   await startDemo(page, 'Jonas, at the counter')

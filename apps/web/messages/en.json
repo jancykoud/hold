@@ -2840,6 +2840,7 @@
       "read": "{km} km, {fuel}",
       "atHandover": "At handover: {reading}",
       "none": "No reading was taken.",
+      "byRenter": "Read by the renter where they left it. Check it against the photograph of the dashboard.",
       "save": "Save the reading",
       "saved": "Reading saved.",
       "needed": "Read the dashboard before sealing.",
@@ -3226,7 +3227,12 @@
       "photo_reused": "This photograph was used before. Take a new one of the item as it is now.",
       "views_missing": "Some photographs are still to take.",
       "no_quote": "Choose the new return time first.",
-      "quote_stale": "The rental changed since this price was given. Choose the new time again."
+      "quote_stale": "The rental changed since this price was given. Choose the new time again.",
+      "not_read": "This item has no dashboard to read.",
+      "odometer_invalid": "The kilometres must be a whole number.",
+      "fuel_invalid": "Choose the fuel level, from empty to full.",
+      "odometer_below_handover": "The odometer reads less than when you took the car. Check the figure on the dashboard.",
+      "reading_missing": "Read the dashboard before you send."
     },
     "orderDescription": "{shop}: {items}, {days, plural, one {# day} other {# days}}",
     "holdPage": {
@@ -4929,7 +4935,8 @@
       "send": {
         "ready": "Every photograph is taken. Sending seals them, and your return counts from that moment.",
         "missing": "{count, plural, one {# photograph still to take} other {# photographs still to take}}",
-        "button": "Send my return"
+        "button": "Send my return",
+        "unread": "Read the dashboard before you send."
       },
       "receipt": {
         "onTime": "Returned on time",
@@ -4964,6 +4971,12 @@
         "releasedDetail": "Nothing was charged.",
         "charged": "Charged after a person approved a claim",
         "seeClaim": "See the claim"
+      },
+      "reading": {
+        "title": "Dashboard",
+        "lead": "Photograph the dashboard, then enter what it shows. The shop reads the same figures from your photograph when it opens.",
+        "atHandover": "When you took it: {reading}",
+        "read": "You read: {reading}"
       }
     },
     "staff": {

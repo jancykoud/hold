@@ -1,4 +1,4 @@
-import { DECLARED_PHOTO_SOURCES, INCIDENT_HINTS, INCIDENT_LIMITS, INCIDENT_STATES, MAX_PHOTO_BYTES, MISSED_VIEWS } from '@hold/domain'
+import { DECLARED_PHOTO_SOURCES, INCIDENT_HINTS, INCIDENT_LIMITS, INCIDENT_STATES, MAX_PHOTO_BYTES, MISSED_VIEWS, READING_LIMITS } from '@hold/domain'
 import { z } from 'zod'
 import { pushRegistration, pushTokenSchema } from './push'
 import { RETURN_TO } from './renter-paypal'
@@ -73,6 +73,8 @@ export const renterActions = {
   'start-self-return': action({}, z.object({ sessionIds: z.array(z.string()) })),
   'request-self-return-upload': action({ sessionId: z.uuid(), view: planView, sha256, bytes }, uploadLink),
   'confirm-self-return-upload': action({ sessionId: z.uuid(), view: planView, ...uploaded }, photo),
+  // A vehicle's dashboard as its renter read it where they left it: whole kilometres and a tank in eighths.
+  'save-self-return-reading': action({ sessionId: z.uuid(), odometerKm: z.coerce.number().int().min(0).max(READING_LIMITS.odometerKm), fuelEighths: z.coerce.number().int().min(0).max(READING_LIMITS.fuelEighths) }, nothing),
   'send-self-return': action({}, nothing),
 
   // The claim: a code to the renter's address, then accept or contest with it, or acknowledge an approved one.

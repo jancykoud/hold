@@ -34,5 +34,8 @@ export const item = (overrides: Partial<Return['items'][number]> = {}): Return['
   missing: ['left', 'drop-point'],
   photos: [],
   guides: { left: 'https://hold.example/handover-left.jpg' },
+  takesReadings: false,
+  reading: null,
+  handoverReading: null,
   ...overrides,
 });
