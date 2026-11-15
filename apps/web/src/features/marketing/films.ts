@@ -18,7 +18,8 @@ export const HOW_IT_WORKS_CHAPTERS = [
 ] as const
 
 export const films = {
-  // A city bike and an e-scooter scanned by a sheet of light, and brackets that close on a chip in the paint.
+  // A coupé of Hold's own drawing scanned by a sheet of light, and brackets that close on a scratch in its door
+  // (scripts/hero-film).
   home: { wide: '/video/hero-wide.mp4', tall: '/video/hero-tall.mp4', still: { wide: '/images/hero/hero-wide-still.webp', tall: '/images/hero/hero-tall-still.webp' } },
   // Priya's assistant books through Hold's MCP server; then Priya, Jonas and Tomás take the rental through its hold, six
   // photographs, comparison and settlement, with each call to PayPal travelling to a PayPal record that fills as it goes.

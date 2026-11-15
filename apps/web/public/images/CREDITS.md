@@ -19,6 +19,18 @@ Replace `frame-handover.jpg` and `frame-return.jpg` with a real handover and ret
 
 ## The films
 
-`public/video/hero-wide.mp4`, `public/video/hero-tall.mp4`, `hero/hero-wide-still.webp` and `hero/hero-tall-still.webp` are Hold's own work: a Three.js scene of a city bike and an e-scooter modelled in code, rendered frame by frame in a browser and encoded with ffmpeg. No photograph, model or music from anyone else is in them. The still is frame 186 of the 360, where the brackets have closed on the chip.
+`public/video/hero-wide.mp4`, `public/video/hero-tall.mp4`, `hero/hero-wide-still.webp` and `hero/hero-tall-still.webp` are Hold's own work, remade on 15 November 2026 when vehicle rental became the lead market: a Three.js scene of a coupé modelled in code, of Hold's own drawing and with no maker's badge or shape, rendered frame by frame in a browser and encoded with ffmpeg. No photograph, model or music from anyone else is in them. The still is frame 210 of the 360, where the brackets have closed on the scratch in the door and the finding's card is shown. Until that date the film showed a city bike and an e-scooter.
+
+The scene's source is `apps/web/scripts/hero-film/scene.mjs`, and `render.mjs` beside it draws the frames. Three.js is not one of Hold's dependencies, so its folder is named when the film is made:
+
+```sh
+cd apps/web
+node scripts/hero-film/render.mjs --three <folder of the three package> --out /tmp/wide
+node scripts/hero-film/render.mjs --three <folder of the three package> --out /tmp/tall --size 720x1280
+ffmpeg -framerate 30 -i /tmp/wide/frame-%04d.png -c:v libx264 -pix_fmt yuv420p -crf 24 -preset slow -movflags +faststart -an public/video/hero-wide.mp4
+ffmpeg -framerate 30 -i /tmp/tall/frame-%04d.png -c:v libx264 -pix_fmt yuv420p -crf 24 -preset slow -movflags +faststart -an public/video/hero-tall.mp4
+cwebp -q 82 /tmp/wide/frame-0210.png -o public/images/hero/hero-wide-still.webp
+cwebp -q 82 /tmp/tall/frame-0210.png -o public/images/hero/hero-tall-still.webp
+```
 
 `public/video/how-wide.mp4`, `public/video/how-tall.mp4`, `hero/how-wide-still.webp` and `hero/how-tall-still.webp` are made the same way: three people modelled in code (Priya, Jonas and Tomás), the e-bike, the counter and the owner's desk, Hold's MCP server and PayPal's sandbox as two panels at the back, with every screen drawn in Hold's own type and colours and every photograph on them rendered from the 3D e-bike. The still is frame 335 of the 1,185, the hold just authorized.

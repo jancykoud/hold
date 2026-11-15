@@ -4,7 +4,7 @@ import { EvidenceViewer } from './evidence-viewer'
 import { FilmStage, StageCopy } from './film-stage'
 import { films } from './films'
 
-// The first thing anyone sees: a dark stage where a bike and a scooter are scanned and a chip in the paint is found,
+// The first thing anyone sees: a dark stage where a car is scanned and a scratch in its door is found,
 // with the claim and the two ways in over it; then the photograph that proves it. The words arrive one after another.
 export function Hero() {
   const t = useTranslations('hero')

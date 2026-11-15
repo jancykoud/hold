@@ -6,7 +6,9 @@ export default defineConfig(
   {
     ignores: ['**/.next/**', 'apps/web/public/vendor/**', '**/cdk.out/**', '**/next-env.d.ts', '**/playwright-report/**', '**/test-results/**', '.superpowers/**', '.claude/**',
       // The phone app lints with Expo's own config (apps/mobile/eslint.config.js).
-      'apps/mobile/**'],
+      'apps/mobile/**',
+      // The home page's film is drawn with Three.js, which is not a dependency, so its two scripts are in no project.
+      'apps/web/scripts/hero-film/**'],
   },
   eslint.configs.recommended,
   tseslint.configs.strictTypeChecked,
