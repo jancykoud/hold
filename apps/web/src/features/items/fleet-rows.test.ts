@@ -6,7 +6,7 @@ import { fleetRows, keepItemsUnderTypes } from './fleet-rows'
 // The fleet passport's rows (extensions.md section 12.5): each item type with its items below it, each item with what
 // its rentals say about it, read by the domain's itemWear and wearingFastest, filtered as the items page is.
 
-const type = (id: string, name: string): CatalogType => ({ id, name, category: 'e_bike', currency: 'EUR', valueCents: 2400_00, holdCents: 300_00, dayRateCents: 45_00, accessories: [], photoPlanId: 'plan', views: [], simulated: false })
+const type = (id: string, name: string): CatalogType => ({ id, name, category: 'e_bike', currency: 'EUR', valueCents: 2400_00, holdCents: 300_00, dayRateCents: 45_00, accessories: [], photoPlanId: 'plan', views: [], simulated: false, includedKmPerDay: null })
 const item = (id: string, typeId: string, standing: CatalogItem['standing'] = 'available'): CatalogItem => ({ id, itemTypeId: typeId, label: id, size: null, serial: null, status: 'in_service', statusNote: null, statusSince: null, standing, rental: undefined, simulated: false })
 const rental = (n: number, damageFindings: number): ItemRentalRecord => ({ rentalId: `r${String(n)}`, startsAt: new Date(Date.UTC(2026, 9, n, 9)), endsAt: new Date(Date.UTC(2026, 9, n + 1, 9)), damageFindings, claimLinesCents: damageFindings * 35_00, claimTotalCents: damageFindings > 0 ? damageFindings * 35_00 : null, collectedCents: damageFindings * 35_00 })
 const catalog: ItemCatalog = { types: [type('ebike', 'City e-bike'), type('kayak', 'Kayak')], items: [item('e1', 'ebike'), item('e2', 'ebike', 'in_repair'), item('k1', 'kayak', 'retired')] }

@@ -124,6 +124,18 @@ describe('saving an item type', () => {
     expect(await items.saveItemType(null, form({ ...ebike, name: 'Kayak', dayRate: '4,5x' }))).toEqual({ ok: false, failure: 'refused', reason: 'day_rate_invalid' })
   })
 
+  it('asks a vehicle for the kilometres each day includes, and keeps them; no other kind is asked', async () => {
+    await signIn(jar, OWNER, 'passkey')
+    const car = { ...ebike, name: 'Compact car', category: 'car' }
+    expect(await items.saveItemType(null, form(car))).toEqual({ ok: false, failure: 'refused', reason: 'included_distance_missing' })
+    expect(await items.saveItemType(null, form({ ...car, includedKmPerDay: 'many' }))).toEqual({ ok: false, failure: 'refused', reason: 'included_distance_invalid' })
+    const saved = await items.saveItemType(null, form({ ...car, includedKmPerDay: '200' }))
+    expect(saved).toMatchObject({ ok: true })
+    const { database } = await getServices()
+    const catalog = await inShop(database, { role: 'hold_app', shopId, userId: ownerId }, itemCatalog)
+    expect(catalog.types.find((type) => type.name === 'Compact car')).toMatchObject({ category: 'car', includedKmPerDay: 200 })
+  })
+
   it('takes a type with no kit', async () => {
     await signIn(jar, OWNER, 'passkey')
     const bare = Object.fromEntries(Object.entries(ebike).filter(([field]) => !field.startsWith('accessory')))

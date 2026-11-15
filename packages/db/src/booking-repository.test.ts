@@ -188,7 +188,8 @@ describe('a renter link', () => {
     const rentalId = await book([{ itemTypeId: seatTypeId, count: 1 }], at(320), at(330))
     const view = await act({ role: 'hold_app', shopId }, (transaction) => renterView(transaction, rentalId, NOW))
     expect(view).toMatchObject({ shopName: 'Ribeira Bikes', state: 'pending_payment', feeCents: 8_00, holdCents: 50_00, currency: 'EUR', days: 1, wearPolicy: 'Scuffs are wear.' })
-    expect(view?.lines).toEqual([{ name: 'Child seat', count: 1, dayRateCents: 8_00, holdCents: 50_00 }])
+    // A child seat is not driven, so its booking includes no kilometres.
+    expect(view?.lines).toEqual([{ name: 'Child seat', count: 1, dayRateCents: 8_00, holdCents: 50_00, includedKmPerDay: null }])
     expect(view?.prices).toEqual([{ description: 'Scratch', category: 'damage', amountCents: 35_00 }])
   })
 

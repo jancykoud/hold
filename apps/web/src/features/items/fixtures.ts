@@ -6,6 +6,7 @@ export const ebikeType: CatalogType = {
   id: '00000000-0000-4000-8000-0000000000e1',
   name: 'City e-bike',
   category: 'e_bike',
+  includedKmPerDay: null,
   currency: 'EUR',
   valueCents: 2400_00,
   holdCents: 300_00,

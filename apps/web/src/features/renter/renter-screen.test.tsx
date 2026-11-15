@@ -19,7 +19,7 @@ const view: RenterView = {
   currency: 'EUR',
   feeCents: 120_00,
   holdCents: 300_00,
-  lines: [{ name: 'City e-bike', count: 1, dayRateCents: 40_00, holdCents: 300_00 }],
+  lines: [{ name: 'City e-bike', count: 1, dayRateCents: 40_00, holdCents: 300_00, includedKmPerDay: null }],
   prices: [
     { description: 'Scratched frame', category: 'damage', amountCents: 35_00 },
     { description: 'Missing charger', category: 'loss', amountCents: 60_00 },
@@ -41,6 +41,14 @@ describe('the renter’s page', () => {
   it('says until when the booking keeps its items while the fee is unpaid, in the shop’s time', () => {
     renderWithIntl(<RenterScreen token="token" view={view} />)
     expect(screen.getByText('Your items are kept for you until 10:15 AM.')).toBeInTheDocument()
+  })
+
+  it('tells the renter of a vehicle, before they pay, how many kilometres are included, and says no such thing of an item that is not driven', () => {
+    const { unmount } = renderWithIntl(<RenterScreen token="token" view={{ ...view, lines: [{ name: 'Compact car', count: 1, dayRateCents: 60_00, holdCents: 1200_00, includedKmPerDay: 200 }] }} />)
+    expect(screen.getByText('200 km a day included, 600 km for these 3 days. Each kilometre beyond is charged at the price of a kilometre below.')).toBeInTheDocument()
+    unmount()
+    renderWithIntl(<RenterScreen token="token" view={view} />)
+    expect(screen.queryByText(/km a day included/)).not.toBeInTheDocument()
   })
 
   it('names no deadline once there is none to meet', () => {

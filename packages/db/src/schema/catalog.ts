@@ -1,7 +1,7 @@
 import { ITEM_CATEGORIES, ITEM_STATUSES, PRICE_CATEGORIES } from '@hold/domain'
 import type { Accessory, ViewOutline } from '@hold/domain'
 import { sql } from 'drizzle-orm'
-import { boolean, integer, jsonb, pgTable, text, unique, uniqueIndex } from 'drizzle-orm/pg-core'
+import { boolean, check, integer, jsonb, pgTable, text, unique, uniqueIndex } from 'drizzle-orm/pg-core'
 import { shopIsolation } from './access.ts'
 import { at, cents, createdAt, currency, id, reference } from './columns.ts'
 import { allowed, itemCategory, itemStatus, priceCategory } from './enums.ts'
@@ -47,12 +47,16 @@ export const itemTypes = pgTable(
     photoPlanId: reference()
       .notNull()
       .references(() => photoPlans.id),
+    // For a kind that is driven: the kilometres a rental includes for each day (packages/domain readings.ts). None for
+    // any other kind.
+    includedKmPerDay: integer(),
     // Sample data added for a demonstration, shown as a sample wherever it appears.
     simulated: boolean().notNull().default(false),
     createdAt: createdAt(),
   },
   (table) => [
     allowed(table.category, ITEM_CATEGORIES),
+    check('included_km_per_day_non_negative', sql`${table.includedKmPerDay} >= 0`),
     // A shop's own types have distinct names, whatever their case. Sample types stand apart.
     uniqueIndex('item_types_shop_name_unique')
       .on(table.shopId, sql`lower(${table.name})`)

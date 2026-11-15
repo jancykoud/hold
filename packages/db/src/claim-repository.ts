@@ -1,17 +1,22 @@
 import { reserveEvidencePack } from './evidence-repository.ts'
-import { checkClaimLines, checkKeptLine, claimTotal, CLAIM_TRANSITIONS, HOLD_TRANSITIONS, money, transition } from '@hold/domain'
-import type { ClaimLine } from '@hold/domain'
+import { checkClaimLines, checkKeptLine, claimTotal, CLAIM_TRANSITIONS, HOLD_TRANSITIONS, money, readingLine, readingReason, transition } from '@hold/domain'
+import type { ClaimLine, UnitPriceCategory } from '@hold/domain'
 import { and, eq, isNotNull, isNull } from 'drizzle-orm'
 import { claimStaff, startSettling } from './claim-access.ts'
 import { EXECUTIONS_QUEUE } from './fee-repository.ts'
 import { approvals, auditLog, authorizations, captureSessions, claimLines, claims, comparisons, executions, findings, holds, incidents, outbox, photos, priceEntries, rentalItems, rentals, shops } from './schema/index.ts'
 import { openClaimIncidents } from './incident-closing.ts'
+import { readingCharges } from './reading-charges.ts'
 import { shopPayPalMode } from './paypal-mode.ts'
 import type { Transaction } from './scope.ts'
 
-// A line from a finding or a named person's reason, priced from the agreed list; or the line the renter agreed during
-// the rental, which staff keep at its amount or lower (extensions.md section 10.4).
-export type DraftClaimLine = { readonly priceEntryId: string; readonly findingId?: string; readonly reason?: string } | { readonly incidentId: string; readonly amountCents: number }
+// A line from a finding or a named person's reason, priced from the agreed list; the line the renter agreed during
+// the rental, which staff keep at its amount or lower (extensions.md section 10.4); or a line counted from a vehicle's
+// readings, which names only the item and which of the two it charges: the count and the amount are the server's.
+export type DraftClaimLine =
+  | { readonly priceEntryId: string; readonly findingId?: string; readonly reason?: string }
+  | { readonly incidentId: string; readonly amountCents: number }
+  | { readonly reading: UnitPriceCategory; readonly rentalItemId: string }
 const refused = <Reason extends string>(reason: Reason) => ({ ok: false, reason }) as const
 
 export async function draftClaim(transaction: Transaction, rentalId: string, userId: string, lines: readonly DraftClaimLine[], now: Date) {
@@ -28,7 +33,22 @@ export async function draftClaim(transaction: Transaction, rentalId: string, use
   const priced: ClaimLine[] = []
   const stored: Omit<typeof claimLines.$inferInsert, 'claimId'>[] = []
   const seen = new Set<string>()
+  // What each driven item's readings are charged, worked out once for the lines that ask for it.
+  const read = lines.some((line) => 'reading' in line) ? await readingCharges(transaction, rentalId) : []
   for (const line of lines) {
+    if ('reading' in line) {
+      const identity = `reading-${line.reading}-${line.rentalItemId}`
+      if (seen.has(identity)) return refused('duplicate_line')
+      seen.add(identity)
+      const item = read.find((each) => each.rentalItemId === line.rentalItemId)
+      const charge = item?.[line.reading] ?? null
+      if (item === undefined || charge === null) return refused('nothing_to_charge')
+      const counted = readingLine({ priceEntryId: charge.priceEntryId, unit: money(charge.unitCents, rental.currency), reading: line.reading, quantity: charge.quantity, photoCount: item.photoCount })
+      if (!counted.ok) return refused(counted.error)
+      priced.push(counted.value)
+      stored.push({ shopId: rental.shopId, priceEntryId: charge.priceEntryId, currency: rental.currency, amountCents: counted.value.amount.cents, quantity: charge.quantity, source: 'reading', addedByUserId: userId, reason: readingReason(line.reading, { handover: item.handover, returned: item.returned, usage: item.usage, unit: money(charge.unitCents, rental.currency) }), createdAt: now })
+      continue
+    }
     if ('incidentId' in line) {
       const kept = await agreedLine(transaction, rentalId, line)
       if (!kept.ok) return kept

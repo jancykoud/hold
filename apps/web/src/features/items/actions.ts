@@ -25,6 +25,8 @@ export const saveItemType = shopAction(
       value: text(20),
       hold: text(20),
       dayRate: text(20),
+      // For a kind that is driven: the kilometres each day includes. Left out by the form for any other kind.
+      includedKmPerDay: text(8).optional(),
       accessoryName: list(z.string().max(200)),
       accessoryCount: list(z.string().max(4)),
       viewLabel: list(z.string().max(200)),
@@ -43,9 +45,12 @@ export const saveItemType = shopAction(
     if (hold === undefined) return new Refusal('hold_invalid')
     const dayRate = parseAmount(input.dayRate, currency)
     if (dayRate === undefined) return new Refusal('day_rate_invalid')
+    // Whole kilometres, or it is refused below; a kind that is not driven sends none and keeps none.
+    const included = input.includedKmPerDay === undefined || input.includedKmPerDay.trim() === '' ? undefined : /^\d+$/.test(input.includedKmPerDay.trim()) ? Number(input.includedKmPerDay.trim()) : Number.NaN
     const draft = {
       name: input.name,
       category: input.category,
+      ...(included === undefined ? {} : { includedKmPerDay: included }),
       currency,
       value,
       hold,

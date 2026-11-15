@@ -20,6 +20,8 @@ export type ItemTypeFormValues = Amounts & {
   readonly itemTypeId: string
   readonly name: string
   readonly category: ItemCategory
+  // For a kind that is driven: the kilometres each day includes, as typed. Empty for any other kind.
+  readonly includedKmPerDay: string
   readonly accessories: readonly KitRow[]
   readonly views: readonly PhotoPlanViewDraft[]
 }
@@ -52,7 +54,7 @@ export function ItemTypeForm({ currency, values }: { currency: string; values?: 
     <form action={save} className="grid min-w-0 gap-6">
       <input type="hidden" name="locale" value={locale} />
       <input type="hidden" name="itemTypeId" value={values?.itemTypeId ?? ''} />
-      <TypeBasics name={values?.name ?? ''} category={category} onCategory={chooseCategory} amounts={values ?? { value: '', hold: '', dayRate: '' }} currency={currency} />
+      <TypeBasics name={values?.name ?? ''} category={category} onCategory={chooseCategory} amounts={values ?? { value: '', hold: '', dayRate: '' }} currency={currency} includedKmPerDay={values?.includedKmPerDay ?? ''} />
       <KitEditor kit={kit} />
       <PhotoPlanEditor
         views={views}

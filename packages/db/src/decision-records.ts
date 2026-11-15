@@ -29,7 +29,7 @@ export type DecisionClaimLine = {
   readonly id: string
   readonly description: string
   readonly amountCents: number
-  readonly source: 'finding' | 'person' | 'agreed_in_rental'
+  readonly source: 'finding' | 'person' | 'agreed_in_rental' | 'reading'
   // A named person's written reason, for a line without photographs.
   readonly reason: string | null
   // Where the mark is on the return photograph, and the display copies of the two photographs of its view.

@@ -1,4 +1,5 @@
 import { money, REFUND_KINDS, settle } from '@hold/domain'
+import { readingCharges } from './reading-charges.ts'
 import { and, asc, desc, eq, isNull, sql } from 'drizzle-orm'
 import { approvals, captureSessions, claimLines, claimReplies, claims, comparisons, executions, findings, holds, incidents, invoices, items, marks, moneyEvents, photos, priceEntries, rentalItems, rentals, users } from './schema/index.ts'
 import { shopPayPalMode } from './paypal-mode.ts'
@@ -39,7 +40,9 @@ export async function claimWorkspace(transaction: Transaction, rentalId: string)
   const refundedCents = payments.filter((payment) => REFUND_KINDS.includes(payment.kind)).reduce((sum, payment) => sum + payment.amountCents, 0)
   const effectiveTotal = claim?.state === 'waived' || hold.state === 'released' || decisions.some((decision) => decision.decision === 'waived') ? 0 : Math.max(0, (claim?.totalCents ?? 0) - refundedCents)
   const amounts = hold.state === 'invoiced' || (hold.state === 'expired' && bills.length > 0) ? { capture: money(0, rental.currency), release: money(hold.reservedCents, rental.currency), invoice: money(effectiveTotal, rental.currency) } : settle(money(effectiveTotal, rental.currency), money(hold.reservedCents, hold.currency))
-  return { protectedReply, agreedIncidents, rentalId, rentalState: rental.state, currency: rental.currency, simulated: rental.simulated, reservedCents: hold.reservedCents, holdState: hold.state, claim: claim === undefined ? null : { id: claim.id, state: claim.state, totalCents: claim.totalCents, raisedByUserId: claim.raisedByUserId, replyDueAt: claim.replyDueAt }, prices, possibleFindings, lines, payments, invoices: bills, execution: execution ?? null, replies, decisions, amounts }
+  // What each driven item's readings are charged, for staff to choose when they draft the claim; none once it is drafted.
+  const readings = claim === undefined ? await readingCharges(transaction, rentalId) : []
+  return { protectedReply, agreedIncidents, readings, rentalId, rentalState: rental.state, currency: rental.currency, simulated: rental.simulated, reservedCents: hold.reservedCents, holdState: hold.state, claim: claim === undefined ? null : { id: claim.id, state: claim.state, totalCents: claim.totalCents, raisedByUserId: claim.raisedByUserId, replyDueAt: claim.replyDueAt }, prices, possibleFindings, lines, payments, invoices: bills, execution: execution ?? null, replies, decisions, amounts }
 }
 export type ClaimWorkspace = NonNullable<Awaited<ReturnType<typeof claimWorkspace>>>
 

@@ -157,6 +157,8 @@ export const rentalItems = pgTable(
     // The item's day rate and hold as the renter agreed them at booking, whatever its type says later.
     dayRateCents: cents().notNull(),
     holdCents: cents().notNull(),
+    // The kilometres each day includes, as agreed at booking, for an item that is driven; none for any other.
+    includedKmPerDay: integer(),
     accessoriesOut: jsonb().$type<readonly Accessory[]>().notNull().default([]),
     accessoriesBack: jsonb().$type<readonly Accessory[]>(),
   },

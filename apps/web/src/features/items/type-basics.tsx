@@ -1,6 +1,6 @@
 'use client'
 
-import { ITEM_CATEGORIES, ITEM_TYPE_LIMITS } from '@hold/domain'
+import { ITEM_CATEGORIES, ITEM_TYPE_LIMITS, READING_LIMITS, takesReadings } from '@hold/domain'
 import type { ItemCategory } from '@hold/domain'
 import { Coins } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -11,10 +11,10 @@ import { FormCard } from '@/components/ui/form-card'
 
 export type Amounts = { readonly value: string; readonly hold: string; readonly dayRate: string }
 
-type TypeBasicsProps = { name: string; category: ItemCategory; onCategory: (category: ItemCategory) => void; amounts: Amounts; currency: string }
+type TypeBasicsProps = { name: string; category: ItemCategory; onCategory: (category: ItemCategory) => void; amounts: Amounts; currency: string; includedKmPerDay: string }
 
 // The type's name and kind, and the three amounts every rental of it is priced from.
-export function TypeBasics({ name, category, onCategory, amounts, currency }: TypeBasicsProps) {
+export function TypeBasics({ name, category, onCategory, amounts, currency, includedKmPerDay }: TypeBasicsProps) {
   const t = useTranslations('shop.items.form')
   const categories = useTranslations('shop.items.categories')
   const amount = (field: keyof Amounts, label: string) => (
@@ -51,6 +51,14 @@ export function TypeBasics({ name, category, onCategory, amounts, currency }: Ty
           {amount('hold', t('hold', { currency }))}
           {amount('dayRate', t('dayRate', { currency }))}
         </div>
+        {/* Only a kind that is driven includes kilometres; the ones beyond are charged from the price list. */}
+        {takesReadings(category) ? (
+          <div className="grid max-w-sm content-start gap-1.5 pt-5">
+            <Label htmlFor="includedKmPerDay">{t('includedKm')}</Label>
+            <Input id="includedKmPerDay" name="includedKmPerDay" type="number" inputMode="numeric" min={0} max={READING_LIMITS.includedKmPerDay} step={1} className="figures" defaultValue={includedKmPerDay} required aria-describedby="included-km-help" />
+            <p id="included-km-help" className="text-sm text-muted-foreground">{t('includedKmHelp')}</p>
+          </div>
+        ) : null}
       </FormCard>
     </>
   )

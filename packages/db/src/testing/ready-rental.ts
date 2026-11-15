@@ -1,4 +1,4 @@
-import { addDays, money } from '@hold/domain'
+import { addDays, money, takesReadings } from '@hold/domain'
 import type { ItemCategory } from '@hold/domain'
 import { asc, eq } from 'drizzle-orm'
 import { registerOwner } from '../accounts.ts'
@@ -16,6 +16,12 @@ import type { Database, Scope, Transaction } from '../scope.ts'
 
 const eur = (cents: number) => money(cents, 'EUR')
 export const VIEWS = ['left-side', 'right-side', 'battery'] as const
+// For a kind that is driven: what each day includes, and the two prices its readings are charged at.
+export const INCLUDED_KM_PER_DAY = 200
+const UNIT_PRICES = [
+  { description: 'Each kilometre beyond those included', category: 'mileage', amount: eur(30) },
+  { description: 'Each eighth of a tank missing', category: 'fuel', amount: eur(12_00) },
+] as const
 
 export type ReadyRentalShop = {
   readonly scope: Scope
@@ -35,7 +41,7 @@ export async function readyRentalShop(database: Database, subject: string, now: 
   const scope: Scope = { role: 'hold_app', shopId: registered.shopId, userId: registered.userId }
   const act = <Result>(work: (transaction: Transaction) => Promise<Result>) => inShop(database, scope, work)
   await act((transaction) =>
-    publishPriceList(transaction, scope.shopId, { currency: 'EUR', ownerApprovalThreshold: undefined, entries: [{ description: 'Scratch', category: 'damage', amount: eur(35_00) }], wearPolicy: 'Scuffs are wear.' }, now),
+    publishPriceList(transaction, scope.shopId, { currency: 'EUR', ownerApprovalThreshold: undefined, entries: [{ description: 'Scratch', category: 'damage', amount: eur(35_00) }, ...(takesReadings(category) ? UNIT_PRICES : [])], wearPolicy: 'Scuffs are wear.' }, now),
   )
   const views = [
     { label: 'Left side', outline: 'whole_side', required: true },
@@ -43,7 +49,7 @@ export async function readyRentalShop(database: Database, subject: string, now: 
     { label: 'Battery', outline: 'detail', required: false },
   ] as const
   const saved = await act((transaction) =>
-    saveItemType(transaction, scope.shopId, { draft: { name: 'City e-bike', category, currency: 'EUR', value: eur(2400_00), hold: eur(300_00), dayRate: eur(40_00), accessories: [], views: [...views] } }, now),
+    saveItemType(transaction, scope.shopId, { draft: { name: 'City e-bike', category, ...(takesReadings(category) ? { includedKmPerDay: INCLUDED_KM_PER_DAY } : {}), currency: 'EUR', value: eur(2400_00), hold: eur(300_00), dayRate: eur(40_00), accessories: [], views: [...views] } }, now),
   )
   if (!saved.ok) throw new Error(saved.reason)
   const typeId = saved.id

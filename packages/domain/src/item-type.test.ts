@@ -68,4 +68,16 @@ describe('an item type', () => {
   it('includes the photo plan’s problems', () => {
     expect(checkItemType({ ...draft, views: [] })).toEqual([{ kind: 'no_views' }])
   })
+
+  // A vehicle's rental includes a number of kilometres for each day; the ones beyond are charged at the price list's
+  // price of a kilometre (readings.ts).
+  it('needs the kilometres a day a vehicle includes, none or more, and asks no such thing of an item that is not driven', () => {
+    const car: ItemTypeDraft = { ...draft, name: 'Compact car', category: 'car' }
+    expect(checkItemType(car)).toEqual([{ kind: 'included_distance_missing' }])
+    expect(checkItemType({ ...car, includedKmPerDay: 200 })).toEqual([])
+    expect(checkItemType({ ...car, includedKmPerDay: 0 })).toEqual([])
+    expect(checkItemType({ ...car, includedKmPerDay: -5 })).toEqual([{ kind: 'included_distance_invalid' }])
+    expect(checkItemType({ ...car, includedKmPerDay: 12.5 })).toEqual([{ kind: 'included_distance_invalid' }])
+    expect(checkItemType({ ...draft, includedKmPerDay: 200 })).toEqual([])
+  })
 })

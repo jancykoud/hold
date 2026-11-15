@@ -2260,7 +2260,9 @@
         "save": "Save item type",
         "saving": "Saving…",
         "saved": "Item type saved.",
-        "passkeyBody": "Changing an item type's hold, day rate or photo plan needs your passkey."
+        "passkeyBody": "Changing an item type's hold, day rate or photo plan needs your passkey.",
+        "includedKm": "Kilometres included each day",
+        "includedKmHelp": "A rental includes this many for each day. Each kilometre beyond is charged at the price list’s price of a kilometre. Enter 0 to charge every kilometre."
       },
       "passport": {
         "label": "Item passport",
@@ -2365,7 +2367,9 @@
         "transition_not_allowed": "A retired item cannot be brought back.",
         "with_renter": "A renter has this item. Send it to repair once it is back.",
         "rental_under_way": "A rental still needs this item. Retire it once that rental is over.",
-        "role_may_not_retire": "Only the owner or a manager can retire an item."
+        "role_may_not_retire": "Only the owner or a manager can retire an item.",
+        "included_distance_missing": "Say how many kilometres each day includes. Enter 0 to charge every kilometre.",
+        "included_distance_invalid": "The kilometres included must be a whole number, from 0 to 5000."
       },
       "fleet": {
         "keys": "Days out count this year. Damage shows what the comparison found on each of an item’s last rentals. Arrow keys move between rows; Enter opens an item’s passport; the button at the end of a row offers its passport, its status or its type’s hold.",
@@ -3492,7 +3496,8 @@
         "title": "Not collected yet",
         "body": "The photographs of how your rental left the shop appear here once you collect it."
       }
-    }
+    },
+    "lineIncluded": "{km} km a day included, {total} km for {days, plural, one {this day} other {these # days}}. Each kilometre beyond is charged at the price of a kilometre below."
   },
   "shopPage": {
     "label": "Book online",
@@ -3623,7 +3628,8 @@
       "incident_not_agreed": "That report was not agreed by the renter.",
       "raises_agreed_line": "A line the renter agreed can be lowered, never raised.",
       "empty_line": "Leave the line out rather than keep it at nothing.",
-      "owner_decides_after_promise": "The shop missed the date it promised the renter. Only the owner can decide this claim now."
+      "owner_decides_after_promise": "The shop missed the date it promised the renter. Only the owner can decide this claim now.",
+      "nothing_to_charge": "The readings give nothing to charge for that."
     },
     "acknowledge": "I have reviewed this claim",
     "reviewFirst": "Review the evidence and prices. Your reply period starts when you confirm you have reviewed this claim.",
@@ -3677,6 +3683,11 @@
       "noPhotos": "There are no sealed handover and return photographs of this item to show.",
       "more": "More about this claim",
       "provenance": "Where these photographs came from"
+    },
+    "reading": {
+      "charge": "Charge {item}: {price}, {quantity} × {unit} = {amount}",
+      "mileage": "{from} km at handover, {to} km at return: {driven} km driven, {included} km included.",
+      "fuel": "{from}/8 of a tank at handover, {to}/8 at return: {missing}/8 missing."
     }
   },
   "scorecard": {
@@ -4555,7 +4566,8 @@
       "source": {
         "finding": "From the photo comparison",
         "person": "A person's written reason",
-        "agreed_in_rental": "Agreed by the renter during the rental"
+        "agreed_in_rental": "Agreed by the renter during the rental",
+        "reading": "Counted from the dashboard readings"
       },
       "atHandover": "At handover: {line}",
       "atReturn": "At return: {line}",

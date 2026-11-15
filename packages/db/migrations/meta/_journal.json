@@ -379,6 +379,13 @@
       "when": 1794700337583,
       "tag": "0053_dashboard_readings",
       "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1794725025968,
+      "tag": "0054_readings_charged",
+      "breakpoints": true
     }
   ]
 }

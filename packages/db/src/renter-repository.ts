@@ -48,7 +48,8 @@ export type RenterView = {
   readonly currency: string
   readonly feeCents: number
   readonly holdCents: number
-  readonly lines: readonly { readonly name: string; readonly count: number; readonly dayRateCents: number; readonly holdCents: number }[]
+  // includedKmPerDay: for an item that is driven, the kilometres each day includes, as agreed at booking.
+  readonly lines: readonly { readonly name: string; readonly count: number; readonly dayRateCents: number; readonly holdCents: number; readonly includedKmPerDay: number | null }[]
   readonly prices: readonly { readonly description: string; readonly category: PriceCategory; readonly amountCents: number }[]
   readonly wearPolicy: string
   readonly replyPeriodHours: number
@@ -92,12 +93,12 @@ export async function renterView(transaction: Transaction, rentalId: string, now
     .where(eq(rentals.id, rentalId))
   if (rental === undefined) return undefined
   const lines = await transaction
-    .select({ name: itemTypes.name, count: count(rentalItems.id), dayRateCents: rentalItems.dayRateCents, holdCents: rentalItems.holdCents })
+    .select({ name: itemTypes.name, count: count(rentalItems.id), dayRateCents: rentalItems.dayRateCents, holdCents: rentalItems.holdCents, includedKmPerDay: rentalItems.includedKmPerDay })
     .from(rentalItems)
     .innerJoin(items, eq(items.id, rentalItems.itemId))
     .innerJoin(itemTypes, eq(itemTypes.id, items.itemTypeId))
     .where(eq(rentalItems.rentalId, rentalId))
-    .groupBy(itemTypes.name, rentalItems.dayRateCents, rentalItems.holdCents)
+    .groupBy(itemTypes.name, rentalItems.dayRateCents, rentalItems.holdCents, rentalItems.includedKmPerDay)
     .orderBy(asc(itemTypes.name))
   const prices = await transaction
     .select({ description: priceEntries.description, category: priceEntries.category, amountCents: priceEntries.amountCents })

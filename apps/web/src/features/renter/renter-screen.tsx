@@ -201,6 +201,7 @@ export function RenterScreen({
               <span className="text-sm text-muted-foreground tabular-nums">
                 {t('lineTerms', { rate: formatMoney(money(line.dayRateCents, view.currency), locale), hold: formatMoney(money(line.holdCents, view.currency), locale) })}
               </span>
+              {line.includedKmPerDay === null ? null : <span className="text-sm text-pretty text-muted-foreground tabular-nums">{t('lineIncluded', { km: line.includedKmPerDay, total: line.includedKmPerDay * view.days, days: view.days })}</span>}
             </li>
           ))}
         </ul>

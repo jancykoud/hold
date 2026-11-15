@@ -2260,7 +2260,9 @@
         "save": "Artikeltyp speichern",
         "saving": "Wird gespeichert…",
         "saved": "Artikeltyp gespeichert.",
-        "passkeyBody": "Zum Ändern von Reservierung, Tagespreis oder Fotoplan eines Artikeltyps brauchen Sie Ihren Passkey."
+        "passkeyBody": "Zum Ändern von Reservierung, Tagespreis oder Fotoplan eines Artikeltyps brauchen Sie Ihren Passkey.",
+        "includedKm": "Inklusivkilometer pro Tag",
+        "includedKmHelp": "Eine Miete enthält so viele für jeden Tag. Jeder weitere Kilometer wird zum Kilometerpreis der Preisliste berechnet. Mit 0 wird jeder Kilometer berechnet."
       },
       "passport": {
         "label": "Artikelpass",
@@ -2365,7 +2367,9 @@
         "transition_not_allowed": "Ein ausgemusterter Artikel kann nicht zurückgeholt werden.",
         "with_renter": "Eine mietende Person hat diesen Artikel. Geben Sie ihn in die Reparatur, sobald er zurück ist.",
         "rental_under_way": "Eine Miete braucht diesen Artikel noch. Mustern Sie ihn aus, sobald diese Miete vorbei ist.",
-        "role_may_not_retire": "Nur Inhaber oder Leitung können einen Artikel ausmustern."
+        "role_may_not_retire": "Nur Inhaber oder Leitung können einen Artikel ausmustern.",
+        "included_distance_missing": "Gib an, wie viele Kilometer jeder Tag enthält. Mit 0 wird jeder Kilometer berechnet.",
+        "included_distance_invalid": "Die Inklusivkilometer müssen eine ganze Zahl von 0 bis 5000 sein."
       },
       "fleet": {
         "keys": "Tage unterwegs zählen dieses Jahr. Schäden zeigt, was der Vergleich bei jeder der letzten Mieten eines Artikels fand. Pfeiltasten wechseln zwischen Zeilen; Enter öffnet den Pass eines Artikels; die Schaltfläche am Zeilenende bietet Pass, Status oder die Reservierung der Art.",
@@ -3492,7 +3496,8 @@
         "title": "Noch nicht abgeholt",
         "body": "Die Fotos davon, wie Ihre Miete den Laden verlassen hat, erscheinen hier, sobald Sie sie abholen."
       }
-    }
+    },
+    "lineIncluded": "{km} km pro Tag inklusive, {total} km für {days, plural, one {diesen Tag} other {diese # Tage}}. Jeder weitere Kilometer wird zum Kilometerpreis unten berechnet."
   },
   "shopPage": {
     "label": "Online buchen",
@@ -3623,7 +3628,8 @@
       "incident_not_agreed": "Diese Meldung wurde von der mietenden Person nicht akzeptiert.",
       "raises_agreed_line": "Ein akzeptierter Posten kann gesenkt, nie erhöht werden.",
       "empty_line": "Lassen Sie den Posten weg, statt ihn bei null zu behalten.",
-      "owner_decides_after_promise": "Das Geschäft hat das der mietenden Person zugesagte Datum verpasst. Nur die Inhaberin oder der Inhaber kann diese Forderung jetzt entscheiden."
+      "owner_decides_after_promise": "Das Geschäft hat das der mietenden Person zugesagte Datum verpasst. Nur die Inhaberin oder der Inhaber kann diese Forderung jetzt entscheiden.",
+      "nothing_to_charge": "Die Ablesungen ergeben dafür nichts zu berechnen."
     },
     "acknowledge": "Ich habe diese Forderung geprüft",
     "reviewFirst": "Prüfen Sie die Belege und Preise. Ihre Antwortfrist beginnt mit Ihrer Prüfbestätigung.",
@@ -3677,6 +3683,11 @@
       "noPhotos": "Es gibt keine versiegelten Fotos dieses Artikels von Übergabe und Rückgabe.",
       "more": "Mehr zu dieser Forderung",
       "provenance": "Woher diese Fotos stammen"
+    },
+    "reading": {
+      "charge": "{item} berechnen: {price}, {quantity} × {unit} = {amount}",
+      "mileage": "{from} km bei der Übergabe, {to} km bei der Rückgabe: {driven} km gefahren, {included} km inklusive.",
+      "fuel": "{from}/8 Tank bei der Übergabe, {to}/8 bei der Rückgabe: {missing}/8 fehlen."
     }
   },
   "scorecard": {
@@ -4555,7 +4566,8 @@
       "source": {
         "finding": "Aus dem Fotovergleich",
         "person": "Schriftliche Begründung einer Person",
-        "agreed_in_rental": "Vom Mieter während der Miete akzeptiert"
+        "agreed_in_rental": "Vom Mieter während der Miete akzeptiert",
+        "reading": "Aus den Ablesungen des Armaturenbretts berechnet"
       },
       "atHandover": "Bei der Übergabe: {line}",
       "atReturn": "Bei der Rückgabe: {line}",

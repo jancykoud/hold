@@ -31,7 +31,8 @@ export const MARK_STATUSES = ['open', 'repaired', 'reported'] as const
 export const COMPARISON_STATES = ['pending', 'running', 'clean', 'findings', 'deferred', 'failed'] as const
 // reported: matches a mark the renter reported during this rental that a line already speaks for, or none may.
 export const FINDING_CLASSES = ['new_damage', 'known_mark', 'wear', 'missing_part', 'uncertain', 'reported'] as const
-export const CLAIM_LINE_SOURCES = ['finding', 'person', 'agreed_in_rental'] as const
+// reading: counted from a vehicle's two dashboard readings (packages/domain readings.ts).
+export const CLAIM_LINE_SOURCES = ['finding', 'person', 'agreed_in_rental', 'reading'] as const
 export const CLAIM_REPLY_DECISIONS = ['accept', 'contest'] as const
 export const APPROVAL_SUBJECTS = ['claim', 'release', 'refund', 'proposal'] as const
 export const APPROVAL_DECISIONS = ['approved', 'rejected', 'waived'] as const

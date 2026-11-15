@@ -58,6 +58,7 @@ describe('the item type form', () => {
           itemTypeId: '00000000-0000-4000-8000-0000000000e1',
           name: 'City e-bike',
           category: 'e_bike',
+          includedKmPerDay: '',
           value: '2400.00',
           hold: '300.00',
           dayRate: '45.00',

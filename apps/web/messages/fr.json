@@ -2260,7 +2260,9 @@
         "save": "Enregistrer le type d'article",
         "saving": "Enregistrement…",
         "saved": "Type d'article enregistré.",
-        "passkeyBody": "Modifier l'empreinte, le tarif par jour ou le plan photo d'un type d'article demande votre clé d'accès."
+        "passkeyBody": "Modifier l'empreinte, le tarif par jour ou le plan photo d'un type d'article demande votre clé d'accès.",
+        "includedKm": "Kilomètres inclus par jour",
+        "includedKmHelp": "Une location en inclut autant pour chaque jour. Chaque kilomètre au-delà est facturé au prix du kilomètre de la grille. Saisissez 0 pour facturer chaque kilomètre."
       },
       "passport": {
         "label": "Passeport de l'article",
@@ -2365,7 +2367,9 @@
         "transition_not_allowed": "Un article retiré ne peut pas être remis en service.",
         "with_renter": "Un client a cet article. Envoyez-le en réparation une fois rentré.",
         "rental_under_way": "Une location a encore besoin de cet article. Retirez-le quand cette location sera terminée.",
-        "role_may_not_retire": "Seuls le propriétaire ou un responsable peuvent retirer un article."
+        "role_may_not_retire": "Seuls le propriétaire ou un responsable peuvent retirer un article.",
+        "included_distance_missing": "Indiquez combien de kilomètres chaque jour inclut. Saisissez 0 pour facturer chaque kilomètre.",
+        "included_distance_invalid": "Les kilomètres inclus doivent être un nombre entier, de 0 à 5000."
       },
       "fleet": {
         "keys": "Les jours dehors comptent cette année. Dommages montre ce que la comparaison a trouvé à chacune des dernières locations d’un article. Les flèches passent d’une ligne à l’autre ; Entrée ouvre le passeport d’un article ; le bouton en fin de ligne propose son passeport, son état ou le blocage de son type.",
@@ -3492,7 +3496,8 @@
         "title": "Pas encore retirée",
         "body": "Les photos de l’état de votre location au départ de la boutique apparaissent ici dès que vous la retirez."
       }
-    }
+    },
+    "lineIncluded": "{km} km par jour inclus, {total} km pour {days, plural, one {ce jour} other {ces # jours}}. Chaque kilomètre au-delà est facturé au prix du kilomètre ci-dessous."
   },
   "shopPage": {
     "label": "Réserver en ligne",
@@ -3623,7 +3628,8 @@
       "incident_not_agreed": "Ce signalement n’a pas été accepté par le locataire.",
       "raises_agreed_line": "Une ligne acceptée par le locataire peut être baissée, jamais augmentée.",
       "empty_line": "Retirez la ligne plutôt que de la garder à zéro.",
-      "owner_decides_after_promise": "La boutique a manqué la date promise au locataire. Seul le propriétaire peut maintenant décider de cette réclamation."
+      "owner_decides_after_promise": "La boutique a manqué la date promise au locataire. Seul le propriétaire peut maintenant décider de cette réclamation.",
+      "nothing_to_charge": "Les relevés ne donnent rien à facturer pour cela."
     },
     "acknowledge": "J’ai examiné cette réclamation",
     "reviewFirst": "Vérifiez les preuves et les prix. Votre délai commence quand vous confirmez avoir examiné cette réclamation.",
@@ -3677,6 +3683,11 @@
       "noPhotos": "Aucune photo scellée de cet article à la remise et au retour n’est disponible.",
       "more": "Plus sur cette réclamation",
       "provenance": "D’où viennent ces photos"
+    },
+    "reading": {
+      "charge": "Facturer {item} : {price}, {quantity} × {unit} = {amount}",
+      "mileage": "{from} km à la remise, {to} km au retour : {driven} km parcourus, {included} km inclus.",
+      "fuel": "{from}/8 du réservoir à la remise, {to}/8 au retour : {missing}/8 manquants."
     }
   },
   "scorecard": {
@@ -4555,7 +4566,8 @@
       "source": {
         "finding": "De la comparaison des photos",
         "person": "Motif écrit par une personne",
-        "agreed_in_rental": "Acceptée par le locataire pendant la location"
+        "agreed_in_rental": "Acceptée par le locataire pendant la location",
+        "reading": "Calculé à partir des relevés du tableau de bord"
       },
       "atHandover": "À la remise : {line}",
       "atReturn": "Au retour : {line}",

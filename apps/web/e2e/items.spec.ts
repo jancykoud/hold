@@ -48,6 +48,8 @@ test('a car is suggested the nineteen views of a walk around it, ending on the d
   await page.getByLabel('Value to replace, in EUR').fill('18000')
   await page.getByLabel('Hold while it is out, in EUR').fill('1200')
   await page.getByLabel('Fee per day, in EUR').fill('60')
+  // A kind that is driven says how many kilometres each day includes, and is not saved without it.
+  await page.getByLabel('Kilometres included each day').fill('200')
   await page.getByRole('button', { name: 'Save item type' }).click()
   await expect(page).toHaveURL(/\/shop\/items$/)
   await expect(page.getByRole('region', { name: 'Compact car' }).getByText('19 views')).toBeVisible()

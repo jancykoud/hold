@@ -1,4 +1,4 @@
-import { bindingRental, changeItemStatus, checkItem, ITEM_LIMITS, itemStanding, nextItemLabels, viewKeys } from '@hold/domain'
+import { bindingRental, changeItemStatus, checkItem, ITEM_LIMITS, itemStanding, nextItemLabels, takesReadings, viewKeys } from '@hold/domain'
 import type { Accessory, ClaimState, ItemCategory, ItemDraft, ItemStanding, ItemStatus, ItemTypeDraft, RentalState } from '@hold/domain'
 import { and, asc, count, desc, eq, inArray, ne, notInArray, sql } from 'drizzle-orm'
 import type { PhotoPlanView } from './schema/index.ts'
@@ -21,6 +21,8 @@ export type CatalogType = {
   readonly photoPlanId: string
   readonly views: readonly PhotoPlanView[]
   readonly simulated: boolean
+  // For a kind that is driven: the kilometres a rental includes for each day.
+  readonly includedKmPerDay: number | null
 }
 
 // The rental that decides where an item stands, when one still needs it.
@@ -57,6 +59,7 @@ const typeColumns = {
   photoPlanId: itemTypes.photoPlanId,
   views: photoPlans.views,
   simulated: itemTypes.simulated,
+  includedKmPerDay: itemTypes.includedKmPerDay,
 }
 
 const itemColumns = {
@@ -155,6 +158,8 @@ export async function saveItemType(transaction: Transaction, shopId: string, inp
     dayRateCents: draft.dayRate.cents,
     accessories: draft.accessories.map((accessory) => ({ name: accessory.name.trim(), count: accessory.count })),
     photoPlanId,
+    // Kept only for a kind that is driven.
+    includedKmPerDay: takesReadings(draft.category) ? (draft.includedKmPerDay ?? null) : null,
   }
   if (input.id !== undefined) {
     await transaction.update(itemTypes).set(values).where(eq(itemTypes.id, input.id))

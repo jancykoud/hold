@@ -1,8 +1,8 @@
 'use client'
 import type { ClaimWorkspace } from '@hold/db'
-import { amountText, formatMoney, money, parseAmount } from '@hold/domain'
+import { amountText, formatMoney, money, parseAmount, UNIT_PRICE_CATEGORIES } from '@hold/domain'
 import { Plus } from 'lucide-react'
-import { useLocale, useTranslations } from 'next-intl'
+import { useFormatter, useLocale, useTranslations } from 'next-intl'
 import { useActionState, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -21,6 +21,13 @@ export function ClaimDraftForm({ data, leading = false }: { data: ClaimWorkspace
   const [result, prepare, pending] = useActionState(prepareClaim, null)
   const [rows, setRows] = useState([{ priceEntryId: data.prices[0]?.id ?? '', reason: '' }])
   const [selected, setSelected] = useState<readonly string[]>([])
+  // The charges counted from a vehicle's readings that staff chose, as "mileage:<rental item>".
+  const [read, setRead] = useState<readonly string[]>([])
+  const number = useFormatter().number
+  const offered = data.readings.flatMap((item) => UNIT_PRICE_CATEGORIES.flatMap((reading) => {
+    const charge = item[reading]
+    return charge === null ? [] : [{ key: `${reading}:${item.rentalItemId}`, reading, item, charge }]
+  }))
   const [agreed, setAgreed] = useState<Readonly<Record<string, AgreedChoice>>>(Object.fromEntries(data.agreedIncidents.map((incident) => [incident.id, { keep: true, amount: amountText(money(incident.agreedCents ?? 0, data.currency)) }])))
   // A confirmed finding no agreed price matched is offered too: staff choose its price, and the line keeps its evidence.
   const findings = data.possibleFindings
@@ -39,7 +46,7 @@ export function ClaimDraftForm({ data, leading = false }: { data: ClaimWorkspace
   })
   // A chosen finding without its price is never sent: the form waits for one.
   const blocked = kept.some((line) => line.raised) || pricedFindings.some((line) => line.priceEntryId === '')
-  const lines = [...kept.map(({ incidentId, amountCents }) => ({ incidentId, amountCents })), ...pricedFindings.filter((line) => line.priceEntryId !== ''), ...rows.filter((row) => row.reason.trim() !== '')]
+  const lines = [...offered.filter((each) => read.includes(each.key)).map((each) => ({ reading: each.reading, rentalItemId: each.item.rentalItemId })), ...kept.map(({ incidentId, amountCents }) => ({ incidentId, amountCents })), ...pricedFindings.filter((line) => line.priceEntryId !== ''), ...rows.filter((row) => row.reason.trim() !== '')]
   return <form action={prepare} className="grid gap-5">
     <input type="hidden" name="locale" value={locale} /><input type="hidden" name="rentalId" value={data.rentalId} /><input type="hidden" name="lines" value={JSON.stringify(lines)} />
     <p className="text-pretty text-muted-foreground">{t('draftGuidance')}</p>
@@ -47,6 +54,16 @@ export function ClaimDraftForm({ data, leading = false }: { data: ClaimWorkspace
       const choice = agreed[incident.id] ?? { keep: false, amount: '' }
       return <AgreedLineField key={incident.id} incident={incident} currency={data.currency} choice={choice} raised={kept.some((line) => line.incidentId === incident.id && line.raised)} onChange={(next) => { setAgreed({ ...agreed, [incident.id]: next }) }} />
     })}
+    {offered.length === 0 ? null : <ul className="grid gap-2">{offered.map(({ key, reading, item, charge }) => <li key={key}>
+      <label className="flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-border/70 px-3 py-2 transition-colors duration-200 ease-swift has-checked:border-primary has-checked:bg-primary/6">
+        <input type="checkbox" className="mt-1 min-h-11 min-w-11 shrink-0 accent-primary" checked={read.includes(key)} aria-label={t('reading.charge', { item: item.itemLabel, price: charge.description, quantity: number(charge.quantity), unit: formatMoney(money(charge.unitCents, data.currency), locale), amount: formatMoney(money(charge.amountCents, data.currency), locale) })} onChange={(event) => { setRead(event.target.checked ? [...read, key] : read.filter((each) => each !== key)) }} />
+        <span className="grid min-w-0 gap-0.5 self-center">
+          <span className="font-semibold wrap-long-words">{item.itemLabel}: {charge.description}</span>
+          <span className="figures">{number(charge.quantity)} × {formatMoney(money(charge.unitCents, data.currency), locale)} = {formatMoney(money(charge.amountCents, data.currency), locale)}</span>
+          <span className="text-sm text-pretty text-muted-foreground">{reading === 'mileage' ? t('reading.mileage', { from: number(item.handover.odometerKm), to: number(item.returned.odometerKm), driven: number(item.usage.drivenKm), included: number(item.usage.includedKm) }) : t('reading.fuel', { from: item.handover.fuelEighths, to: item.returned.fuelEighths, missing: item.usage.missingFuelEighths })}</span>
+        </span>
+      </label>
+    </li>)}</ul>}
     {findings.length === 0 ? null : <ul className="grid gap-2">{findings.map((finding) => <li key={finding.id}>
       <label className="flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-border/70 px-3 py-2 transition-colors duration-200 ease-swift has-checked:border-primary has-checked:bg-primary/6">
         <input type="checkbox" className="mt-1 min-h-11 min-w-11 shrink-0 accent-primary" checked={selected.includes(finding.id)} onChange={(event) => { setSelected(event.target.checked ? [...selected, finding.id] : selected.filter((id) => id !== finding.id)) }} />

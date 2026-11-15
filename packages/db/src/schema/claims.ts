@@ -52,6 +52,9 @@ export const claimLines = pgTable(
       .references(() => priceEntries.id),
     currency: currency().notNull(),
     amountCents: cents().notNull(),
+    // How many of the entry the line charges: one, except for a line counted from a vehicle's readings, which takes the
+    // entry's price a kilometre or an eighth of a tank as many times as the readings say.
+    quantity: integer().notNull().default(1),
     source: claimLineSource().notNull(),
     findingId: reference().references(() => findings.id),
     // The incident whose agreed line this is, for a line the renter agreed during the rental.
@@ -60,7 +63,7 @@ export const claimLines = pgTable(
     reason: text(),
     createdAt: createdAt(),
   },
-  (table) => [allowed(table.source, CLAIM_LINE_SOURCES), nonNegative(table.amountCents), shopIsolation(table.shopId)],
+  (table) => [allowed(table.source, CLAIM_LINE_SOURCES), nonNegative(table.amountCents), check('quantity_positive', sql`${table.quantity} >= 1`), shopIsolation(table.shopId)],
 )
 
 export const claimReplies = pgTable(

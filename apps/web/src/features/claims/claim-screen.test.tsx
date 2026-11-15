@@ -10,7 +10,7 @@ vi.mock('@/features/negotiation/actions', () => ({ confirmSettlementForShop: vi.
 vi.mock('@/features/promise/actions', () => ({ writeToRenter: vi.fn() }))
 vi.mock('@/features/promise/renter-actions', () => ({ writeToShop: vi.fn() }))
 vi.mock('@/hooks/use-look-again', () => ({ useLookAgain: () => undefined }))
-const workspace: ClaimWorkspace = { protectedReply: false, agreedIncidents: [], rentalId: 'rental', rentalState: 'inspecting', currency: 'EUR', simulated: false, reservedCents: 30000, holdState: 'placed', claim: null, prices: [{ id: 'price', description: 'Scratch', amountCents: 3500 }], possibleFindings: [], lines: [], payments: [], invoices: [], execution: null, replies: [], decisions: [], amounts: { capture: { cents: 0, currency: 'EUR' }, release: { cents: 30000, currency: 'EUR' }, invoice: { cents: 0, currency: 'EUR' } } }
+const workspace: ClaimWorkspace = { protectedReply: false, agreedIncidents: [], readings: [], rentalId: 'rental', rentalState: 'inspecting', currency: 'EUR', simulated: false, reservedCents: 30000, holdState: 'placed', claim: null, prices: [{ id: 'price', description: 'Scratch', amountCents: 3500 }], possibleFindings: [], lines: [], payments: [], invoices: [], execution: null, replies: [], decisions: [], amounts: { capture: { cents: 0, currency: 'EUR' }, release: { cents: 30000, currency: 'EUR' }, invoice: { cents: 0, currency: 'EUR' } } }
 describe('claim preparation and settlement screen', () => {
   const waiting = { ...workspace, simulated: true, claim: { id: 'claim', state: 'presented' as const, totalCents: 5000, raisedByUserId: 'staff', replyDueAt: new Date('2026-12-08T09:00:00Z') } }
   const oneLeft = { allowance: { left: 1, refusal: null }, recording: undefined }
@@ -273,5 +273,35 @@ describe('the promise to decide a contested claim', () => {
     renderWithIntl(<ClaimScreen shopName="Ribeira Bikes" data={contested('escalated')} canAct canDecide promise={missed} messages={[]} renterName="Lena Brandt" isOwner />)
     expect(screen.getByRole('button', { name: 'Uphold claim and settle' })).toBeInTheDocument()
     expect(screen.getByText('The renter will read this reason on their claim page.')).toBeInTheDocument()
+  })
+})
+
+// docs/vehicle-plan.md step 3, part C: what a vehicle's readings are charged is counted and priced by the server. Staff
+// only choose to charge it; no figure of it is typed or sent.
+describe('a charge counted from a vehicle’s readings', () => {
+  const charged = {
+    ...workspace,
+    readings: [{
+      rentalItemId: 'rental-item', itemLabel: 'Compact car 1', handover: { odometerKm: 48_210, fuelEighths: 8 }, returned: { odometerKm: 48_930, fuelEighths: 5 },
+      usage: { drivenKm: 720, includedKm: 200, excessKm: 520, missingFuelEighths: 3 }, photoCount: 2,
+      mileage: { priceEntryId: 'per-km', description: 'Each kilometre beyond those included', unitCents: 30, quantity: 520, amountCents: 156_00 },
+      fuel: null,
+    }],
+  }
+  const lines = (container: HTMLElement) => JSON.parse(container.querySelector<HTMLInputElement>('input[name="lines"]')?.value ?? '[]') as unknown
+
+  it('is offered with how it was counted, and sent as the choice alone when staff tick it', () => {
+    const { container } = renderWithIntl(<ClaimScreen shopName="Ribeira Bikes" data={charged} canAct />)
+    const choice = screen.getByRole('checkbox', { name: 'Charge Compact car 1: Each kilometre beyond those included, 520 × €0.30 = €156.00' })
+    expect(choice).not.toBeChecked()
+    expect(screen.getByText('48,210 km at handover, 48,930 km at return: 720 km driven, 200 km included.')).toBeInTheDocument()
+    expect(lines(container)).toEqual([])
+    fireEvent.click(choice)
+    expect(lines(container)).toEqual([{ reading: 'mileage', rentalItemId: 'rental-item' }])
+  })
+
+  it('offers nothing where the readings give nothing to charge', () => {
+    renderWithIntl(<ClaimScreen shopName="Ribeira Bikes" data={workspace} canAct />)
+    expect(screen.queryByRole('checkbox', { name: /^Charge / })).not.toBeInTheDocument()
   })
 })

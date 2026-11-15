@@ -1,7 +1,8 @@
 import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 import { ITEM_CATEGORIES } from './photo-plan.ts'
-import { checkIncludedDistance, checkReading, checkReturnReading, READING_LIMITS, readingUsage, takesReadings } from './readings.ts'
+import { money } from './money.ts'
+import { checkIncludedDistance, checkReading, checkReturnReading, READING_LIMITS, readingReason, readingUsage, takesReadings } from './readings.ts'
 
 // What a vehicle's dashboard says at handover and at return (vehicle-plan.md step 3): the kilometres on its odometer and
 // the fuel in its tank, in eighths. Staff enter both from the dashboard photograph; plain code works out the rest.
@@ -66,5 +67,21 @@ describe('what a rental used, from its two readings', () => {
       expect(usage.missingFuelEighths).toBeLessThanOrEqual(8)
       expect(usage.excessKm).toBeLessThanOrEqual(usage.drivenKm)
     }))
+  })
+})
+
+// A line counted from the readings says how it was counted, in figures alone, so a renter reads it in any language
+// beside the shop's own words for the price.
+describe('how a charge from the readings was counted', () => {
+  const handover = { odometerKm: 48_210, fuelEighths: 8 }
+  const returned = { odometerKm: 48_930, fuelEighths: 5 }
+  const usage = readingUsage({ handover, returned, days: 1, includedKmPerDay: 200 })
+
+  it('gives the two odometer readings, what was driven less what was included, and the price of one kilometre', () => {
+    expect(readingReason('mileage', { handover, returned, usage, unit: money(30, 'EUR') })).toBe('48210 km → 48930 km · 720 km − 200 km = 520 km × 0.30 EUR')
+  })
+
+  it('gives the two tank readings in eighths, and the price of one eighth', () => {
+    expect(readingReason('fuel', { handover, returned, usage, unit: money(12_00, 'EUR') })).toBe('8/8 → 5/8 · 3 × 12.00 EUR')
   })
 })

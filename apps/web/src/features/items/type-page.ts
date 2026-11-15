@@ -13,6 +13,7 @@ export function formValues(type: CatalogType): ItemTypeFormValues {
     value: text(type.valueCents),
     hold: text(type.holdCents),
     dayRate: text(type.dayRateCents),
+    includedKmPerDay: type.includedKmPerDay === null ? '' : String(type.includedKmPerDay),
     accessories: type.accessories.map((accessory) => ({ name: accessory.name, count: String(accessory.count) })),
     views: type.views.map((view) => ({ label: view.label, outline: view.outline, required: view.required })),
   }

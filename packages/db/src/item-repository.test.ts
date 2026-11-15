@@ -1,4 +1,4 @@
-import { ITEM_CATEGORIES, money } from '@hold/domain'
+import { ITEM_CATEGORIES, money, takesReadings } from '@hold/domain'
 import type { ItemTypeDraft } from '@hold/domain'
 import { eq, sql } from 'drizzle-orm'
 import { beforeAll, describe, expect, it } from 'vitest'
@@ -67,7 +67,7 @@ describe('an item type', () => {
 
   it('is saved under each kind the code names, a car as well as a room, since the database knows the same kinds', async () => {
     for (const category of ITEM_CATEGORIES) {
-      const typeId = await newType({ ...ebike, name: `One ${category}`, category })
+      const typeId = await newType({ ...ebike, name: `One ${category}`, category, ...(takesReadings(category) ? { includedKmPerDay: 200 } : {}) })
       const catalog = await act(owner, itemCatalog)
       expect(catalog.types.find((candidate) => candidate.id === typeId)?.category).toBe(category)
     }

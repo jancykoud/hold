@@ -1,14 +1,18 @@
 import type { Page } from '@playwright/test'
 import { expectFitsEveryWidth } from './support/responsive'
 import { bookAtTheCounter, feePaidAndHoldPlaced } from './support/rental'
-import { addItems, ownerWithPrices } from './support/shop'
+import { addItems, ownerWithPrices, publishPrices } from './support/shop'
 import { expect, test } from './support/test'
 
-// A vehicle's dashboard (docs/vehicle-plan.md step 3, part B): staff read the kilometres and the fuel at the handover
-// and at the return, neither is sealed without them, and the renter reads them on the condition report.
+// A vehicle's dashboard (docs/vehicle-plan.md step 3): staff read the kilometres and the fuel at the handover and at
+// the return, neither is sealed without them, the renter reads them on the condition report, and what the two readings
+// used beyond what the booking includes is counted and priced by the server for staff to charge.
 
 async function carShop(page: Page): Promise<void> {
   await ownerWithPrices(page, 'Porto Cars')
+  // A second version of the price list, with the price of a kilometre and of an eighth of a tank.
+  await page.getByRole('navigation', { name: 'Shop pages' }).getByRole('link', { name: 'Prices' }).click()
+  await publishPrices(page, 'EUR', 'Each kilometre beyond those included\tMileage\t0.30\nEach eighth of a tank missing\tFuel\t12')
   await page.getByRole('navigation', { name: 'Shop pages' }).getByRole('link', { name: 'PayPal' }).click()
   await page.getByLabel('Client ID').fill('sandbox-client-id-for-the-test')
   await page.getByLabel('Secret').fill('sandbox-secret-for-the-test')
@@ -22,6 +26,7 @@ async function carShop(page: Page): Promise<void> {
   await page.getByLabel('Value to replace, in EUR').fill('18000')
   await page.getByLabel('Hold while it is out, in EUR').fill('1200')
   await page.getByLabel('Fee per day, in EUR').fill('60')
+  await page.getByLabel('Kilometres included each day').fill('200')
   await page.getByRole('button', { name: 'Save item type' }).click()
   await expect(page).toHaveURL(/\/shop\/items$/)
   // Two cars, so one is still free once the first is booked.
@@ -99,4 +104,18 @@ test('a car is handed over and returned only once its dashboard is read, and the
   await page.reload()
   await expect(dashboard(page)).toContainText('48,930 km, 5/8 of a tank')
   await expect(dashboard(page).getByRole('button', { name: 'Save the reading' })).toHaveCount(0)
+
+  // One day includes 200 km: 720 km driven leaves 520 to charge, and three eighths of a tank are missing. Staff only
+  // choose to charge them; the count and the amount are the server's.
+  await page.getByRole('link', { name: 'Back to the rental', exact: true }).first().click()
+  await page.getByRole('link', { name: 'Claim and settlement', exact: true }).click()
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Claim and settlement')
+  await page.getByRole('checkbox', { name: 'Charge Compact car 1: Each kilometre beyond those included, 520 × €0.30 = €156.00' }).check()
+  await page.getByRole('checkbox', { name: 'Charge Compact car 1: Each eighth of a tank missing, 3 × €12.00 = €36.00' }).check()
+  await expectFitsEveryWidth(page)
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await page.getByRole('button', { name: 'Prepare claim for review', exact: true }).click()
+  await expect(page.getByText('48210 km → 48930 km · 720 km − 200 km = 520 km × 0.30 EUR')).toBeVisible()
+  await expect(page.getByText('8/8 → 5/8 · 3 × 12.00 EUR')).toBeVisible()
+  await expect(page.getByText('€192.00').first()).toBeVisible()
 })

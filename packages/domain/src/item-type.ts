@@ -1,6 +1,7 @@
 import type { Money } from './money.ts'
 import { checkPhotoPlan } from './photo-plan.ts'
 import type { ItemCategory, PhotoPlanProblem, PhotoPlanViewDraft } from './photo-plan.ts'
+import { checkIncludedDistance, takesReadings } from './readings.ts'
 
 // A kind of thing a shop rents: what it is worth, what is held while it is out, what a day of it costs, the kit
 // that goes with it and the views photographed at each handover and return (architecture.md section 6.3).
@@ -20,6 +21,9 @@ export type ItemTypeDraft = {
   readonly dayRate: Money
   readonly accessories: readonly Accessory[]
   readonly views: readonly PhotoPlanViewDraft[]
+  // For a kind that is driven: the kilometres a rental includes for each day. Kept on each booking; the ones beyond
+  // are charged at the price list's price of a kilometre (readings.ts). Not read for any other kind.
+  readonly includedKmPerDay?: number | undefined
 }
 
 export type ItemTypeProblem =
@@ -29,6 +33,8 @@ export type ItemTypeProblem =
   | { readonly kind: 'hold_zero' }
   | { readonly kind: 'day_rate_zero' }
   | { readonly kind: 'hold_above_value' }
+  | { readonly kind: 'included_distance_missing' }
+  | { readonly kind: 'included_distance_invalid' }
   | { readonly kind: 'wrong_currency'; readonly field: 'value' | 'hold' | 'dayRate' }
   | { readonly kind: 'too_many_accessories' }
   | { readonly kind: 'accessory_name_missing'; readonly accessory: number }
@@ -49,6 +55,10 @@ export function checkItemType(draft: ItemTypeDraft): readonly ItemTypeProblem[] 
     if (draft[field].currency !== draft.currency) problems.push({ kind: 'wrong_currency', field })
   }
   if (draft.hold.cents > draft.value.cents) problems.push({ kind: 'hold_above_value' })
+  if (takesReadings(draft.category)) {
+    if (draft.includedKmPerDay === undefined) problems.push({ kind: 'included_distance_missing' })
+    else if (!checkIncludedDistance(draft.includedKmPerDay)) problems.push({ kind: 'included_distance_invalid' })
+  }
   problems.push(...checkAccessories(draft.accessories))
   problems.push(...checkPhotoPlan(draft.views))
   return problems

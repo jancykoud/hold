@@ -82,6 +82,8 @@ export type PricedBooking = {
   readonly terms: BookingTerms
   // Each line with its type's name, as the shop wrote it.
   readonly names: ReadonlyMap<string, string>
+  // For each type that is driven, the kilometres a day it includes, which the booking keeps.
+  readonly includedKmPerDay: ReadonlyMap<string, number | null>
   readonly priceList: { readonly id: string; readonly version: number }
   readonly wearPolicyId: string
 }
@@ -116,20 +118,20 @@ export async function priceBooking(transaction: Transaction, shopId: string, boo
   const [wear] = list === undefined ? [] : await transaction.select({ id: wearPolicies.id }).from(wearPolicies).where(and(eq(wearPolicies.version, list.version), isNotNull(wearPolicies.publishedAt)))
   if (list === undefined || wear === undefined) return { ok: false, reason: 'no_price_list' }
   const terms = bookingTerms(lines, rentalDays(booking.startsAt, booking.endsAt), currency)
-  return { ok: true, priced: { currency, terms, names: new Map(types.map((type) => [type.id, type.name])), priceList: list, wearPolicyId: wear.id } }
+  return { ok: true, priced: { currency, terms, names: new Map(types.map((type) => [type.id, type.name])), includedKmPerDay: new Map(types.map((type) => [type.id, type.includedKmPerDay])), priceList: list, wearPolicyId: wear.id } }
 }
 
 export async function createBooking(transaction: Transaction, shopId: string, booking: NewBooking, now: Date): Promise<BookingResult> {
   const priced = await priceBooking(transaction, shopId, booking, now)
   if (!priced.ok) return priced
-  const { currency, terms, priceList: list, wearPolicyId } = priced.priced
+  const { currency, terms, priceList: list, wearPolicyId, includedKmPerDay } = priced.priced
 
   const candidates = await itemsWithRentals(transaction, booking.lines.map((line) => line.itemTypeId), true)
-  const chosen: { readonly itemId: string; readonly dayRateCents: number; readonly holdCents: number }[] = []
+  const chosen: { readonly itemId: string; readonly dayRateCents: number; readonly holdCents: number; readonly includedKmPerDay: number | null }[] = []
   for (const line of terms.lines) {
     const freeItems = candidates.filter((item) => item.itemTypeId === line.itemTypeId && free(item, booking, now)).slice(0, line.count)
     if (freeItems.length < line.count) return { ok: false, reason: 'not_available', itemTypeId: line.itemTypeId }
-    chosen.push(...freeItems.map((item) => ({ itemId: item.id, dayRateCents: line.dayRate.cents, holdCents: line.hold.cents })))
+    chosen.push(...freeItems.map((item) => ({ itemId: item.id, dayRateCents: line.dayRate.cents, holdCents: line.hold.cents, includedKmPerDay: includedKmPerDay.get(line.itemTypeId) ?? null })))
   }
 
   const [rental] = await transaction
