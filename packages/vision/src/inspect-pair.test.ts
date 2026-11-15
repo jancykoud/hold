@@ -11,7 +11,7 @@ import { inspectPair } from './inspect-pair.ts'
 // pair of a car's flank is checked at the end of this file.
 const DEMONSTRATION = join(import.meta.dirname, '../../../apps/web/public/images')
 const SAMPLE = join(DEMONSTRATION, 'sample-bike-handover.jpg')
-const OTHER = join(import.meta.dirname, '../../../apps/web/public/images/renter.jpg')
+const OTHER = join(import.meta.dirname, '../../../apps/web/public/images/driver.jpg')
 const WIDTH = 1600
 const HEIGHT = 685
 // A spot on the down tube, in handover pixels.
