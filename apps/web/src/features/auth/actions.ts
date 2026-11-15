@@ -85,7 +85,7 @@ export async function signInWithDemoAccount(_previous: DemoFormState, data: Form
   const current = choice.data === 'continue' ? await readDemoSession() : undefined
   let session: DemoSession
   if (current === undefined) {
-    const started = await startDemo(demo, key.data, await requester())
+    const started = await startDemo(demo, key.data, await requester(), readLocale(data.get('locale')))
     if (!started.ok) return { notice: started.notice }
     await writeDemoSession(started.session)
     await writeSession(started.tokens, 'demo')

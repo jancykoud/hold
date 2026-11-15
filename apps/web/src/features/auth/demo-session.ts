@@ -1,6 +1,7 @@
 import 'server-only'
 import { DEMO_ACCOUNT_KEYS, DEMO_SESSION_DOMAIN, newDemoPassword } from '@hold/auth'
 import type { DemoAccountKey, DemoSessionAccounts, Tokens } from '@hold/auth'
+import { demoWords } from '@hold/db'
 import type { DemoSessionInput, OpenedDemoSession, PayPalMode, RateLimit } from '@hold/db'
 import { DEMO_STARTS_PER_DAY, utcDay } from '@hold/domain'
 import { z } from 'zod'
@@ -62,7 +63,8 @@ async function signIn(dependencies: DemoDependencies, session: DemoSession, key:
   return { ok: false, notice: signedIn.error.kind === 'too_many_requests' ? 'busy' : 'unavailable' }
 }
 
-export async function startDemo(dependencies: DemoDependencies, key: DemoAccountKey, requester: Requester): Promise<DemoStart> {
+// language: the one the visitor reads the site in, so the shop they are given is written in it.
+export async function startDemo(dependencies: DemoDependencies, key: DemoAccountKey, requester: Requester, language = 'en'): Promise<DemoStart> {
   const { sessions } = dependencies
   if (sessions === undefined) return { ok: false, notice: 'unavailable' }
   // A network is unknown only for a request from this machine (callerNetwork): the deployed app always sits behind App
@@ -81,6 +83,7 @@ export async function startDemo(dependencies: DemoDependencies, key: DemoAccount
       slug: `ribeira-rentals-${code}`,
       paypal: await sessions.paypal(),
       now: dependencies.now(),
+      words: demoWords(language),
     })
   } catch (error) {
     warn('open', error instanceof Error ? error.name : 'unknown')

@@ -1,9 +1,11 @@
 import { money } from '@hold/domain'
-import type { PriceEntryDraft } from '@hold/domain'
+import type { PhotoPlanViewDraft, PriceEntryDraft } from '@hold/domain'
 import { sql } from 'drizzle-orm'
 import { addItems, saveItemType } from './item-repository.ts'
 import { publishPriceList } from './price-list-repository.ts'
-import { addSampleRentals } from './sample-rentals.ts'
+import { TRANSLATED_DEMO_WORDS } from './demo-words.ts'
+import type { DemoWords } from './demo-words.ts'
+import { addSampleRentals, BIKE_CLAIM, SAMPLE_ITEM_NAMES } from './sample-rentals.ts'
 import { saveSelfReturnSettings } from './self-return-repository.ts'
 import { grantShopSettlement } from './settlement-mandate-repository.ts'
 import { staffRoles } from './schema/index.ts'
@@ -56,7 +58,8 @@ export const DEMO_SHOP = {
     ],
   },
   // A car beside the bikes: the condition report of a vehicle is what Hold is built for first. Its plan is the walk
-  // around a car in full, in English as the demo is, and each day includes 200 kilometres.
+  // around a car in full, and each day includes 200 kilometres. These words are the demo's English; demo-words.ts has
+  // them in the site's other languages.
   vehicle: {
     name: 'Compact car',
     category: 'car',
@@ -98,23 +101,47 @@ export const DEMO_SHOP = {
     'Stone chips smaller than a coin, light scuffs on tyres and wheel trims, and ordinary wear of seats and pedals are never charged. A mark already recorded at the handover is never charged again.',
 } as const
 
+// The demo's words in English, as it is opened when no others are given.
+export const DEMO_WORDS: DemoWords = {
+  language: 'en',
+  prices: DEMO_SHOP.priceList.map((entry) => entry.description),
+  bike: { name: DEMO_SHOP.bookable.name, views: DEMO_SHOP.bookable.views.map((view) => view.label) },
+  car: { name: DEMO_SHOP.vehicle.name, views: DEMO_SHOP.vehicle.views.map((view) => view.label) },
+  dropPoint: DEMO_SHOP.dropPoint,
+  wearPolicy: DEMO_SHOP.wearPolicy,
+  sampleItems: SAMPLE_ITEM_NAMES,
+}
+
+// The demo's words in a language the site is written in, and in English for any other.
+export function demoWords(language: string): DemoWords {
+  return language in TRANSLATED_DEMO_WORDS ? TRANSLATED_DEMO_WORDS[language as keyof typeof TRANSLATED_DEMO_WORDS] : DEMO_WORDS
+}
+
+// The given words laid over the demo's figures. A list of words of the wrong length would misname a price or a view.
+function worded<Entry>(entries: readonly Entry[], words: readonly string[], lay: (entry: Entry, word: string) => Entry): Entry[] {
+  if (words.length !== entries.length) throw new Error(`The demo's words name ${String(words.length)} where the demo has ${String(entries.length)}.`)
+  return entries.map((entry, index) => lay(entry, words[index] ?? ''))
+}
+
 // A demo account as Cognito knows it.
 export type DemoPerson = { readonly subject: string; readonly email: string }
 
 // Everything the demo shop starts with after its owner: the published price list and wear policy, Jonas at the
 // counter, and the sample rentals. Runs as hold_app in a transaction bound to the new shop, whose owner it names.
-export async function furnishDemoShop(transaction: Transaction, shopId: string, ownerUserId: string, staffPerson: DemoPerson, now: Date): Promise<{ readonly rentals: number }> {
+export async function furnishDemoShop(transaction: Transaction, shopId: string, ownerUserId: string, staffPerson: DemoPerson, now: Date, words: DemoWords = DEMO_WORDS): Promise<{ readonly rentals: number }> {
+  const prices = worded<PriceEntryDraft>(DEMO_SHOP.priceList, words.prices, (entry, description) => ({ ...entry, description }))
+  const priceOf = (english: string) => words.prices[DEMO_SHOP.priceList.findIndex((entry) => entry.description === english)] ?? english
   await transaction.execute(sql`select set_config('hold.user_id', ${ownerUserId}, true)`)
   const published = await publishPriceList(
     transaction,
     shopId,
-    { currency: DEMO_SHOP.currency, entries: DEMO_SHOP.priceList, wearPolicy: DEMO_SHOP.wearPolicy, ownerApprovalThreshold: money(DEMO_SHOP.ownerApprovalThresholdCents, DEMO_SHOP.currency) },
+    { currency: DEMO_SHOP.currency, entries: prices, wearPolicy: words.wearPolicy, ownerApprovalThreshold: money(DEMO_SHOP.ownerApprovalThresholdCents, DEMO_SHOP.currency) },
     now,
   )
   if (!published.ok) throw new Error(`The demo price list was refused: ${published.reason}.`)
   const [staff] = await transaction
     .select({ userId: sql<string>`registered.id` })
-    .from(sql`hold_register_user(${staffPerson.subject}, ${staffPerson.email}, ${DEMO_SHOP.staffName}, 'en') as registered(id)`)
+    .from(sql`hold_register_user(${staffPerson.subject}, ${staffPerson.email}, ${DEMO_SHOP.staffName}, ${words.language}) as registered(id)`)
   if (staff === undefined) throw new Error('hold_register_user returned no row.')
   await transaction.insert(staffRoles).values({ shopId, userId: staff.userId, role: 'counter_staff', approvalLimitCents: DEMO_SHOP.staffApprovalLimitCents })
   const bike = DEMO_SHOP.bookable
@@ -122,7 +149,7 @@ export async function furnishDemoShop(transaction: Transaction, shopId: string, 
   const saved = await saveItemType(
     transaction,
     shopId,
-    { draft: { name: bike.name, category: bike.category, currency: DEMO_SHOP.currency, value: eur(bike.valueCents), hold: eur(bike.holdCents), dayRate: eur(bike.dayRateCents), accessories: [], views: bike.views } },
+    { draft: { name: words.bike.name, category: bike.category, currency: DEMO_SHOP.currency, value: eur(bike.valueCents), hold: eur(bike.holdCents), dayRate: eur(bike.dayRateCents), accessories: [], views: worded<PhotoPlanViewDraft>(bike.views, words.bike.views, (view, label) => ({ ...view, label })) } },
     now,
   )
   if (!saved.ok) throw new Error(`The demo item type was refused: ${saved.reason}.`)
@@ -132,14 +159,14 @@ export async function furnishDemoShop(transaction: Transaction, shopId: string, 
   const savedCar = await saveItemType(
     transaction,
     shopId,
-    { draft: { name: car.name, category: car.category, currency: DEMO_SHOP.currency, value: eur(car.valueCents), hold: eur(car.holdCents), dayRate: eur(car.dayRateCents), accessories: [], views: car.views, includedKmPerDay: car.includedKmPerDay } },
+    { draft: { name: words.car.name, category: car.category, currency: DEMO_SHOP.currency, value: eur(car.valueCents), hold: eur(car.holdCents), dayRate: eur(car.dayRateCents), accessories: [], views: worded<PhotoPlanViewDraft>(car.views, words.car.views, (view, label) => ({ ...view, label })), includedKmPerDay: car.includedKmPerDay } },
     now,
   )
   if (!savedCar.ok) throw new Error(`The demo car was refused: ${savedCar.reason}.`)
   const addedCars = await addItems(transaction, { itemTypeId: savedCar.id, count: car.count, size: '', serial: '' }, now)
   if (!addedCars.ok) throw new Error(`The demo cars were refused: ${addedCars.reason}.`)
-  await saveSelfReturnSettings(transaction, shopId, { allowed: true, dropPoint: DEMO_SHOP.dropPoint, hours: { opens: DEMO_SHOP.opensAt, closes: DEMO_SHOP.closesAt } })
-  const samples = await addSampleRentals(transaction, { shopId, userId: ownerUserId, raisedByUserId: staff.userId, timeZone: DEMO_SHOP.timeZone, now })
+  await saveSelfReturnSettings(transaction, shopId, { allowed: true, dropPoint: words.dropPoint, hours: { opens: DEMO_SHOP.opensAt, closes: DEMO_SHOP.closesAt } })
+  const samples = await addSampleRentals(transaction, { shopId, userId: ownerUserId, raisedByUserId: staff.userId, timeZone: DEMO_SHOP.timeZone, now, itemNames: words.sampleItems, bikeClaim: { first: priceOf(BIKE_CLAIM.first), also: priceOf(BIKE_CLAIM.also) } })
   if (!samples.ok) throw new Error(`The sample rentals were refused: ${samples.reason}.`)
   // The owner's limits for the shop's advocate, set as Tomás would on the contested-claims page, so a judge can hand
   // the sample claim that waits for a reply to the two advocates without a passkey first. Only a demo shop gets them.

@@ -36,7 +36,7 @@ import type { Transaction } from './scope.ts'
 // claims to decide and a hold near its end. Every rental is marked simulated, every PayPal reference starts with
 // SIMULATED, and every audit line says so, so nothing here can pass for a real rental or a real payment.
 
-type SampleItem = 'hatchback' | 'saloon' | 'scooter' | 'estate' | 'seat' | 'suv' | 'ebike'
+export type SampleItem = 'hatchback' | 'saloon' | 'scooter' | 'estate' | 'seat' | 'suv' | 'ebike'
 
 // Each sample rental's fee is one day of each of its items.
 const CATALOG: Record<
@@ -52,6 +52,9 @@ const CATALOG: Record<
   // One bike beside the vehicles: the claim on it is the one the recorded advocates argue, line for line.
   ebike: { name: 'E-bike', category: 'e_bike', holdCents: 300_00, dayRateCents: 45_00, valueCents: 2400_00 },
 }
+
+// What each sample item is called where the shop's words are not given: in English.
+export const SAMPLE_ITEM_NAMES = Object.fromEntries(Object.entries(CATALOG).map(([key, item]) => [key, item.name])) as Readonly<Record<SampleItem, string>>
 
 // The suggested plan for a category, worded in English like the rest of the samples: "frame_left" reads "Frame left".
 function samplePlan(category: ItemCategory) {
@@ -121,7 +124,7 @@ type SampleRental = {
 }
 
 // The bike claim's two prices, by their words in the demo shop's price list (demo-shop.ts).
-const BIKE_CLAIM = { first: 'Scratch on the frame, through the paint', also: 'Cleaning after a muddy ride' } as const
+export const BIKE_CLAIM = { first: 'Scratch on the frame, through the paint', also: 'Cleaning after a muddy ride' } as const
 
 const SAMPLES: readonly SampleRental[] = [
   { renter: 'Lukas Weber', items: ['hatchback'], starts: { fromNow: -110 }, ends: [3, 18, 0], state: 'out', hold: 'placed' },
@@ -163,6 +166,10 @@ export type SampleRentalsInput = {
   // Who raised the sample claims at the counter. In a demo it is the counter staff, so the owner, who did not raise
   // the contested one, may decide it (architecture.md section 7.3). Otherwise the person adding the samples.
   readonly raisedByUserId?: string
+  // The shop's own words, for a demo opened in another language than English: what each sample item is called, and
+  // the two prices of the bike claim as its price list words them.
+  readonly itemNames?: Readonly<Record<SampleItem, string>>
+  readonly bikeClaim?: { readonly first: string; readonly also: string }
 }
 
 async function publishedTerms(transaction: Transaction) {
@@ -190,6 +197,7 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
   if ((existing?.count ?? 0) > 0) return { ok: false, reason: 'has_rentals' }
 
   const { shopId, userId, now } = input
+  const names = input.itemNames ?? SAMPLE_ITEM_NAMES
   const raiser = input.raisedByUserId ?? userId
   const day = shopDay(input.timeZone, now)
   const moment = (at: Moment): Date => {
@@ -216,14 +224,14 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
   for (const [key, item] of Object.entries(CATALOG) as [SampleItem, (typeof CATALOG)[SampleItem]][]) {
     const [plan] = await transaction
       .insert(photoPlans)
-      .values({ shopId, name: item.name, views: samplePlan(item.category), createdAt: now })
+      .values({ shopId, name: names[key], views: samplePlan(item.category), createdAt: now })
       .returning({ id: photoPlans.id })
     if (plan === undefined) throw new Error('A sample photo plan was not created.')
     const [type] = await transaction
       .insert(itemTypes)
       .values({
         shopId,
-        name: item.name,
+        name: names[key],
         category: item.category,
         currency,
         valueCents: item.valueCents,
@@ -266,7 +274,7 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
       numbered.set(key, number)
       const [item] = await transaction
         .insert(items)
-        .values({ shopId, itemTypeId: typeOf(key), label: `${CATALOG[key].name} ${String(number)}`, simulated: true, createdAt: now })
+        .values({ shopId, itemTypeId: typeOf(key), label: `${names[key]} ${String(number)}`, simulated: true, createdAt: now })
         .returning({ id: items.id })
       if (item === undefined) throw new Error('A sample item was not created.')
       const [rentalItem] = await transaction
@@ -324,7 +332,7 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
     let capturedCents = 0
     if (sample.claim !== undefined) {
       const kind = sample.claim.kind
-      const named = sample.claim.prices
+      const named = sample.claim.prices === undefined ? undefined : (input.bikeClaim ?? sample.claim.prices)
       const entry = (named === undefined ? undefined : terms.entries.find((each) => each.description === named.first)) ?? terms.entries.find((each) => each.category === kind) ?? terms.entries[0]
       if (entry === undefined) throw new Error('The price list has no entries.')
       const also = sample.claim.also === undefined ? undefined : ((named === undefined ? undefined : terms.entries.find((each) => each.description === named.also)) ?? terms.entries.find((each) => each.category === sample.claim?.also))
@@ -368,8 +376,8 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
         // The shop's promise to decide it, still open, and what renter and shop wrote since (architecture.md 6.16).
         if (promise !== undefined) await transaction.update(claims).set({ decideBy: decideByFor({ contestedAt: repliedAt, days: promise.days, timeZone: input.timeZone, closes: promise.closes, validUntil: null }) }).where(eq(claims.id, claim.id))
         await transaction.insert(claimMessages).values([
-          { shopId, claimId: claim.id, author: 'renter', authorUserId: null, body: 'The lock was in the side pocket of the bag. Could someone check there?', createdAt: inMonth(new Date(repliedAt.getTime() + 60 * MINUTE)) },
-          { shopId, claimId: claim.id, author: 'shop', authorUserId: raiser, body: 'Thank you, we will check the side pocket and the return photographs, and decide before the date above.', createdAt: inMonth(new Date(repliedAt.getTime() + 3 * 60 * MINUTE)) },
+          { shopId, claimId: claim.id, author: 'renter', authorUserId: null, body: 'The key was in the glovebox, under the manual. Could someone look there?', createdAt: inMonth(new Date(repliedAt.getTime() + 60 * MINUTE)) },
+          { shopId, claimId: claim.id, author: 'shop', authorUserId: raiser, body: 'Thank you, we will check the glovebox and the return photographs, and decide before the date above.', createdAt: inMonth(new Date(repliedAt.getTime() + 3 * 60 * MINUTE)) },
         ])
       }
       if (sample.claim.state === 'charged') {

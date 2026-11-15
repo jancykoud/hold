@@ -1,7 +1,8 @@
 import { randomUUID } from 'node:crypto'
 import { eq, sql } from 'drizzle-orm'
 import { openShop } from './accounts.ts'
-import { DEMO_SHOP, furnishDemoShop } from './demo-shop.ts'
+import { DEMO_SHOP, DEMO_WORDS, furnishDemoShop } from './demo-shop.ts'
+import type { DemoWords } from './demo-words.ts'
 import type { DemoPerson } from './demo-shop.ts'
 import { auditLog, shops } from './schema/index.ts'
 import { inShop, outsideShop } from './scope.ts'
@@ -23,20 +24,23 @@ export type DemoSessionInput = {
   // webhookId: the shared app's subscription, when it has one. Without it the shop reads every step back from PayPal.
   readonly paypal: { readonly credentialReference: string; readonly mode: PayPalMode; readonly webhookId?: string } | undefined
   readonly now: Date
+  // The shop's words in the visitor's language. Left out, the demo is in English.
+  readonly words?: DemoWords
 }
 
 export type OpenedDemoSession = { readonly shopId: string; readonly slug: string; readonly rentals: number }
 
 export function openDemoSession(database: Database, input: DemoSessionInput, newId: () => string = randomUUID): Promise<OpenedDemoSession> {
   const shopId = newId()
+  const words = input.words ?? DEMO_WORDS
   return inShop(database, { role: 'hold_app', shopId }, async (transaction) => {
     const owner = await openShop(transaction, shopId, {
       ...input.owner,
       name: DEMO_SHOP.ownerName,
-      language: 'en',
+      language: words.language,
       shop: { name: DEMO_SHOP.name, timeZone: DEMO_SHOP.timeZone, slug: input.slug, demoSession: true },
     })
-    const furnished = await furnishDemoShop(transaction, shopId, owner.userId, input.staff, input.now)
+    const furnished = await furnishDemoShop(transaction, shopId, owner.userId, input.staff, input.now, words)
     if (input.paypal !== undefined) {
       await savePayPalAccount(transaction, shopId, input.paypal.mode, input.paypal.credentialReference)
       if (input.paypal.webhookId !== undefined) await saveWebhookId(transaction, shopId, input.paypal.mode, input.paypal.webhookId)

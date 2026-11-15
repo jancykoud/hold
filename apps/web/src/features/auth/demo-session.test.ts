@@ -86,6 +86,14 @@ describe('starting a demo', () => {
     expect((await findPerson(database, second.subject))?.shops.map((shop) => shop.shopId)).toEqual([second.session.shopId])
   })
 
+  it('opens the shop in the language the visitor reads, and in English when none is given', async () => {
+    const opened: (string | undefined)[] = []
+    const watching: DemoDependencies = { ...demo, sessions: demo.sessions && { ...demo.sessions, open: (input) => (opened.push(input.words?.car.name), openDemoSession(database, input)) } }
+    expect((await startDemo(watching, 'owner', { network: 'french-visitor' }, 'fr')).ok).toBe(true)
+    expect((await startDemo(watching, 'owner', { network: 'english-visitor' })).ok).toBe(true)
+    expect(opened).toEqual(['Citadine', 'Compact car'])
+  })
+
   it('is closed where demo mode is off, and makes nothing', async () => {
     expect(await startDemo({ ...demo, sessions: undefined }, 'owner', { network: 'judge' })).toEqual({ ok: false, notice: 'unavailable' })
     expect(created).toEqual([])

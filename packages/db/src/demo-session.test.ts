@@ -4,11 +4,12 @@ import { beforeAll, describe, expect, it } from 'vitest'
 import { findPerson } from './accounts.ts'
 import { publicShops } from './assistant-repository.ts'
 import { demoAccountForRental, openDemoSession } from './demo-session.ts'
-import { DEMO_SHOP } from './demo-shop.ts'
+import { DEMO_SHOP, DEMO_WORDS } from './demo-shop.ts'
+import type { DemoWords } from './demo-words.ts'
 import { addItems, saveItemType } from './item-repository.ts'
 import { currentPriceList } from './price-list-repository.ts'
 import { bookableTypes } from './booking-repository.ts'
-import { auditLog, claims, itemTypes, paypalAccounts, photoPlans, rentals, shops } from './schema/index.ts'
+import { auditLog, claimLines, claims, itemTypes, paypalAccounts, photoPlans, priceEntries, rentals, shops, users } from './schema/index.ts'
 import { inShop } from './scope.ts'
 import { createTestDatabase } from './testing/test-database.ts'
 import type { TestDatabase } from './testing/test-database.ts'
@@ -68,6 +69,34 @@ describe('a demo session', () => {
     expect(type?.simulated).toBe(false)
     // One photograph a side of the frame is all a judge must take; the sample photograph is of that view.
     expect(type?.views.filter((view: { readonly required: boolean }) => view.required)).toHaveLength(1)
+  })
+
+  it('speaks the visitor’s language when given its words: the items, their views, the prices and the house rules', async () => {
+    const french = (word: string) => `fr: ${word}`
+    const words: DemoWords = {
+      language: 'fr',
+      prices: DEMO_WORDS.prices.map(french),
+      bike: { name: 'Vélo de ville', views: DEMO_WORDS.bike.views.map(french) },
+      car: { name: 'Citadine', views: DEMO_WORDS.car.views.map(french) },
+      dropPoint: 'Place 4 derrière le bureau.',
+      wearPolicy: 'Les éclats plus petits qu’une pièce ne sont jamais facturés.',
+      sampleItems: { ...DEMO_WORDS.sampleItems, saloon: 'Berline' },
+    }
+    const opened = await openDemoSession(database, { ...people('fr0001'), slug: 'ribeira-rentals-fr0001', paypal: PAYPAL, now: NOW, words })
+
+    expect(opened.rentals).toBe(13)
+    const [owner] = await database.select({ language: users.language }).from(users).where(eq(users.cognitoSubject, 'owner-fr0001'))
+    expect(owner?.language).toBe('fr')
+    const [shop] = await database.select({ dropPoint: shops.dropPoint }).from(shops).where(eq(shops.id, opened.shopId))
+    expect(shop?.dropPoint).toBe('Place 4 derrière le bureau.')
+    const prices = await database.select({ description: priceEntries.description }).from(priceEntries).where(eq(priceEntries.shopId, opened.shopId))
+    expect(prices.map((price) => price.description).sort()).toEqual([...words.prices].sort())
+    const types = await database.select({ name: itemTypes.name, views: photoPlans.views }).from(itemTypes).innerJoin(photoPlans, eq(photoPlans.id, itemTypes.photoPlanId)).where(eq(itemTypes.shopId, opened.shopId))
+    expect(types.map((type) => type.name)).toEqual(expect.arrayContaining(['Citadine', 'Vélo de ville', 'Berline']))
+    expect(types.find((type) => type.name === 'Citadine')?.views.map((view: { readonly label: string }) => view.label)).toEqual(words.car.views)
+    // The one claim on a bike is still priced by the bike's two entries, found by their place in the list, not their words.
+    const lines = await database.select({ description: priceEntries.description }).from(claimLines).innerJoin(priceEntries, eq(priceEntries.id, claimLines.priceEntryId)).where(eq(claimLines.shopId, opened.shopId))
+    expect(lines.map((line) => line.description)).toEqual(expect.arrayContaining(['fr: Scratch on the frame, through the paint', 'fr: Cleaning after a muddy ride']))
   })
 
   // docs/vehicle-plan.md: the condition report of a vehicle is what Hold is built for first, so the demo shows one.
