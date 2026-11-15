@@ -20,7 +20,6 @@ export type ShopPageScreenProps = {
 // A shop's own page, where a renter books with nobody signed in: dates, items, and the terms beside them.
 export function ShopPageScreen({ shop, open, period, types, prices, wearPolicy }: ShopPageScreenProps) {
   const t = useTranslations('shopPage')
-  const booking = useTranslations('booking')
   return (
     <div className="mx-auto grid w-full max-w-5xl content-start gap-8 px-4 pt-6 pb-16 md:px-8 md:pt-10">
       <header className="relative isolate grid animate-rise gap-3 py-2">
@@ -36,11 +35,7 @@ export function ShopPageScreen({ shop, open, period, types, prices, wearPolicy }
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
           <div className="stagger grid min-w-0 gap-6">
             <PeriodForm from={period.from} to={period.to} invalid={period.invalid} />
-            {period.period === undefined ? null : types.some((type) => type.available > 0) ? (
-              <ShopBookingForm slug={shop.slug} types={types} currency={shop.currency} days={period.days} from={period.from} to={period.to} />
-            ) : (
-              <p className="surface p-4 text-muted-foreground md:p-5">{booking('nothingFree')}</p>
-            )}
+            {period.period === undefined ? null : <ShopBookingForm slug={shop.slug} types={types} currency={shop.currency} days={period.days} from={period.from} to={period.to} />}
           </div>
           <div className="min-w-0 lg:sticky lg:top-20">
             <TermsView currency={shop.currency} prices={prices} wearPolicy={wearPolicy} />

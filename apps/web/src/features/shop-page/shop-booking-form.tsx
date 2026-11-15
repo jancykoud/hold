@@ -13,12 +13,16 @@ type ShopBookingFormProps = { slug: string; types: readonly BookableType[]; curr
 // Books with nobody signed in, then takes the renter to their own link, where they see the terms and pay the fee.
 export function ShopBookingForm({ slug, types, currency, days, from, to }: ShopBookingFormProps) {
   const t = useTranslations('shopPage')
+  const booking = useTranslations('booking')
   const locale = useLocale()
   const [result, book, pending] = useActionState(bookOnShopPage, null)
   useEffect(() => {
     if (result?.ok === true) window.location.assign(result.value.url)
   }, [result])
   const refused = result === null || result.ok ? null : result
+  // Nothing is free: said here, by the form itself, so the form is still on the page when a booking of the last free
+  // item answers. The booking takes the item, the page is drawn again with none free, and the renter must still reach their link.
+  if (!pending && result?.ok !== true && !types.some((type) => type.available > 0)) return <p className="surface p-4 text-muted-foreground md:p-5">{booking('nothingFree')}</p>
   return (
     <form action={book} className="grid gap-6">
       <input type="hidden" name="locale" value={locale} />

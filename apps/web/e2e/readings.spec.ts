@@ -29,8 +29,8 @@ async function carShop(page: Page): Promise<void> {
   await page.getByLabel('Kilometres included each day').fill('200')
   await page.getByRole('button', { name: 'Save item type' }).click()
   await expect(page).toHaveURL(/\/shop\/items$/)
-  // Two cars, so one is still free once the first is booked.
-  await addItems(page, 'Compact car', '2', '')
+  // One car only: booking the last free item must still open its rental.
+  await addItems(page, 'Compact car', '1', '')
 }
 
 // The test browser has no camera, so each needed view is the sample photograph.

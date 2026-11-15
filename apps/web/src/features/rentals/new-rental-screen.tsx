@@ -36,18 +36,13 @@ function SetUpFirst({ need }: { need: 'needs_paypal' | 'needs_items' }) {
 // Booking at the counter or on the phone: when, then what is free then, then for whom.
 export function NewRentalScreen({ shopName, currency, period, types, ready, startsToday = false }: NewRentalScreenProps) {
   const t = useTranslations('shop.rentals')
-  const booking = useTranslations('booking')
   return (
     <ShopFrame shopName={shopName} title={t('form.title')} actions={<BackLink href={shopRoutes.rentals}>{t('form.back')}</BackLink>}>
       <div className="grid max-w-4xl gap-8">
         {ready === 'ready' ? (
           <>
             <PeriodForm from={period.from} to={period.to} invalid={period.invalid} />
-            {period.period === undefined ? null : types.some((type) => type.available > 0) ? (
-              <BookingForm types={types} currency={currency} days={period.days} from={period.from} to={period.to} startsToday={startsToday} />
-            ) : (
-              <p className="surface px-5 py-6 text-center text-muted-foreground">{booking('nothingFree')}</p>
-            )}
+            {period.period === undefined ? null : <BookingForm types={types} currency={currency} days={period.days} from={period.from} to={period.to} startsToday={startsToday} />}
           </>
         ) : (
           <SetUpFirst need={ready} />

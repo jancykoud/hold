@@ -22,6 +22,7 @@ const LANGUAGE_NAMES: Readonly<Record<string, string>> = { en: 'English', de: 'D
 // What to book and for whom. The dates come from the form above it; the booking opens once it is made.
 export function BookingForm({ types, currency, days, from, to, startsToday = false }: BookingFormProps) {
   const t = useTranslations('shop.rentals.form')
+  const booking = useTranslations('booking')
   const locale = useLocale()
   const router = useRouter()
   const [result, book, pending] = useActionState(bookRental, null)
@@ -31,6 +32,9 @@ export function BookingForm({ types, currency, days, from, to, startsToday = fal
     if (result?.ok === true) router.push(result.value.sent === 'held' ? `${rentalRoutes.rental(result.value.rentalId)}?link=held` : rentalRoutes.rental(result.value.rentalId))
   }, [result, router])
 
+  // Nothing is free: said here, by the form itself, so the form is still on the page when a booking of the last free
+  // item answers. The booking takes the item, the page is drawn again with none free, and the rental must still open.
+  if (!pending && result?.ok !== true && !types.some((type) => type.available > 0)) return <p className="surface px-5 py-6 text-center text-muted-foreground">{booking('nothingFree')}</p>
   return (
     <form action={book} className="grid gap-8">
       <input type="hidden" name="locale" value={locale} />
