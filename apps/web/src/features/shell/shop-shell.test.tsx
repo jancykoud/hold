@@ -17,7 +17,7 @@ const person = {
 
 function shell(paypalConnected = true, role: 'owner' | 'counter_staff' | 'read_only' = 'owner') {
   return renderWithIntl(
-    <ShopShell person={person} shop={{ id: 'shop-1', name: 'Ribeira Bikes' }} role={role} paypalConnected={paypalConnected}>
+    <ShopShell person={person} shop={{ id: 'shop-1', name: 'Ribeira Bikes' }} role={role} paypalConnected={paypalConnected} paypalMode="sandbox">
       <p>The page</p>
     </ShopShell>,
   )

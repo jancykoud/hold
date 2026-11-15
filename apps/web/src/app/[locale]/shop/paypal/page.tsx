@@ -26,6 +26,7 @@ export default async function Page() {
       notifications={account?.credentialReference === DEMO_PAYPAL_REFERENCE ? (account.webhookId != null ? 'demo_on' : 'demo') : account?.webhookId != null ? 'on' : 'off'}
       isOwner={context.role === 'owner'}
       gate={gate}
+      paypalMode={config.paypalMode}
     />
   )
 }

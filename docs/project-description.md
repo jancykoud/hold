@@ -501,6 +501,7 @@ On top of those eight steps, in this order, each only once the one before it wor
 Hold is now built as a company's product. The order below is the order of what blocks real customers, not of what is most interesting to build.
 
 - **First: real money.** Nothing else matters until a rental business can take a real hold.
+  - Live PayPal tried end to end. Since 15 November 2026 one setting sends every call to live PayPal instead of the sandbox; no deployment sets it and no call has been made (`deploy.md` section 11).
   - PayPal's partner onboarding, so a business connects with a PayPal sign-in and Hold never sees a secret (section 7). PayPal has to approve Hold as a partner.
   - Partial capture switched on for each live PayPal account, and the trial of a hold funded by a card, which may last about ten days and may not renew (`tech-stack.md` section 16, items 19 and 20).
   - A registered company behind Hold, with terms and a privacy notice written for it and for each country it sells in. The public pages still describe a hackathon project in the sandbox, and stay that way until this is true.

@@ -22,7 +22,7 @@ const schema = z.object({
   HOLD_UPKEEP_QUEUE_ARN: z.string().startsWith('arn:aws:sqs:'),
   HOLD_SCHEDULE_GROUP: z.string().min(1),
   HOLD_SCHEDULER_ROLE_ARN: z.string().startsWith('arn:aws:iam:'),
-  HOLD_PAYPAL_MODE: z.literal('sandbox').default('sandbox'),
+  HOLD_PAYPAL_MODE: z.enum(['sandbox', 'live']).default('sandbox'),
   // Named, not its value: the SMTP login is read from Secrets Manager when the first email is sent.
   HOLD_SMTP_SECRET: z.string().min(1),
   // The web app's own address, for links in the emails the worker sends.
@@ -40,7 +40,7 @@ export type WorkerSettings = {
   readonly queues: Readonly<Record<'executions' | 'paypal-events' | 'upkeep', string> & Partial<Record<'comparisons' | 'media' | 'evidence' | 'messages' | 'ops-agent' | 'ops-execute' | 'negotiations', string>>>
   // Where a hold's schedules are made, the role they send with, and the queues they may send to.
   readonly schedules: { readonly groupName: string; readonly roleArn: string; readonly queueArns: Readonly<Record<'upkeep', string>> }
-  readonly paypalMode: 'sandbox'
+  readonly paypalMode: 'sandbox' | 'live'
   readonly smtpSecret: string
   readonly publicUrl: string
   readonly renterLinkKeySecretArn: string

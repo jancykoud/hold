@@ -1679,7 +1679,7 @@
       "wear_policy_missing": "Indiquez ce qui compte comme usure normale.",
       "wear_policy_too_long": "La politique d'usure est trop longue.",
       "currency_fixed": "La devise est fixée dès qu'une liste de prix est publiée.",
-      "paypal_refused": "PayPal n'a pas accepté ces identifiants. Vérifiez que vous avez copié les deux depuis la même app sandbox.",
+      "paypal_refused": "PayPal n'a pas accepté ces identifiants. Vérifiez que vous avez copié les deux depuis la même application.",
       "paypal_unavailable": "PayPal est injoignable. Rien n'a été conservé. Réessayez dans un instant.",
       "no_price_list": "Publiez d’abord une grille tarifaire. Les réclamations d’exemple utilisent ses prix.",
       "has_rentals": "Cette boutique a déjà des locations, aucun exemple n’a donc été ajouté.",
@@ -2441,6 +2441,12 @@
       "status": {
         "connected": "Connecté",
         "notConnected": "Non connecté"
+      },
+      "live": {
+        "connectTitle": "Connecter votre compte PayPal professionnel",
+        "reconnectTitle": "Connecter un autre compte PayPal",
+        "app": "Sur developer.paypal.com, ouvrez Apps & Credentials, choisissez Live et ouvrez l’application du compte PayPal professionnel de votre boutique.",
+        "note": "Cette connexion déplace de l’argent réel. Les identifiants sont conservés dans AWS Secrets Manager et ne sont plus jamais affichés."
       }
     },
     "handover": {
@@ -2916,7 +2922,8 @@
     "menuTitle": "Menu de la boutique",
     "paypal": {
       "connected": "PayPal connecté · sandbox",
-      "notConnected": "PayPal non connecté"
+      "notConnected": "PayPal non connecté",
+      "connectedLive": "PayPal connecté · réel"
     },
     "jump": {
       "trigger": "Aller à…",

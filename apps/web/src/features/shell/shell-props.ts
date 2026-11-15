@@ -7,4 +7,6 @@ export type ShellProps = {
   readonly shop: { readonly id: string; readonly name: string }
   readonly role: StaffRole
   readonly paypalConnected: boolean
+  // The PayPal this deployment runs in, said beside the connection so nobody takes a test for real money.
+  readonly paypalMode: 'sandbox' | 'live'
 }

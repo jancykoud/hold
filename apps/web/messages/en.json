@@ -1679,7 +1679,7 @@
       "wear_policy_missing": "Say what counts as ordinary wear.",
       "wear_policy_too_long": "The wear policy is too long.",
       "currency_fixed": "The currency is fixed once a price list is published.",
-      "paypal_refused": "PayPal did not accept these credentials. Check that you copied both from the same sandbox app.",
+      "paypal_refused": "PayPal did not accept these credentials. Check that you copied both from the same app.",
       "paypal_unavailable": "PayPal could not be reached. Nothing was kept. Try again in a moment.",
       "no_price_list": "Publish a price list first. The sample claims use its prices.",
       "has_rentals": "This shop already has rentals, so no samples were added.",
@@ -2441,6 +2441,12 @@
       "status": {
         "connected": "Connected",
         "notConnected": "Not connected"
+      },
+      "live": {
+        "connectTitle": "Connect your PayPal business account",
+        "reconnectTitle": "Connect a different PayPal account",
+        "app": "At developer.paypal.com, open Apps & Credentials, choose Live, and open the app of your shop's PayPal business account.",
+        "note": "This connection moves real money. The credentials are kept in AWS Secrets Manager and are never shown again."
       }
     },
     "handover": {
@@ -2916,7 +2922,8 @@
     "menuTitle": "Shop menu",
     "paypal": {
       "connected": "PayPal connected · sandbox",
-      "notConnected": "PayPal not connected"
+      "notConnected": "PayPal not connected",
+      "connectedLive": "PayPal connected · live"
     },
     "jump": {
       "trigger": "Jump to…",

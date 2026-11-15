@@ -9,19 +9,22 @@ const schema = z.object({
   HOLD_DATABASE_NAME: z.string().min(1).default('hold_db'),
   HOLD_OPS_AGENT_QUEUE_URL: z.url(),
   HOLD_SMTP_SECRET: z.string().min(1),
-  HOLD_PAYPAL_MODE: z.literal('sandbox').default('sandbox'),
-  // PayPal's remote MCP server, which answers over server-sent events (tech-stack.md trial 10).
-  HOLD_PAYPAL_MCP_URL: z.url().default('https://mcp.sandbox.paypal.com/sse'),
+  HOLD_PAYPAL_MODE: z.enum(['sandbox', 'live']).default('sandbox'),
+  // PayPal's remote MCP server, which answers over server-sent events (tech-stack.md trial 10). Unset, the one of the
+  // mode: the sandbox's was tried, the live one is the address PayPal documents and has not been.
+  HOLD_PAYPAL_MCP_URL: z.url().optional(),
   // The evidence bucket, from which a dispute answer attaches the rental's published record.
   HOLD_EVIDENCE_BUCKET: z.string().min(3),
 })
+
+const MCP_URLS = { sandbox: 'https://mcp.sandbox.paypal.com/sse', live: 'https://mcp.paypal.com/sse' } as const
 
 export type OperationsSettings = {
   readonly region: string
   readonly database: { readonly clusterArn: string; readonly secretArn: string; readonly name: string }
   readonly opsAgentQueueUrl: string
   readonly smtpSecret: string
-  readonly paypalMode: 'sandbox'
+  readonly paypalMode: 'sandbox' | 'live'
   readonly paypalMcpUrl: string
   readonly evidenceBucket: string
 }
@@ -36,7 +39,7 @@ export function loadOperationsSettings(environment: Readonly<Record<string, stri
     opsAgentQueueUrl: value.HOLD_OPS_AGENT_QUEUE_URL,
     smtpSecret: value.HOLD_SMTP_SECRET,
     paypalMode: value.HOLD_PAYPAL_MODE,
-    paypalMcpUrl: value.HOLD_PAYPAL_MCP_URL,
+    paypalMcpUrl: value.HOLD_PAYPAL_MCP_URL ?? MCP_URLS[value.HOLD_PAYPAL_MODE],
     evidenceBucket: value.HOLD_EVIDENCE_BUCKET,
   }
 }

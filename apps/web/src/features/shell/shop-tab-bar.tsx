@@ -17,7 +17,7 @@ const tab = 'flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center g
 
 // Below lg: the day's work and a new rental at the foot of the screen, where a thumb reaches at the counter, and the
 // whole menu behind the last tab.
-export function ShopTabBar({ person, shop, role, paypalConnected }: ShellProps) {
+export function ShopTabBar({ person, shop, role, paypalConnected, paypalMode }: ShellProps) {
   const t = useTranslations('shell')
   const nav = useTranslations('shop.nav')
   const pathname = usePathname()
@@ -70,7 +70,7 @@ export function ShopTabBar({ person, shop, role, paypalConnected }: ShellProps) 
                 setOpen(false)
               }}
             />
-            <ShellTools person={person} paypalConnected={paypalConnected} />
+            <ShellTools person={person} paypalConnected={paypalConnected} paypalMode={paypalMode} />
           </div>
         </SheetContent>
       </Sheet>

@@ -8,14 +8,14 @@ import { getServices } from './services'
 // page that shows its button, and never its secret. Nothing where PayPal is simulated, or for a shop with no account,
 // and the page then sends the renter to PayPal's own page as before.
 
-export async function checkoutFrom(services: { readonly services: 'aws' | 'fake'; readonly store: CredentialStore }, reference: string | undefined): Promise<PayPalCheckout | undefined> {
+export async function checkoutFrom(services: { readonly services: 'aws' | 'fake'; readonly store: CredentialStore; readonly paypalMode: PayPalCheckout['environment'] }, reference: string | undefined): Promise<PayPalCheckout | undefined> {
   if (services.services === 'fake' || reference === undefined) return undefined
   const credentials = await services.store.read(reference).catch(() => undefined)
-  return credentials === undefined ? undefined : { clientId: credentials.clientId, environment: 'sandbox' }
+  return credentials === undefined ? undefined : { clientId: credentials.clientId, environment: services.paypalMode }
 }
 
 export async function paypalCheckout(shopId: string): Promise<PayPalCheckout | undefined> {
   const { config, database, paypalCredentials } = await getServices()
   const account = await inShop(database, { role: 'hold_app', shopId }, (transaction) => findPayPalAccount(transaction, shopId, config.paypalMode))
-  return checkoutFrom({ services: config.services, store: paypalCredentials }, account?.credentialReference)
+  return checkoutFrom({ services: config.services, store: paypalCredentials, paypalMode: config.paypalMode }, account?.credentialReference)
 }

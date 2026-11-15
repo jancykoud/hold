@@ -200,8 +200,17 @@ The stacks make these with random values, kept if a stack is deleted. Put the re
 
 ## 11. Before a shop takes real money
 
-None of this is built. Hold runs in PayPal's sandbox only, by configuration (`HOLD_PAYPAL_MODE` accepts `sandbox`
-alone). A live shop would also need:
+Hold runs in PayPal's sandbox unless a deployment says otherwise. Since 15 November 2026 the code can name live
+PayPal: `HOLD_PAYPAL_MODE=live`, on the web app and on every worker, sends each call to `api-m.paypal.com`, loads
+PayPal's live script on the renter's pages, checks a shop's credentials with live PayPal, and says "live" beside the
+shop's connection. No deployment sets it: `infra/` passes no `HOLD_PAYPAL_MODE`, so every stack it makes runs in the
+sandbox, and nothing here has been tried against live PayPal (`docs/tech-stack.md` section 16, item 21).
+
+A deployment that sets it offers no demo: the settings are refused with `HOLD_DEMO_SESSIONS` on, since the demo opens
+a shop for anyone and bills its sample photographs. A shop's sandbox account and its live account are separate
+records, so a shop connected in the sandbox is not connected live.
+
+Before a shop takes real money, none of which is built:
 
 - PayPal's go-live steps for the app ([go live](https://developer.paypal.com/api/rest/production/)), a verified
   business account, and **partial capture switched on** for the shop's PayPal account, which a wallet-funded

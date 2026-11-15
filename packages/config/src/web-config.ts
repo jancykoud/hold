@@ -56,8 +56,9 @@ const awsServices = z
     // The Secrets Manager secret holding the Expo access token push notifications are sent with (architecture.md section
     // 13.9), by name or ARN. Unset, or a secret not created yet, pushes go without one.
     HOLD_PUSH_SECRET: z.string().min(1).max(300).optional(),
-    // Only sandbox accounts are connected in the hackathon build.
-    HOLD_PAYPAL_MODE: z.literal('sandbox').default('sandbox'),
+    // Which PayPal a shop connects and every call goes to: the sandbox unless the deployment names live, which moves
+    // real money (project-description.md section 15 says what that needs first).
+    HOLD_PAYPAL_MODE: z.enum(['sandbox', 'live']).default('sandbox'),
     // The worker's queues, for work the app hands on at once. Without them, work waits in the outbox for the relay.
     HOLD_EXECUTIONS_QUEUE_URL: z.url().optional(),
     HOLD_PAYPAL_EVENTS_QUEUE_URL: z.url().optional(),
@@ -83,6 +84,11 @@ const awsServices = z
   .refine((value) => value.HOLD_ENVIRONMENT !== 'production' || (value.HOLD_EVIDENCE_BUCKET !== undefined && value.HOLD_DISPLAY_BUCKET !== undefined), {
     path: ['HOLD_EVIDENCE_BUCKET'],
     message: 'Deployed, the app stores photographs.',
+  })
+  // The demo opens a shop for anyone who asks and bills its sample photographs: never where real money moves.
+  .refine((value) => value.HOLD_PAYPAL_MODE !== 'live' || value.HOLD_DEMO_SESSIONS === undefined, {
+    path: ['HOLD_DEMO_SESSIONS'],
+    message: 'A deployment that moves real money offers no demo.',
   })
   .refine((value) => value.HOLD_COOKIE_KEY_SECRET_ARN !== undefined || value.HOLD_COOKIE_KEY !== undefined, {
     path: ['HOLD_COOKIE_KEY_SECRET_ARN'],
@@ -140,7 +146,7 @@ export type WebConfig =
       readonly demoSessions: boolean
       readonly texts: { readonly sender: string | undefined; readonly configurationSet: string | undefined }
       readonly pushSecret: string | undefined
-      readonly paypalMode: 'sandbox'
+      readonly paypalMode: 'sandbox' | 'live'
       // By queue name, as the outbox names them.
       readonly queues: Readonly<Record<'executions' | 'paypal-events', string> & Partial<Record<'media' | 'comparisons' | 'evidence' | 'negotiations', string>>> | undefined
       readonly photoBuckets: { readonly evidence: string; readonly display: string } | undefined

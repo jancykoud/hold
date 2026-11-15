@@ -18,6 +18,8 @@ type PayPalScreenProps = {
   notifications: 'on' | 'off' | 'demo' | 'demo_on'
   isOwner: boolean
   gate: PasskeyGateState
+  // The PayPal this deployment connects: the sandbox unless said otherwise.
+  paypalMode?: 'sandbox' | 'live'
 }
 
 const NOTICES = { on: 'notificationsOn', off: 'notificationsOff', demo: 'notificationsDemo', demo_on: 'notificationsDemoOn' } as const
@@ -55,9 +57,11 @@ function ConnectionCard({ connectedAt, notifications, offerTurnOn }: { connected
   )
 }
 
-export function PayPalScreen({ shopName, connectedAt, notifications, isOwner, gate }: PayPalScreenProps) {
+export function PayPalScreen({ shopName, connectedAt, notifications, isOwner, gate, paypalMode = 'sandbox' }: PayPalScreenProps) {
   const t = useTranslations('shop.paypal')
-  const steps = [t('steps.app'), t('steps.copy'), t('steps.paste')]
+  // A live account is asked for in its own words: which app to open, and that real money moves.
+  const live = paypalMode === 'live'
+  const steps = [t(live ? 'live.app' : 'steps.app'), t('steps.copy'), t('steps.paste')]
 
   return (
     <ShopFrame shopName={shopName} title={t('title')} description={t('lead')}>
@@ -66,7 +70,7 @@ export function PayPalScreen({ shopName, connectedAt, notifications, isOwner, ga
         {/* One gate for both owner changes on the page, instead of a card inside each. */}
         {isOwner && gate.needed ? <PasskeyGate {...gate} returnTo="/shop/paypal">{null}</PasskeyGate> : null}
         {isOwner ? (
-          <Panel title={connectedAt === undefined ? t('connectTitle') : t('reconnectTitle')} icon={connectedAt === undefined ? PlugZap : Link2}>
+          <Panel title={connectedAt === undefined ? t(live ? 'live.connectTitle' : 'connectTitle') : t(live ? 'live.reconnectTitle' : 'reconnectTitle')} icon={connectedAt === undefined ? PlugZap : Link2}>
             <ol className="grid gap-3 border-b border-border/70 px-4 py-4 md:px-5">
               {steps.map((step, index) => (
                 <li key={step} className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-x-3">
@@ -78,7 +82,7 @@ export function PayPalScreen({ shopName, connectedAt, notifications, isOwner, ga
             {gate.needed ? null : <div className="px-4 py-5 md:px-5"><ConnectPayPalForm /></div>}
             <p className="flex gap-2 border-t border-border/70 bg-muted/30 px-4 py-3 text-sm text-muted-foreground md:px-5">
               <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-              {t('sandboxOnly')}
+              {t(live ? 'live.note' : 'sandboxOnly')}
             </p>
           </Panel>
         ) : (

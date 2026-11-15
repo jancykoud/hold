@@ -1,4 +1,6 @@
 import 'server-only'
+import { checkWithPayPal } from './paypal-credential-check'
+import type { CredentialCheck } from './paypal-credential-check'
 import { comparisonMessageSchema, createBedrockContestModel, createBedrockIncidentModel, createSimulatedComparisonModel, createSimulatedContestModel, createSimulatedIncidentModel, runComparison } from '@hold/compare'
 import type { ContestModel, IncidentModel } from '@hold/compare'
 import { createCognitoIdentity, createDemoSessionAccounts, createFakeIdentity, readKeySecret } from '@hold/auth'
@@ -30,7 +32,7 @@ import { DEMO_WEBHOOK_PATH } from './demo-webhook-address'
 import { readSampleImage, withSamplePhotos } from './sample-photos'
 
 // What a PayPal credential check found: the credentials work, PayPal refused them, or PayPal could not be reached.
-export type CredentialCheck = 'accepted' | 'refused' | 'unavailable'
+export type { CredentialCheck }
 
 // The outside services the web app reaches, built once per server process from its settings.
 export type Services = {
@@ -144,13 +146,6 @@ function demoPayPalFrom(store: CredentialStore, paypalFor: (credentialReference:
     const webhookId = await demoWebhook(paypalFor(DEMO_PAYPAL_REFERENCE), publicUrl)
     return { credentialReference: DEMO_PAYPAL_REFERENCE, mode: 'sandbox', ...(webhookId === undefined ? {} : { webhookId }) }
   }
-}
-
-async function checkWithPayPal(credentials: PayPalCredentials): Promise<CredentialCheck> {
-  const client = createPayPalClient({ environment: 'sandbox', credentials: () => Promise.resolve(credentials) })
-  const checked = await client.checkCredentials()
-  if (checked.ok) return 'accepted'
-  return checked.error.kind === 'unavailable' ? 'unavailable' : 'refused'
 }
 
 async function build(): Promise<Services> {
@@ -276,7 +271,7 @@ async function build(): Promise<Services> {
     push: createExpoPushSender({ accessToken: expoAccessTokenFromSecret(config.pushSecret, config.region) }),
     simulatedPush: undefined,
     paypalCredentials,
-    checkPayPalCredentials: checkWithPayPal,
+    checkPayPalCredentials: (credentials) => checkWithPayPal(config.paypalMode, credentials),
     paypalFor,
     simulatedPayPal: undefined,
     simulatedWebhookFor: () => undefined,

@@ -7,10 +7,10 @@ import type { ShellProps } from './shell-props'
 const onBand = 'text-band-muted hover:bg-band-hover hover:text-band-foreground'
 
 // The foot of the shop's menu: PayPal's state, the language and theme, and the account.
-export function ShellTools({ person, paypalConnected }: Pick<ShellProps, 'person' | 'paypalConnected'>) {
+export function ShellTools({ person, paypalConnected, paypalMode }: Pick<ShellProps, 'person' | 'paypalConnected' | 'paypalMode'>) {
   return (
     <div className="grid gap-1.5 border-t border-band-border pt-3">
-      <PayPalStatus connected={paypalConnected} />
+      <PayPalStatus connected={paypalConnected} paypalMode={paypalMode} />
       <div className="flex items-center gap-1 px-1">
         <LanguageSwitcher className={onBand} />
         <ThemeToggle className={onBand} />

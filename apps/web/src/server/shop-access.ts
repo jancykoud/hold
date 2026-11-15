@@ -27,6 +27,7 @@ export type ShopContext = {
   readonly approvalLimitCents: number
   // Whether the shop has connected PayPal in the mode this deployment runs in, read with the rest, for the frame.
   readonly paypalConnected: boolean
+  readonly paypalMode: 'sandbox' | 'live'
   readonly factor: SessionFactor
   // This person must confirm with a passkey before changing the shop, and this session has not. Always so for the
   // phone, whose session no passkey proves: every step that asks for one is refused there and done on the web.
@@ -71,6 +72,7 @@ async function accessWith(credential: Credential): Promise<ShopAccess> {
       role: entry.role,
       approvalLimitCents: entry.approvalLimitCents,
       paypalConnected: entry.paypalConnected,
+      paypalMode: config.paypalMode,
       factor,
       passkeyNeeded: factor === 'bearer' || (strongNeeded && factor !== 'passkey'),
     },

@@ -311,7 +311,8 @@ Cognito with passkeys, on AWS CDK · Vitest, fast-check and Playwright. Why each
 
 Hold runs end to end in PayPal's sandbox. Before a shop takes real money:
 
-- **Live PayPal and partner onboarding.** The configuration accepts only the sandbox. Going live needs PayPal's app
+- **Live PayPal and partner onboarding.** The code can name live PayPal by one setting, which no deployment sets and
+  which has not been tried against live PayPal. Going live needs PayPal's app
   review and partial capture switched on per shop ([`docs/deploy.md`](docs/deploy.md) section 11). Today a shop pastes
   its own PayPal app's secret; PayPal's partner onboarding, refused to this account in the sandbox on 28 October 2026,
   needs PayPal to approve Hold as a partner.

@@ -4,7 +4,7 @@
 
 import type { Locale } from '@/i18n/routing'
 
-export type PayPalCheckout = { readonly clientId: string; readonly environment: 'sandbox' }
+export type PayPalCheckout = { readonly clientId: string; readonly environment: 'sandbox' | 'live' }
 
 export type PaymentSessionCallbacks = {
   readonly onApprove: (data: { readonly orderId: string }) => Promise<void>
@@ -22,7 +22,7 @@ type PayPalNamespace = { createInstance(options: { readonly clientId: string; re
 // is, and an English page in Switzerland got a French button.
 export const PAYPAL_LOCALES: Readonly<Record<Locale, string>> = { en: 'en-GB', es: 'es-ES', fr: 'fr-FR', de: 'de-DE' }
 
-const SCRIPTS: Record<PayPalCheckout['environment'], string> = { sandbox: 'https://www.sandbox.paypal.com/web-sdk/v6/core' }
+const SCRIPTS: Record<PayPalCheckout['environment'], string> = { sandbox: 'https://www.sandbox.paypal.com/web-sdk/v6/core', live: 'https://www.paypal.com/web-sdk/v6/core' }
 const LOAD_MILLISECONDS = 10_000
 
 const loaded = (): PayPalNamespace | undefined => {

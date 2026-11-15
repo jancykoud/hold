@@ -27,6 +27,16 @@ describe('loadWebConfig', () => {
     expect(loadWebConfig({ ...AWS, HOLD_DEMO_SESSIONS: 'on' })).toMatchObject({ demoSessions: true })
     expect(() => loadWebConfig({ ...AWS, HOLD_DEMO_SESSIONS: 'yes' })).toThrow()
   })
+  // project-description.md section 15: real money is a deployment of its own, named by its setting and never by default.
+  it('connects live PayPal accounts only where the deployment says so, and never beside the demo', () => {
+    expect(loadWebConfig(AWS)).toMatchObject({ paypalMode: 'sandbox' })
+    expect(loadWebConfig({ ...AWS, HOLD_PAYPAL_MODE: 'live' })).toMatchObject({ paypalMode: 'live' })
+    expect(() => loadWebConfig({ ...AWS, HOLD_PAYPAL_MODE: 'production' })).toThrow(/HOLD_PAYPAL_MODE/)
+    // The demo opens shops for anyone and bills sample photographs: neither may sit where real money moves.
+    expect(() => loadWebConfig({ ...AWS, HOLD_PAYPAL_MODE: 'live', HOLD_DEMO_SESSIONS: 'on' })).toThrow(/HOLD_DEMO_SESSIONS/)
+    // The fakes move no money at all, whatever the setting says.
+    expect(loadWebConfig({ HOLD_ENVIRONMENT: 'test', HOLD_COOKIE_KEY: KEY, HOLD_PAYPAL_MODE: 'live' })).toMatchObject({ services: 'fake', paypalMode: 'sandbox' })
+  })
   it('reads the AWS services, with defaults for the region, database name and public address', () => {
     expect(loadWebConfig(AWS)).toMatchObject({
       environment: 'development',

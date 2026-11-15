@@ -12,7 +12,7 @@ export default async function ShopLayout({ children }: { children: ReactNode }) 
   if (access.kind !== 'in_shop') return <SiteFrame>{children}</SiteFrame>
   const { context } = access
   return (
-    <ShopShell person={context.person} shop={{ id: context.shop.id, name: context.shop.name }} role={context.role} paypalConnected={context.paypalConnected}>
+    <ShopShell person={context.person} shop={{ id: context.shop.id, name: context.shop.name }} role={context.role} paypalConnected={context.paypalConnected} paypalMode={context.paypalMode}>
       {children}
     </ShopShell>
   )

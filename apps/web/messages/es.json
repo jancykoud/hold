@@ -1679,7 +1679,7 @@
       "wear_policy_missing": "Explica qué cuenta como desgaste normal.",
       "wear_policy_too_long": "La política de desgaste es demasiado larga.",
       "currency_fixed": "La moneda queda fijada en cuanto se publica una lista de precios.",
-      "paypal_refused": "PayPal no ha aceptado estas credenciales. Comprueba que copiaste las dos de la misma app de sandbox.",
+      "paypal_refused": "PayPal no ha aceptado estas credenciales. Comprueba que copiaste las dos de la misma aplicación.",
       "paypal_unavailable": "No se pudo conectar con PayPal. No se ha guardado nada. Inténtalo de nuevo en un momento.",
       "no_price_list": "Publica primero una lista de precios. Las reclamaciones de muestra usan sus precios.",
       "has_rentals": "Esta tienda ya tiene alquileres, así que no se añadió ninguna muestra.",
@@ -2441,6 +2441,12 @@
       "status": {
         "connected": "Conectado",
         "notConnected": "Sin conectar"
+      },
+      "live": {
+        "connectTitle": "Conectar su cuenta PayPal de empresa",
+        "reconnectTitle": "Conectar otra cuenta de PayPal",
+        "app": "En developer.paypal.com, abra Apps & Credentials, elija Live y abra la aplicación de la cuenta PayPal de empresa de su tienda.",
+        "note": "Esta conexión mueve dinero real. Las credenciales se guardan en AWS Secrets Manager y no se vuelven a mostrar."
       }
     },
     "handover": {
@@ -2916,7 +2922,8 @@
     "menuTitle": "Menú de la tienda",
     "paypal": {
       "connected": "PayPal conectado · sandbox",
-      "notConnected": "PayPal sin conectar"
+      "notConnected": "PayPal sin conectar",
+      "connectedLive": "PayPal conectado · real"
     },
     "jump": {
       "trigger": "Ir a…",

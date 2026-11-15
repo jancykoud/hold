@@ -1679,7 +1679,7 @@
       "wear_policy_missing": "Beschreiben Sie, was als normale Abnutzung gilt.",
       "wear_policy_too_long": "Die Regel zur Abnutzung ist zu lang.",
       "currency_fixed": "Die Währung steht fest, sobald eine Preisliste veröffentlicht ist.",
-      "paypal_refused": "PayPal hat diese Zugangsdaten nicht angenommen. Prüfen Sie, ob Sie beide aus derselben Sandbox-App kopiert haben.",
+      "paypal_refused": "PayPal hat diese Zugangsdaten nicht angenommen. Prüfen Sie, ob Sie beide aus derselben App kopiert haben.",
       "paypal_unavailable": "PayPal ist nicht erreichbar. Es wurde nichts gespeichert. Versuchen Sie es gleich noch einmal.",
       "no_price_list": "Veröffentlichen Sie zuerst eine Preisliste. Die Beispielforderungen verwenden ihre Preise.",
       "has_rentals": "Dieser Laden hat schon Vermietungen, daher wurden keine Beispiele hinzugefügt.",
@@ -2441,6 +2441,12 @@
       "status": {
         "connected": "Verbunden",
         "notConnected": "Nicht verbunden"
+      },
+      "live": {
+        "connectTitle": "Ihr PayPal-Geschäftskonto verbinden",
+        "reconnectTitle": "Ein anderes PayPal-Konto verbinden",
+        "app": "Öffnen Sie auf developer.paypal.com Apps & Credentials, wählen Sie Live und öffnen Sie die App des PayPal-Geschäftskontos Ihres Geschäfts.",
+        "note": "Diese Verbindung bewegt echtes Geld. Die Zugangsdaten liegen im AWS Secrets Manager und werden nie wieder angezeigt."
       }
     },
     "handover": {
@@ -2916,7 +2922,8 @@
     "menuTitle": "Ladenmenü",
     "paypal": {
       "connected": "PayPal verbunden · Sandbox",
-      "notConnected": "PayPal nicht verbunden"
+      "notConnected": "PayPal nicht verbunden",
+      "connectedLive": "PayPal verbunden · live"
     },
     "jump": {
       "trigger": "Springen zu…",

@@ -2,10 +2,11 @@ import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { shopRoutes } from '@/lib/routes'
 
-// Whether the shop's PayPal account is connected, and that it is the sandbox, so nobody takes a test for real money.
-export function PayPalStatus({ connected }: { connected: boolean }) {
+// Whether the shop's PayPal account is connected, and whether it is the sandbox or a live one, so nobody takes a test
+// for real money.
+export function PayPalStatus({ connected, paypalMode }: { connected: boolean; paypalMode: 'sandbox' | 'live' }) {
   const t = useTranslations('shell.paypal')
-  const label = connected ? t('connected') : t('notConnected')
+  const label = connected ? t(paypalMode === 'live' ? 'connectedLive' : 'connected') : t('notConnected')
 
   return (
     <Link

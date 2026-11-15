@@ -8,7 +8,7 @@ import { ShopNav } from './shop-nav'
 import { ShopSwitcher } from './shop-switcher'
 
 // The shop's menu from the lg breakpoint, in the dark band, every page named. Below lg it is behind the tab bar.
-export function ShopSidebar({ person, shop, role, paypalConnected }: ShellProps) {
+export function ShopSidebar({ person, shop, role, paypalConnected, paypalMode }: ShellProps) {
   const t = useTranslations('shell')
 
   return (
@@ -18,7 +18,7 @@ export function ShopSidebar({ person, shop, role, paypalConnected }: ShellProps)
       </Link>
       <ShopSwitcher person={person} shop={shop} role={role} />
       <ShopNav role={role} className="flex-1" />
-      <ShellTools person={person} paypalConnected={paypalConnected} />
+      <ShellTools person={person} paypalConnected={paypalConnected} paypalMode={paypalMode} />
     </aside>
   )
 }

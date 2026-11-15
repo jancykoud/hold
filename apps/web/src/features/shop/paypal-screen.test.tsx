@@ -20,6 +20,18 @@ describe('the PayPal page', () => {
     expect(screen.getByRole('button', { name: 'Turn on notifications' })).toBeInTheDocument()
   })
 
+  // A person must never take a test for real money, nor real money for a test.
+  it('asks for a sandbox app where Hold runs in the sandbox, and for a live app where it moves real money', () => {
+    const { unmount } = renderWithIntl(<PayPalScreen shopName="Ribeira Bikes" connectedAt={undefined} notifications="off" isOwner gate={gate} />)
+    expect(screen.getByText('Connect a PayPal sandbox app')).toBeInTheDocument()
+    expect(screen.getByText(/connects sandbox accounts only/)).toBeInTheDocument()
+    unmount()
+    renderWithIntl(<PayPalScreen shopName="Porto Cars" connectedAt={undefined} notifications="off" isOwner gate={gate} paypalMode="live" />)
+    expect(screen.getByText('Connect your PayPal business account')).toBeInTheDocument()
+    expect(screen.getByText(/moves real money/)).toBeInTheDocument()
+    expect(screen.queryByText(/sandbox/i)).not.toBeInTheDocument()
+  })
+
   // Every demo shop shares one sandbox app, which may not subscribe an address per shop (architecture.md section 20.3).
   it('says a demo shop learns each step by reading PayPal back, and offers no notifications to turn on', () => {
     renderWithIntl(<PayPalScreen shopName="Ribeira Bikes" connectedAt={new Date('2026-10-14T09:00:00Z')} notifications="demo" isOwner gate={gate} />)

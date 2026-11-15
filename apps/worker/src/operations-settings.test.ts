@@ -23,6 +23,12 @@ it('reads only what the operations agent needs, with the database name, PayPal m
   })
 })
 
+it('reads live PayPal accounts, and PayPal’s live MCP server, only where the deployment says so', () => {
+  expect(loadOperationsSettings({ ...ENVIRONMENT, HOLD_PAYPAL_MODE: 'live' })).toMatchObject({ paypalMode: 'live', paypalMcpUrl: 'https://mcp.paypal.com/sse' })
+  expect(loadOperationsSettings({ ...ENVIRONMENT, HOLD_PAYPAL_MODE: 'live', HOLD_PAYPAL_MCP_URL: 'https://mcp.example.test/sse' })).toMatchObject({ paypalMcpUrl: 'https://mcp.example.test/sse' })
+  expect(() => loadOperationsSettings({ ...ENVIRONMENT, HOLD_PAYPAL_MODE: 'production' })).toThrow(/HOLD_PAYPAL_MODE/)
+})
+
 it('names what is missing without its value', () => {
   expect(() => loadOperationsSettings({ ...ENVIRONMENT, HOLD_DATABASE_SECRET_ARN: 'secret' })).toThrow(/HOLD_DATABASE_SECRET_ARN/)
 })
