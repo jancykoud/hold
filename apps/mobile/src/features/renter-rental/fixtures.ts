@@ -17,7 +17,7 @@ export const rentalView = (overrides: Partial<Rental['view']> = {}): Rental['vie
   feeCents: 9000,
   holdCents: 60000,
   lines: [{ name: 'City e-bike', count: 1, dayRateCents: 4500, holdCents: 60000 }],
-  prices: [{ description: 'Scratch on the frame', category: 'damage', amountCents: 4000 }],
+  prices: [{ description: 'Scratch on the frame', category: 'damage', amountCents: 4000, damageType: null }],
   wearPolicy: 'Dust and light tyre wear are ordinary.',
   replyPeriodHours: 48,
   renterName: 'Alex',

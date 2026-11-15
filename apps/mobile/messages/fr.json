@@ -1155,7 +1155,8 @@
       "rate_limited": "Trop de messages pour l’instant. Réessayez dans une heure.",
       "not_found": "Cette réclamation n’est pas ouverte aux messages.",
       "standing_rule_off": "Elle est déjà désactivée."
-    }
+    },
+    "damageType": "Type de dommage : {type}"
   },
   "negotiation": {
     "title": "Votre représentant",
@@ -1455,5 +1456,11 @@
     "failedTitle": "Hold n'a pas pu être prévenu",
     "failedBody": "Rien n'a été activé. Réessayez.",
     "channel": "Locations et retours"
+  },
+  "damageTypes": {
+    "scratch": "Rayure",
+    "impact": "Choc",
+    "dent": "Bosse",
+    "broken_glass": "Bris de glace"
   }
 }

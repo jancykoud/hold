@@ -1,4 +1,4 @@
-import { CLAIM_STATES, CONDITION_REPLIES, ESCALATION_REASONS, HOLD_STATES, INCIDENT_HINTS, INCIDENT_KINDS, INCIDENT_STATES, MOVE_KINDS, NEGOTIATION_KINDS, NEGOTIATION_SIDES, NEGOTIATION_STATES, PASS_REASONS, PRICE_CATEGORIES, RENTAL_STATES, VIEW_OUTLINES } from '@hold/domain'
+import { DAMAGE_TYPES, CLAIM_STATES, CONDITION_REPLIES, ESCALATION_REASONS, HOLD_STATES, INCIDENT_HINTS, INCIDENT_KINDS, INCIDENT_STATES, MOVE_KINDS, NEGOTIATION_KINDS, NEGOTIATION_SIDES, NEGOTIATION_STATES, PASS_REASONS, PRICE_CATEGORIES, RENTAL_STATES, VIEW_OUTLINES } from '@hold/domain'
 import { z } from 'zod'
 
 // What each renter screen reads (architecture.md section 13.8), the same as the renter's web page shows. The server
@@ -23,7 +23,8 @@ const rentalView = z.object({
   feeCents: cents,
   holdCents: cents,
   lines: z.array(z.object({ name: z.string(), count: z.number().int(), dayRateCents: cents, holdCents: cents })),
-  prices: z.array(z.object({ description: z.string(), category: z.enum(PRICE_CATEGORIES), amountCents: cents })),
+  // damageType: the type of damage a price for damage names, when it names one (vehicle-plan.md step 2).
+  prices: z.array(z.object({ description: z.string(), category: z.enum(PRICE_CATEGORIES), amountCents: cents, damageType: z.enum(DAMAGE_TYPES).nullable() })),
   wearPolicy: z.string(),
   replyPeriodHours: z.number(),
   renterName: z.string().nullable(),
@@ -128,6 +129,8 @@ export const renterClaimSchema = z.object({
     z.object({
       id: z.string(),
       description: z.string(),
+      // The type of damage the line's price names, when it names one.
+      damageType: z.enum(DAMAGE_TYPES).nullable(),
       reason: z.string(),
       amountCents: cents,
       actorName: z.string().nullable(),

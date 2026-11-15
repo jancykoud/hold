@@ -49,6 +49,13 @@ describe("a renter's rental", () => {
     expect(screen.getByText('Dust and light tyre wear are ordinary.')).toBeOnTheScreen();
   });
 
+  // docs/vehicle-plan.md step 2: the renter reads which type of damage each price is for.
+  it('names the type of damage a price is for, and nothing beside a price that names none', async () => {
+    await open({ 'renter/rental': rentalAnswer({ prices: [{ description: 'Mark on the door', category: 'damage', amountCents: 18000, damageType: 'scratch' }, { description: 'Lost key', category: 'loss', amountCents: 25000, damageType: null }] }) });
+    expect(await screen.findByText('Mark on the door')).toBeOnTheScreen();
+    expect(screen.getAllByText('Scratch')).toHaveLength(1);
+  });
+
   it('reads it with the rental link as the bearer, and keeps the link on this phone', async () => {
     const view = await open({ 'renter/rental': rentalAnswer() });
     await screen.findByText('Your rental is with you.');

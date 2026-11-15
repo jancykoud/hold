@@ -8,6 +8,7 @@ type Rental = RenterView<'rental'>['view'];
 // The shop's damage prices and its wear policy, as the renter agreed to them: a claim can only be for what is listed.
 export function RentalTerms({ view }: { view: Rental }) {
   const t = useTranslations('rental');
+  const types = useTranslations('damageTypes');
   return (
     <>
       <Panel title={t('prices')}>
@@ -16,7 +17,14 @@ export function RentalTerms({ view }: { view: Rental }) {
         </Text>
         {view.prices.map((price) => (
           <View key={price.description} className="flex-row items-baseline justify-between gap-4 border-t border-border px-4 py-3">
-            <Text className="min-w-0 flex-1">{price.description}</Text>
+            <View className="min-w-0 flex-1 gap-0.5">
+              <Text>{price.description}</Text>
+              {price.damageType === null ? null : (
+                <Text variant="small" tone="muted">
+                  {types(price.damageType)}
+                </Text>
+              )}
+            </View>
             <MoneyText money={{ cents: price.amountCents, currency: view.currency }} />
           </View>
         ))}

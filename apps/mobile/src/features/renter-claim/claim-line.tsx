@@ -11,11 +11,13 @@ type Line = RenterClaim['lines'][number];
 // and at return side by side, with the damage outlined. A line the renter paid for may show its repair.
 export function ClaimLine({ line, currency, timeZone }: { line: Line; currency: string; timeZone: string }) {
   const t = useTranslations('claim');
+  const types = useTranslations('damageTypes');
   const time = useShopTime(timeZone);
   const { color } = useTheme();
   return (
     <Panel title={line.description} aside={<MoneyText money={{ cents: line.amountCents, currency }} />}>
       <View className="gap-4 p-4">
+        {line.damageType === null ? null : <Text tone="muted">{t('damageType', { type: types(line.damageType) })}</Text>}
         <Quoted text={line.reason} caption={t('namedBy', { name: line.actorName ?? t('staff') })} />
         <View className="flex-row gap-2">
           {(['beforeUrl', 'afterUrl'] as const).map((side) => (

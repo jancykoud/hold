@@ -1155,7 +1155,8 @@
       "rate_limited": "Demasiados mensajes por ahora. Inténtelo de nuevo en una hora.",
       "not_found": "Esta reclamación no está abierta a mensajes.",
       "standing_rule_off": "Ya está desactivada."
-    }
+    },
+    "damageType": "Tipo de daño: {type}"
   },
   "negotiation": {
     "title": "Su representante",
@@ -1455,5 +1456,11 @@
     "failedTitle": "No se pudo avisar a Hold",
     "failedBody": "No se activó nada. Inténtalo de nuevo.",
     "channel": "Alquileres y devoluciones"
+  },
+  "damageTypes": {
+    "scratch": "Arañazo",
+    "impact": "Golpe",
+    "dent": "Abolladura",
+    "broken_glass": "Rotura de cristal"
   }
 }

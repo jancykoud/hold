@@ -33,6 +33,11 @@ describe('reading a claim', () => {
     expect(screen.getByText('Reply by Nov 4, 2026, 6:00 PM')).toBeOnTheScreen();
   });
 
+  it('says the type of damage a line’s price names', async () => {
+    await show({ 'renter/claim': { ok: true, value: claim({ lines: claim().lines.map((line) => ({ ...line, damageType: 'dent' as const })) }) } });
+    expect(await screen.findByText('Type of damage: Dent')).toBeOnTheScreen();
+  });
+
   it('acknowledges a claim before the reply period starts', async () => {
     const api = createFakeApi({ 'renter/claim': { ok: true, value: claim({ canAcknowledge: true, canReply: false }) }, 'renter/actions/acknowledge-claim': { ok: true, value: {} } });
     await renderWithProviders(<ClaimScreen token={TOKEN} />, { api });

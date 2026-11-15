@@ -1155,7 +1155,8 @@
       "rate_limited": "Vorerst zu viele Nachrichten. Versuchen Sie es in einer Stunde erneut.",
       "not_found": "Diese Forderung ist nicht für Nachrichten offen.",
       "standing_rule_off": "Sie ist bereits aus."
-    }
+    },
+    "damageType": "Art des Schadens: {type}"
   },
   "negotiation": {
     "title": "Ihr Vertreter",
@@ -1455,5 +1456,11 @@
     "failedTitle": "Hold konnte nicht benachrichtigt werden",
     "failedBody": "Nichts wurde eingeschaltet. Bitte erneut versuchen.",
     "channel": "Mieten und Rückgaben"
+  },
+  "damageTypes": {
+    "scratch": "Kratzer",
+    "impact": "Stoß",
+    "dent": "Delle",
+    "broken_glass": "Glasbruch"
   }
 }

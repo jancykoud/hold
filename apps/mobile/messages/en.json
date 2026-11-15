@@ -1155,7 +1155,8 @@
       "rate_limited": "Too many messages for now. Try again in an hour.",
       "not_found": "This claim is not open for messages.",
       "standing_rule_off": "It is already off."
-    }
+    },
+    "damageType": "Type of damage: {type}"
   },
   "negotiation": {
     "title": "Your advocate",
@@ -1455,5 +1456,11 @@
     "failedTitle": "Hold could not be told",
     "failedBody": "Nothing was turned on. Please try again.",
     "channel": "Rentals and returns"
+  },
+  "damageTypes": {
+    "scratch": "Scratch",
+    "impact": "Impact",
+    "dent": "Dent",
+    "broken_glass": "Broken glass"
   }
 }

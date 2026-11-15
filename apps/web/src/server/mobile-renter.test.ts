@@ -111,7 +111,7 @@ describe('paying from the phone', () => {
     const phone = renterPhone(rental.token)
 
     const before = await phone.view('rental')
-    expect(before).toMatchObject({ ok: true, value: { view: { state: 'pending_payment', shopName: 'Phone Renter Bikes', currency: 'EUR' } } })
+    expect(before).toMatchObject({ ok: true, value: { view: { state: 'pending_payment', shopName: 'Phone Renter Bikes', currency: 'EUR', prices: [{ damageType: null }] } } })
 
     const fee = await phone.act('pay-fee', { returnTo: 'app' })
     if (!fee.ok) throw new Error(JSON.stringify(fee))
@@ -246,7 +246,7 @@ describe('a renter screen from the phone', () => {
     const claim = await presentedClaim(jar, shop, priceId)
     jar.clear()
     const phone = renterPhone(claim.claimToken)
-    expect(await phone.view('claim')).toMatchObject({ ok: true, value: { state: 'presented', canReply: true, canAdvocate: true, currency: 'EUR', lines: [{ amountCents: 3500 }], contest: null } })
+    expect(await phone.view('claim')).toMatchObject({ ok: true, value: { state: 'presented', canReply: true, canAdvocate: true, currency: 'EUR', lines: [{ amountCents: 3500, damageType: null }], contest: null } })
     expect(await phone.act('send-claim-code', { via: 'chosen' })).toMatchObject({ ok: true })
     expect(await phone.act('start-advocate', { code: TEST_SIGN_IN_CODE, highest: '20' })).toMatchObject({ ok: true })
     expect(await phone.view('negotiation')).toMatchObject({ ok: true, value: { canAct: true, highestTotalCents: 2000, advocate: 'hold', transcript: { currency: 'EUR', claimTotalCents: 3500 } } })

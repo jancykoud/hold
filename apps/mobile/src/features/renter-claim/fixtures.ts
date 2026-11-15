@@ -26,6 +26,7 @@ export const claim = (overrides: Partial<Claim> = {}): Claim => ({
     {
       id: 'line-1',
       description: 'Bent rear derailleur',
+      damageType: null,
       reason: 'The derailleur hanger is bent inwards; it was straight at handover.',
       amountCents: 4500,
       actorName: 'Mia Keller',
