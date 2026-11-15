@@ -309,7 +309,7 @@
     "shops": {
       "label": "Pour les loueurs",
       "title": "Protégez chaque article sans débiter ceux qui le rapportent.",
-      "imageAlt": "Des vélos de location rangés sur des étagères dans une arrière-boutique",
+      "imageAlt": "Un parking vu d'en haut, des dizaines de voitures entre des rangées de jeunes arbres",
       "action": "Voir ce que voit le loueur",
       "points": {
         "refund": "Aucun remboursement à émettre après un retour sans dommage, et aucun client qui demande où il en est.",
@@ -321,7 +321,7 @@
     "renters": {
       "label": "Pour les clients",
       "title": "Gardez votre argent pendant la location.",
-      "imageAlt": "La vue du cycliste par-dessus le guidon, sur un pont de bois entre les arbres",
+      "imageAlt": "La vue du conducteur par-dessus le volant, une main posée dessus et des arbres devant",
       "action": "Voir ce que voit le client",
       "points": {
         "notCharge": "Une autorisation n'est pas un débit. Rendez l'article tel qu'il est parti et aucun paiement n'a eu lieu.",
@@ -406,7 +406,7 @@
     "about": "À propos de cette version",
     "aboutBody": "Conçu pour le PayPal AI Hackathon 2026. Hold n'est pas un assureur et ne détient pas l'argent des clients. Les fonds restent sur le compte du client jusqu'à l'approbation d'une réclamation.",
     "rights": "© {year} Hold",
-    "credits": "Photographies d’Unsplash par Nuno Alves et Krzysztof Kowalik, et de Wikimedia Commons par Retired electrician. Les marques sur la portière sont illustratives.",
+    "credits": "Photographies de Wikimedia Commons par Retired electrician, Estormiz et Daniela Cuevas, chacune versée au domaine public. Les marques sur la portière sont illustratives.",
     "legal": "Confidentialité et conditions"
   },
   "pages": {

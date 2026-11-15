@@ -309,7 +309,7 @@
     "shops": {
       "label": "Für Verleihe",
       "title": "Schützen Sie jeden Artikel, ohne denen etwas abzubuchen, die ihn zurückbringen.",
-      "imageAlt": "Mietfahrräder auf Regalen im Lagerraum eines Verleihs",
+      "imageAlt": "Ein Parkplatz von oben, Dutzende Autos zwischen Reihen junger Bäume",
       "action": "Die Sicht des Verleihs ansehen",
       "points": {
         "refund": "Keine Rückerstattung nach einer sauberen Rückgabe, und niemand fragt, wo sie bleibt.",
@@ -321,7 +321,7 @@
     "renters": {
       "label": "Für Mietende",
       "title": "Behalten Sie Ihr Geld, während Sie mieten.",
-      "imageAlt": "Blick über den Lenker beim Fahren über eine Holzbrücke zwischen Bäumen",
+      "imageAlt": "Blick über das Lenkrad, eine Hand am Kranz und Bäume voraus",
       "action": "Die Sicht der Mietenden ansehen",
       "points": {
         "notCharge": "Eine Reservierung ist keine Abbuchung. Geben Sie den Artikel so zurück, wie er war, und es gab nie eine Zahlung.",
@@ -406,7 +406,7 @@
     "about": "Über diese Version",
     "aboutBody": "Entwickelt für den PayPal AI Hackathon 2026. Hold ist kein Versicherer und verwahrt kein Kundengeld. Das Geld bleibt auf dem eigenen Konto der mietenden Person, bis eine Forderung genehmigt ist.",
     "rights": "© {year} Hold",
-    "credits": "Fotos von Unsplash von Nuno Alves und Krzysztof Kowalik sowie von Wikimedia Commons von Retired electrician. Die Spuren an der Tür dienen der Veranschaulichung.",
+    "credits": "Fotos von Wikimedia Commons von Retired electrician, Estormiz und Daniela Cuevas, jeweils gemeinfrei gestellt. Die Spuren an der Tür dienen der Veranschaulichung.",
     "legal": "Datenschutz und Bedingungen"
   },
   "pages": {

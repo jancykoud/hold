@@ -2,6 +2,6 @@ export const shopPointKeys = ['refund', 'photographs', 'oldMarks', 'evidence'] a
 export const renterPointKeys = ['notCharge', 'prices', 'see', 'reply'] as const
 
 export const audienceImages = {
-  shops: '/images/shop.jpg',
-  renters: '/images/renter.jpg',
+  shops: '/images/fleet.jpg',
+  renters: '/images/driver.jpg',
 } as const

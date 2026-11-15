@@ -46,7 +46,7 @@ export function AuthShell({ title, lead, form, preface, other, aside }: AuthShel
       <aside className="lg:p-4 lg:pl-0">
         <div className="relative isolate overflow-clip bg-band text-band-foreground lg:sticky lg:top-22 lg:min-h-[calc(100dvh-6.5rem)] lg:rounded-3xl lg:shadow-overlay">
           <div aria-hidden="true" className="absolute inset-0 -z-10">
-            <Image src="/images/shop.jpg" alt="" fill sizes="(min-width: 64rem) 50vw, 100vw" className="object-cover opacity-60" />
+            <Image src="/images/fleet.jpg" alt="" fill sizes="(min-width: 64rem) 50vw, 100vw" className="object-cover opacity-60" />
           </div>
           <div aria-hidden="true" className="absolute inset-0 -z-10 bg-linear-to-b from-band/90 via-band/80 to-band/35" />
           <div className="mx-auto w-full max-w-half-page px-4 py-14 md:px-8 lg:px-12 lg:py-16">

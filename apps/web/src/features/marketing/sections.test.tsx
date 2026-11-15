@@ -65,7 +65,7 @@ describe('AudiencePanels', () => {
     const panel = within(screen.getByRole('region', { name: 'For shops' }))
     expect(panel.getAllByRole('listitem')).toHaveLength(4)
     expect(panel.getByRole('link', { name: "See the shop's view" })).toHaveAttribute('href', '/for-shops')
-    expect(panel.getByAltText("Rental bicycles stored on racks in a shop's back room")).toBeInTheDocument()
+    expect(panel.getByAltText('A car park seen from above, dozens of cars between rows of young trees')).toHaveAttribute('src', expect.stringContaining('fleet.jpg'))
   })
 
   it('gives renters four reasons and their own page', () => {
@@ -73,6 +73,7 @@ describe('AudiencePanels', () => {
     const panel = within(screen.getByRole('region', { name: 'For renters' }))
     expect(panel.getAllByRole('listitem')).toHaveLength(4)
     expect(panel.getByRole('link', { name: "See the renter's view" })).toHaveAttribute('href', '/for-renters')
+    expect(panel.getByAltText("A driver's view over the steering wheel, a hand on the rim and trees ahead")).toHaveAttribute('src', expect.stringContaining('driver.jpg'))
   })
 })
 
@@ -123,8 +124,8 @@ describe('PageIntro', () => {
   })
 
   it('shows a photograph with its description when given one', () => {
-    renderWithIntl(<PageIntro title="T" lead="L" image={{ src: '/images/shop.jpg', alt: 'Bikes on racks' }} />)
-    expect(screen.getByAltText('Bikes on racks')).toBeInTheDocument()
+    renderWithIntl(<PageIntro title="T" lead="L" image={{ src: '/images/fleet.jpg', alt: 'Cars in a car park' }} />)
+    expect(screen.getByAltText('Cars in a car park')).toBeInTheDocument()
   })
 })
 

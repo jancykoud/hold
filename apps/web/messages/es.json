@@ -309,7 +309,7 @@
     "shops": {
       "label": "Para tiendas",
       "title": "Protege cada artículo sin cobrar a quien lo devuelve.",
-      "imageAlt": "Bicicletas de alquiler guardadas en estantes en la trastienda",
+      "imageAlt": "Un aparcamiento visto desde arriba, decenas de coches entre hileras de árboles jóvenes",
       "action": "Ver lo que ve la tienda",
       "points": {
         "refund": "Ningún reembolso que emitir tras una devolución limpia, ni clientes preguntando dónde está.",
@@ -321,7 +321,7 @@
     "renters": {
       "label": "Para clientes",
       "title": "Conserva tu dinero mientras alquilas.",
-      "imageAlt": "Vista del ciclista sobre el manillar, cruzando un puente de madera entre árboles",
+      "imageAlt": "La vista del conductor sobre el volante, una mano apoyada en él y árboles delante",
       "action": "Ver lo que ve el cliente",
       "points": {
         "notCharge": "Una retención no es un cargo. Devuelve el artículo como salió y nunca hubo pago.",
@@ -406,7 +406,7 @@
     "about": "Sobre esta versión",
     "aboutBody": "Creado para el PayPal AI Hackathon 2026. Hold no es una aseguradora y no guarda el dinero de los clientes. Los fondos permanecen en la cuenta del cliente hasta que se aprueba una reclamación.",
     "rights": "© {year} Hold",
-    "credits": "Fotografías de Unsplash de Nuno Alves y Krzysztof Kowalik, y de Wikimedia Commons de Retired electrician. Las marcas en la puerta son ilustrativas.",
+    "credits": "Fotografías de Wikimedia Commons de Retired electrician, Estormiz y Daniela Cuevas, todas dedicadas al dominio público. Las marcas en la puerta son ilustrativas.",
     "legal": "Privacidad y condiciones"
   },
   "pages": {

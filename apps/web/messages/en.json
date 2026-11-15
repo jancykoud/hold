@@ -309,7 +309,7 @@
     "shops": {
       "label": "For shops",
       "title": "Protect every item without charging the people who bring it back.",
-      "imageAlt": "Rental bicycles stored on racks in a shop's back room",
+      "imageAlt": "A car park seen from above, dozens of cars between rows of young trees",
       "action": "See the shop's view",
       "points": {
         "refund": "No refund to issue after a clean return, and no customer asking where it is.",
@@ -321,7 +321,7 @@
     "renters": {
       "label": "For renters",
       "title": "Keep your money while you rent.",
-      "imageAlt": "A rider's view over the handlebars, crossing a wooden bridge between trees",
+      "imageAlt": "A driver's view over the steering wheel, a hand on the rim and trees ahead",
       "action": "See the renter's view",
       "points": {
         "notCharge": "A hold is not a charge. Return the item as it left and no payment ever happened.",
@@ -406,7 +406,7 @@
     "about": "About this build",
     "aboutBody": "Built for the PayPal AI Hackathon 2026. Hold is not an insurer and does not hold customers' money. Funds stay in the renter's own account until a claim is approved.",
     "rights": "© {year} Hold",
-    "credits": "Photographs from Unsplash by Nuno Alves and Krzysztof Kowalik, and from Wikimedia Commons by Retired electrician. The marks on the door are illustrative.",
+    "credits": "Photographs from Wikimedia Commons by Retired electrician, Estormiz and Daniela Cuevas, each dedicated to the public domain. The marks on the door are illustrative.",
     "legal": "Privacy and terms"
   },
   "pages": {
