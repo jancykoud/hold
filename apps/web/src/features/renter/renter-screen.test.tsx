@@ -21,8 +21,8 @@ const view: RenterView = {
   holdCents: 300_00,
   lines: [{ name: 'City e-bike', count: 1, dayRateCents: 40_00, holdCents: 300_00, includedKmPerDay: null }],
   prices: [
-    { description: 'Scratched frame', category: 'damage', amountCents: 35_00 },
-    { description: 'Missing charger', category: 'loss', amountCents: 60_00 },
+    { description: 'Scratched frame', category: 'damage', amountCents: 35_00, damageType: null },
+    { description: 'Missing charger', category: 'loss', amountCents: 60_00, damageType: null },
   ],
   wearPolicy: 'Light scuffs on the tyres are ordinary wear.',
   replyPeriodHours: 72,

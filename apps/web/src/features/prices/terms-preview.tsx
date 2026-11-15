@@ -1,6 +1,6 @@
 'use client'
 
-import type { PriceCategory } from '@hold/domain'
+import type { DamageType, PriceCategory } from '@hold/domain'
 import { NextIntlClientProvider, useTimeZone, useTranslations } from 'next-intl'
 import { Eye } from 'lucide-react'
 import { useId, useState } from 'react'
@@ -9,12 +9,13 @@ import { Select } from '@/components/ui/select'
 import { routing } from '@/i18n/routing'
 import type { Locale } from '@/i18n/routing'
 
-// The words a renter reads around the shop's own prices, in each language Hold speaks.
-export type TermsMessages = { readonly prices: string; readonly pricesLead: string; readonly wear: string; readonly wearLead: string }
+// The words a renter reads around the shop's own prices, in each language Hold speaks: the titles and leads, and the
+// name of each type of damage a price may name.
+export type TermsMessages = { readonly prices: string; readonly pricesLead: string; readonly wear: string; readonly wearLead: string; readonly damageTypes: Readonly<Record<DamageType | 'none', string>> }
 
 type TermsPreviewProps = {
   currency: string
-  prices: readonly { readonly description: string; readonly category: PriceCategory; readonly amountCents: number }[]
+  prices: readonly { readonly description: string; readonly category: PriceCategory; readonly amountCents: number; readonly damageType?: DamageType | null | undefined }[]
   wearPolicy: string
   terms: Readonly<Record<Locale, TermsMessages>>
 }
@@ -41,7 +42,7 @@ export function TermsPreview({ currency, prices, wearPolicy, terms }: TermsPrevi
       </div>
       {prices.length === 0 ? <p className="text-muted-foreground">{t('preview.empty')}</p> : (
         <div lang={language}>
-          <NextIntlClientProvider locale={language} timeZone={timeZone} messages={{ renter: terms[language] }}>
+          <NextIntlClientProvider locale={language} timeZone={timeZone} messages={{ renter: terms[language], shop: { prices: { damageTypes: terms[language].damageTypes } } }}>
             <TermsView currency={currency} prices={prices} wearPolicy={wearPolicy} />
           </NextIntlClientProvider>
         </div>

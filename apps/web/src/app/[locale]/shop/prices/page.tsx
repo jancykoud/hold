@@ -19,8 +19,8 @@ export async function generateMetadata(): Promise<Metadata> {
 // The words a renter reads around the prices, in each language, for the editor's preview. Only these leave the server.
 async function previewTerms(): Promise<Record<Locale, TermsMessages>> {
   const entries = await Promise.all(routing.locales.map(async (locale) => {
-    const { renter } = await getMessages({ locale })
-    return [locale, { prices: renter.prices, pricesLead: renter.pricesLead, wear: renter.wear, wearLead: renter.wearLead }] as const
+    const { renter, shop } = await getMessages({ locale })
+    return [locale, { prices: renter.prices, pricesLead: renter.pricesLead, wear: renter.wear, wearLead: renter.wearLead, damageTypes: shop.prices.damageTypes }] as const
   }))
   return Object.fromEntries(entries) as Record<Locale, TermsMessages>
 }

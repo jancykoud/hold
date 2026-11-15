@@ -1,5 +1,5 @@
 import { paymentDeadline, paymentLapsed, rentalDays } from '@hold/domain'
-import type { ContactChannel, PriceCategory, RentalState } from '@hold/domain'
+import type { DamageType, ContactChannel, PriceCategory, RentalState } from '@hold/domain'
 import { asc, count, eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
 import { readJson } from './read-json.ts'
@@ -50,7 +50,8 @@ export type RenterView = {
   readonly holdCents: number
   // includedKmPerDay: for an item that is driven, the kilometres each day includes, as agreed at booking.
   readonly lines: readonly { readonly name: string; readonly count: number; readonly dayRateCents: number; readonly holdCents: number; readonly includedKmPerDay: number | null }[]
-  readonly prices: readonly { readonly description: string; readonly category: PriceCategory; readonly amountCents: number }[]
+  // damageType: the type of damage a price for damage names, as the renter agreed to it.
+  readonly prices: readonly { readonly description: string; readonly category: PriceCategory; readonly amountCents: number; readonly damageType: DamageType | null }[]
   readonly wearPolicy: string
   readonly replyPeriodHours: number
   readonly renterName: string | null
@@ -101,7 +102,7 @@ export async function renterView(transaction: Transaction, rentalId: string, now
     .groupBy(itemTypes.name, rentalItems.dayRateCents, rentalItems.holdCents, rentalItems.includedKmPerDay)
     .orderBy(asc(itemTypes.name))
   const prices = await transaction
-    .select({ description: priceEntries.description, category: priceEntries.category, amountCents: priceEntries.amountCents })
+    .select({ description: priceEntries.description, category: priceEntries.category, amountCents: priceEntries.amountCents, damageType: priceEntries.damageType })
     .from(priceEntries)
     .where(eq(priceEntries.priceListId, rental.priceListId))
     .orderBy(asc(priceEntries.position))

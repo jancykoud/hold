@@ -190,7 +190,7 @@ describe('a renter link', () => {
     expect(view).toMatchObject({ shopName: 'Ribeira Bikes', state: 'pending_payment', feeCents: 8_00, holdCents: 50_00, currency: 'EUR', days: 1, wearPolicy: 'Scuffs are wear.' })
     // A child seat is not driven, so its booking includes no kilometres.
     expect(view?.lines).toEqual([{ name: 'Child seat', count: 1, dayRateCents: 8_00, holdCents: 50_00, includedKmPerDay: null }])
-    expect(view?.prices).toEqual([{ description: 'Scratch', category: 'damage', amountCents: 35_00 }])
+    expect(view?.prices).toEqual([{ description: 'Scratch', category: 'damage', amountCents: 35_00, damageType: null }])
   })
 
   it('tells the renter until when an unpaid booking keeps its items: fifteen minutes from when it was made', async () => {

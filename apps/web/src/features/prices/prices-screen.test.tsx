@@ -19,7 +19,7 @@ vi.mock('./price-grid', () => ({
 vi.mock('@/features/shop/actions', () => ({ publishPrices: vi.fn() }))
 vi.mock('@/features/auth/passkey-button', () => ({ PasskeyButton: ({ label }: { label: string }) => <button type="button">{label}</button> }))
 
-const terms = (messages: typeof en) => ({ prices: messages.renter.prices, pricesLead: messages.renter.pricesLead, wear: messages.renter.wear, wearLead: messages.renter.wearLead })
+const terms = (messages: typeof en) => ({ prices: messages.renter.prices, pricesLead: messages.renter.pricesLead, wear: messages.renter.wear, wearLead: messages.renter.wearLead, damageTypes: messages.shop.prices.damageTypes })
 const current: PublishedPriceList = {
   version: 1, currency: 'EUR', publishedAt: new Date('2026-10-01T10:00:00Z'), wearPolicy: 'Scuffs on tyres are wear.',
   entries: [{ id: 'e1', code: 'deep-scratch-on-the-frame', description: 'Deep scratch on the frame', category: 'damage', amountCents: 35_00, damageType: null }],
@@ -87,6 +87,17 @@ describe('the price list editor', () => {
     expect(within(preview).getByText('€35.00')).toBeInTheDocument()
     await user.selectOptions(within(preview).getByRole('combobox', { name: 'Renter’s language' }), 'de')
     expect(within(preview).getByRole('heading', { name: de.renter.prices })).toBeInTheDocument()
+  })
+
+  // The preview speaks the renter's language, not the shop's: so do the types of damage beside the prices.
+  it('names a price’s type of damage in the preview, in the renter’s language', async () => {
+    const user = userEvent.setup()
+    renderWithIntl(<PricesScreen {...props()} current={{ ...current, entries: current.entries.map((entry) => ({ ...entry, damageType: 'scratch' as const })) }} />)
+    const preview = screen.getByRole('region', { name: 'What a renter reads' })
+    expect(within(preview).getByText('Scratch')).toBeInTheDocument()
+    await user.selectOptions(within(preview).getByRole('combobox', { name: 'Renter’s language' }), 'de')
+    expect(within(preview).getByText('Kratzer')).toBeInTheDocument()
+    expect(within(preview).queryByText(/damageTypes/)).not.toBeInTheDocument()
   })
 
   it('lists each version with the open rentals agreed to it, and shows what the draft would change', async () => {

@@ -1,4 +1,4 @@
-import type { PriceCategory } from '@hold/domain'
+import type { DamageType, PriceCategory } from '@hold/domain'
 import { money } from '@hold/domain'
 import { useLocale, useTranslations } from 'next-intl'
 import { Panel } from '@/components/ui/panel'
@@ -8,7 +8,8 @@ type TermsWords = { readonly prices: string; readonly pricesLead: string; readon
 
 type TermsViewProps = {
   currency: string
-  prices: readonly { readonly description: string; readonly category: PriceCategory; readonly amountCents: number }[]
+  // damageType: the type of damage a price for damage names, when it names one.
+  prices: readonly { readonly description: string; readonly category: PriceCategory; readonly amountCents: number; readonly damageType?: DamageType | null | undefined }[]
   wearPolicy: string
   // The titles and leads, when the reader is the shop's own staff rather than the renter.
   words?: TermsWords
@@ -17,6 +18,7 @@ type TermsViewProps = {
 // The shop's damage prices and its wear policy, as a renter reads them before agreeing to them.
 export function TermsView({ currency, prices, wearPolicy, words }: TermsViewProps) {
   const t = useTranslations('renter')
+  const types = useTranslations('shop.prices.damageTypes')
   const locale = useLocale()
   const said = words ?? { prices: t('prices'), pricesLead: t('pricesLead'), wear: t('wear'), wearLead: t('wearLead') }
   return (
@@ -26,7 +28,10 @@ export function TermsView({ currency, prices, wearPolicy, words }: TermsViewProp
         <ul className="divide-y divide-border/70">
           {prices.map((price) => (
             <li key={price.description} className="flex items-baseline justify-between gap-4 px-4 py-3.5 md:px-5">
-              <span className="min-w-0 wrap-long-words">{price.description}</span>
+              <span className="grid min-w-0 gap-0.5">
+                <span className="wrap-long-words">{price.description}</span>
+                {price.damageType == null ? null : <span className="text-sm text-muted-foreground">{types(price.damageType)}</span>}
+              </span>
               <span className="figures shrink-0 font-semibold">{formatMoney(money(price.amountCents, currency), locale)}</span>
             </li>
           ))}
