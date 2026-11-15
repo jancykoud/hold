@@ -126,6 +126,8 @@ const fakeServices = z.object({
   HOLD_ENVIRONMENT: z.literal('test'),
   HOLD_COOKIE_KEY: cookieKey,
   HOLD_PUBLIC_URL: z.url().default('http://localhost:3211'),
+  // A person opening the built app at http://localhost: plain cookie names without Secure, which Safari needs there.
+  HOLD_PLAIN_COOKIES: z.literal('on').optional(),
   // The end-to-end tests of the open scorecard start a server that records a fixture run of made-up pairs.
   HOLD_EVAL_FIXTURE: z.literal('on').optional(),
 })
@@ -161,13 +163,14 @@ export type WebConfig =
       readonly publicUrl: string
       readonly paypalMode: 'sandbox'
       readonly evalFixture: boolean
+      readonly plainCookies: boolean
     }
 
 export function loadWebConfig(environment: Readonly<Record<string, string | undefined>>): WebConfig {
   if (environment['HOLD_ENVIRONMENT'] === 'test') {
     const parsed = fakeServices.parse(environment)
     const key = { kind: 'value', key: parsed.HOLD_COOKIE_KEY } as const
-    return { environment: 'test', services: 'fake', cookieKey: key, renterLinkKey: key, trustKey: key, credentialKey: { kind: 'local' }, publicUrl: parsed.HOLD_PUBLIC_URL, paypalMode: 'sandbox', evalFixture: parsed.HOLD_EVAL_FIXTURE === 'on' }
+    return { environment: 'test', services: 'fake', cookieKey: key, renterLinkKey: key, trustKey: key, credentialKey: { kind: 'local' }, publicUrl: parsed.HOLD_PUBLIC_URL, paypalMode: 'sandbox', evalFixture: parsed.HOLD_EVAL_FIXTURE === 'on', plainCookies: parsed.HOLD_PLAIN_COOKIES === 'on' }
   }
   const parsed = awsServices.safeParse(environment)
   if (!parsed.success) {

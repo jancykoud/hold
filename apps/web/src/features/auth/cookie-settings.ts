@@ -29,13 +29,15 @@ export const SIGNED_IN_COOKIE = BASE_NAMES.signedIn
 // As long as the identity service keeps a refresh token (infra/lib/identity-stack.ts).
 export const REFRESH_SECONDS = 30 * 24 * 60 * 60
 
-type Environment = Pick<WebConfig, 'environment'>
+// plainCookies: only the fakes know it (packages/config), for a person opening the built app over plain HTTP.
+type Environment = { readonly environment: Exclude<WebConfig['environment'], 'test'> } | { readonly environment: 'test'; readonly plainCookies?: boolean }
 
-const isSecure = (config: Environment) => config.environment !== 'development'
+const isSecure = (config: Environment) => config.environment !== 'development' && !(config.environment === 'test' && config.plainCookies === true)
 
 // A browser keeps a __Host- cookie only if it is Secure, has Path=/ and names no Domain, so no other host, not even a
 // neighbour on App Runner's shared domain, and no plain-HTTP page can set one or shadow it. A developer's own machine
-// serves plain HTTP, where a browser refuses the prefix, so there the names are plain.
+// serves plain HTTP, where a browser refuses the prefix, so there the names are plain; so are they for the fakes when
+// asked, since Safari keeps no Secure cookie from http://localhost.
 export function cookieNames(config: Environment): Readonly<Record<CookieName, string>> {
   const prefix = isSecure(config) ? HOST_PREFIX : ''
   return Object.fromEntries(Object.entries(BASE_NAMES).map(([key, name]) => [key, `${prefix}${name}`])) as Record<CookieName, string>

@@ -101,6 +101,11 @@ describe('loadWebConfig', () => {
     expect(() => loadWebConfig({ ...AWS, HOLD_COOKIE_KEY_SECRET_ARN: undefined })).toThrow(/HOLD_COOKIE_KEY_SECRET_ARN/)
   })
 
+  it('sets plain cookies for the fakes only when asked, and knows no such setting for a deployment', () => {
+    expect(loadWebConfig({ HOLD_ENVIRONMENT: 'test', HOLD_COOKIE_KEY: KEY })).toMatchObject({ plainCookies: false })
+    expect(loadWebConfig({ HOLD_ENVIRONMENT: 'test', HOLD_COOKIE_KEY: KEY, HOLD_PLAIN_COOKIES: 'on' })).toMatchObject({ plainCookies: true })
+    expect(loadWebConfig({ ...AWS, HOLD_PLAIN_COOKIES: 'on' })).not.toHaveProperty('plainCookies')
+  })
   it('uses the fakes only when the environment says test', () => {
     expect(loadWebConfig({ HOLD_ENVIRONMENT: 'test', HOLD_COOKIE_KEY: KEY })).toMatchObject({ services: 'fake' })
     expect(() => loadWebConfig({ HOLD_ENVIRONMENT: 'production', HOLD_COOKIE_KEY: KEY })).toThrow(/HOLD_COGNITO_USER_POOL_ID/)

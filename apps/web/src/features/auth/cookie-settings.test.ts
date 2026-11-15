@@ -13,6 +13,14 @@ describe('the session cookies', () => {
     }
   })
 
+  // The built app on its fakes, opened by a person at http://localhost: Safari keeps no Secure cookie from plain HTTP,
+  // so every click signed them out. Asked for by name, and only where nothing is real.
+  it('keep their plain names for the fakes on plain HTTP when asked, and never for a deployment', () => {
+    for (const name of Object.values(cookieNames({ environment: 'test', plainCookies: true }))) expect(name).toMatch(/^hold_/)
+    expect(cookieOptions({ environment: 'test', plainCookies: true })).toMatchObject({ secure: false, httpOnly: true })
+    expect(cookieOptions({ environment: 'test', plainCookies: false })).toMatchObject({ secure: true })
+  })
+
   it('keep their plain names on a developer’s machine, which serves plain HTTP that a browser refuses the prefix over', () => {
     for (const name of Object.values(cookieNames({ environment: 'development' }))) expect(name).toMatch(/^hold_/)
     expect(cookieOptions({ environment: 'development' })).toMatchObject({ secure: false })

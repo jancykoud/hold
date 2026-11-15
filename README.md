@@ -291,7 +291,7 @@ demo as Jonas, at the counter** runs the whole money loop as on the hosted demo.
 pnpm install
 pnpm --filter @hold/web build
 cd apps/web
-HOLD_ENVIRONMENT=test HOLD_COOKIE_KEY="$(openssl rand -base64 32)" HOLD_PUBLIC_URL=http://localhost:3000 \
+HOLD_ENVIRONMENT=test HOLD_PLAIN_COOKIES=on HOLD_COOKIE_KEY="$(openssl rand -base64 32)" HOLD_PUBLIC_URL=http://localhost:3000 \
   node node_modules/next/dist/bin/next start --port 3000
 ```
 
