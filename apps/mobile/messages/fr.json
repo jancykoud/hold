@@ -439,7 +439,8 @@
         "review": "Noter ce que vous avez vu",
         "back": "Retour à la location",
         "sealedHandover": "Scellé. Ces photos ne peuvent plus changer.",
-        "sealedReturn": "Ces photos du retour sont scellées. Rien n'a été débité."
+        "sealedReturn": "Ces photos du retour sont scellées. Rien n'a été débité.",
+        "unread": "Relevez le tableau de bord avant de sceller."
       }
     },
     "marks": {
@@ -519,8 +520,28 @@
         "role_may_not_retire": "Seuls le propriétaire ou un responsable peuvent retirer un article.",
         "item_in_use": "Un client a l'article, ou son retour est encore en vérification. Changez-le une fois rendu et vérifié.",
         "message_invalid": "Écrivez un message de 1000 caractères au plus.",
-        "transition_not_allowed": "La location n'en est pas à cette étape."
+        "transition_not_allowed": "La location n'en est pas à cette étape.",
+        "not_read": "Ce type d’article n’a pas de tableau de bord à relever.",
+        "odometer_invalid": "Les kilomètres doivent être un nombre entier.",
+        "fuel_invalid": "Choisissez le niveau de carburant, de vide à plein.",
+        "odometer_below_handover": "Le compteur indique moins qu’à la remise. Vérifiez le chiffre sur la photo.",
+        "reading_missing": "Relevez le tableau de bord avant de sceller."
       }
+    },
+    "readings": {
+      "title": "Tableau de bord",
+      "lead": "Lisez les deux sur la photo du tableau de bord. Le client les voit sur l’état des lieux.",
+      "odometer": "Kilomètres au compteur",
+      "fuelLabel": "Carburant dans le réservoir",
+      "fuelEmpty": "Vide",
+      "fuelFull": "Plein",
+      "fuelPart": "{eighths}/8",
+      "fuel": "{eighths, select, 0 {réservoir vide} 8 {réservoir plein} other {{eighths}/8 du réservoir}}",
+      "read": "{km} km, {fuel}",
+      "atHandover": "À la remise : {reading}",
+      "none": "Aucun relevé n’a été fait.",
+      "save": "Enregistrer le relevé",
+      "saved": "Relevé enregistré."
     }
   },
   "camera": {

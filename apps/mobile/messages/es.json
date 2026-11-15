@@ -439,7 +439,8 @@
         "review": "Anotar lo que viste",
         "back": "Volver al alquiler",
         "sealedHandover": "Sellado. Estas fotos ya no pueden cambiar.",
-        "sealedReturn": "Estas fotos de devolución están selladas. No se ha cobrado nada."
+        "sealedReturn": "Estas fotos de devolución están selladas. No se ha cobrado nada.",
+        "unread": "Lee el salpicadero antes de sellar."
       }
     },
     "marks": {
@@ -519,8 +520,28 @@
         "role_may_not_retire": "Solo el propietario o un encargado pueden retirar un artículo.",
         "item_in_use": "Un cliente tiene el artículo, o su devolución aún se está revisando. Cámbialo cuando haya vuelto y esté revisado.",
         "message_invalid": "Escribe un mensaje de hasta 1000 caracteres.",
-        "transition_not_allowed": "El alquiler no está en ese paso."
+        "transition_not_allowed": "El alquiler no está en ese paso.",
+        "not_read": "Este tipo de artículo no tiene salpicadero que leer.",
+        "odometer_invalid": "Los kilómetros deben ser un número entero.",
+        "fuel_invalid": "Elige el nivel de combustible, de vacío a lleno.",
+        "odometer_below_handover": "El cuentakilómetros marca menos que en la entrega. Comprueba la cifra en la foto.",
+        "reading_missing": "Lee el salpicadero antes de sellar."
       }
+    },
+    "readings": {
+      "title": "Salpicadero",
+      "lead": "Lee ambos en la foto del salpicadero. El cliente los ve en el informe de estado.",
+      "odometer": "Kilómetros en el cuentakilómetros",
+      "fuelLabel": "Combustible en el depósito",
+      "fuelEmpty": "Vacío",
+      "fuelFull": "Lleno",
+      "fuelPart": "{eighths}/8",
+      "fuel": "{eighths, select, 0 {depósito vacío} 8 {depósito lleno} other {{eighths}/8 del depósito}}",
+      "read": "{km} km, {fuel}",
+      "atHandover": "En la entrega: {reading}",
+      "none": "No se tomó ninguna lectura.",
+      "save": "Guardar la lectura",
+      "saved": "Lectura guardada."
     }
   },
   "camera": {

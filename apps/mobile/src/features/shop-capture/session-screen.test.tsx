@@ -125,6 +125,53 @@ describe("an item's handover photographs", () => {
   });
 });
 
+// docs/vehicle-plan.md step 3: a vehicle's kilometres and fuel are read by a person before its photographs are sealed.
+describe("a vehicle's dashboard", () => {
+  const CAR: CaptureSessionView = { ...HANDOVER, itemLabel: 'Compact car 2', missing: [], takesReadings: true };
+
+  it('is not asked for an item that is not driven', async () => {
+    await open({ ...HANDOVER, missing: [] });
+    expect(screen.queryByText('Dashboard')).not.toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Seal the photographs' })).toBeEnabled();
+  });
+
+  it('must be read before the photographs are sealed', async () => {
+    await open(CAR);
+    expect(screen.getByText('Dashboard')).toBeOnTheScreen();
+    expect(screen.getByText('Read the dashboard before sealing.')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Seal the photographs' })).toBeDisabled();
+  });
+
+  it('is saved as the kilometres and the fuel a person entered, and then lets the photographs be sealed', async () => {
+    // Hold answers the session with the reading once it is kept.
+    let kept: CaptureSessionView = CAR;
+    const view = await open(CAR, { 'shop/actions/record-handover-reading': { ok: true, value: {} }, [`shop/sessions/${SESSION_ID}`]: () => ({ ok: true, value: kept }) });
+    await fireEvent.changeText(screen.getByLabelText('Kilometres on the odometer'), '48210');
+    await fireEvent.press(screen.getByRole('radio', { name: 'Full' }));
+    kept = { ...CAR, reading: { odometerKm: 48210, fuelEighths: 8 } };
+    await act(() => fireEvent.press(screen.getByRole('button', { name: 'Save the reading' })));
+    expect(view.api.calls.find((call) => call.path === 'shop/actions/record-handover-reading')?.options.body).toMatchObject({ sessionId: SESSION_ID, odometerKm: 48210, fuelEighths: 8 });
+    expect(await screen.findByText('Reading saved.')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Seal the photographs' })).toBeEnabled();
+  });
+
+  it('shows what the handover read at a return, and says why a lower odometer is refused', async () => {
+    const back: CaptureSessionView = { ...CAR, kind: 'return', handoverReading: { odometerKm: 48210, fuelEighths: 8 } };
+    await open(back, { 'shop/actions/record-return-reading': { ok: false, failure: 'refused', reason: 'odometer_below_handover' } });
+    expect(screen.getByText('At handover: 48,210 km, full tank')).toBeOnTheScreen();
+    await fireEvent.changeText(screen.getByLabelText('Kilometres on the odometer'), '48000');
+    await fireEvent.press(screen.getByRole('radio', { name: '6/8' }));
+    await act(() => fireEvent.press(screen.getByRole('button', { name: 'Save the reading' })));
+    expect(await screen.findByText('The odometer reads less than at handover. Check the figure against the photograph.')).toBeOnTheScreen();
+  });
+
+  it('is only read once sealed', async () => {
+    await open({ ...CAR, sealed: true, reading: { odometerKm: 48210, fuelEighths: 3 } });
+    expect(screen.getByText('48,210 km, 3/8 of a tank')).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Save the reading' })).not.toBeOnTheScreen();
+  });
+});
+
 describe("an item's return photographs", () => {
   const RETURN: CaptureSessionView = { ...HANDOVER, kind: 'return', ghost: [{ view: 'frame_left', url: 'https://hold.example/handover-left.jpg', simulated: false }] };
 

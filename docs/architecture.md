@@ -1743,8 +1743,8 @@ Each session route is limited to sixty requests per network in fifteen minutes (
 
 | Names | What they do |
 |---|---|
-| `start-handover`, `request-handover-photo`, `record-handover-photo`, `add-handover-mark`, `confirm-known-marks`, `seal-handover` | The guided handover (section 11.2). Photographs go from the phone straight to the evidence store by a signed upload link, as on the web. |
-| `start-return`, `request-return-photo`, `record-return-photo`, `seal-return`, `record-review` | The return, and a person's note on a comparison, which moves no money |
+| `start-handover`, `request-handover-photo`, `record-handover-photo`, `add-handover-mark`, `confirm-known-marks`, `record-handover-reading`, `seal-handover` | The guided handover (section 11.2). Photographs go from the phone straight to the evidence store by a signed upload link, as on the web. |
+| `start-return`, `request-return-photo`, `record-return-photo`, `record-return-reading`, `seal-return`, `record-review` | The return, and a person's note on a comparison, which moves no money |
 | `confirm-drop-off`, `report-drop-off-missing` | A return with nobody at the counter (section 6.13) |
 | `show-renter-link`, `email-renter-link`, `ask-for-hold` | The renter's link, drawn by the phone as a code, and asking for the hold, which the renter approves in PayPal on their own phone |
 | `change-item-status`, `write-to-renter` | A flat tyre sends an item to repair; an answer to the renter on the claim |

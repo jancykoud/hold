@@ -2,6 +2,7 @@ import { View } from 'react-native';
 import { useTranslations } from 'use-intl';
 import type { CaptureSessionView } from '@hold/mobile-api';
 import { Notice, SampleLabel, Screen, Text } from '@/components/ui';
+import { ReadingPanel } from './reading-panel';
 import { SealedActions, SealPanel, SealResult } from './seal-panel';
 import { useSeal } from './use-seal';
 import type { Upload } from './use-uploads';
@@ -13,11 +14,13 @@ type OverviewProps = {
   uploads: Readonly<Record<string, Upload>>;
   onPhotograph: (view: string) => void;
   onRetry: (view: string) => void;
+  // The session is read again, after a reading was kept.
+  onChanged: () => void;
 };
 
 // The item's views and where each stands, with the next step at the bottom, in reach of the thumb: the next view to
 // photograph, then sealing.
-export function SessionOverview({ session, uploads, onPhotograph, onRetry }: OverviewProps) {
+export function SessionOverview({ session, uploads, onPhotograph, onRetry, onChanged }: OverviewProps) {
   const t = useTranslations('shop.capture');
   const statuses = session.plan.map((view) => ({ view, status: viewStatus(session, uploads, view) }));
   const needed = session.plan.filter((view) => view.required);
@@ -64,6 +67,7 @@ export function SessionOverview({ session, uploads, onPhotograph, onRetry }: Ove
           ))}
         </View>
       </View>
+      {session.takesReadings ? <ReadingPanel session={session} onSaved={onChanged} /> : null}
     </Screen>
   );
 }

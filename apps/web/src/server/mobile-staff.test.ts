@@ -178,7 +178,7 @@ describe('the counter on the phone', () => {
     const sessionId = (started.body['value'] as { sessionId: string }).sessionId
 
     const camera = await read(sessionRoute.GET(request(`sessions/${sessionId}`, call, 'GET'), { params: Promise.resolve({ sessionId }) }))
-    expect(camera.body).toMatchObject({ ok: true, value: { kind: 'handover', rentalId, sealed: false, missing: ['left-side', 'right-side'], canAct: true } })
+    expect(camera.body).toMatchObject({ ok: true, value: { kind: 'handover', rentalId, sealed: false, missing: ['left-side', 'right-side'], canAct: true, takesReadings: false, reading: null } })
 
     for (const view of ['left-side', 'right-side']) {
       const photo = Buffer.from(`a photograph of the ${view}`)
@@ -195,6 +195,36 @@ describe('the counter on the phone', () => {
     const { database } = await getServices()
     const lines = await inShop(database, { role: 'hold_app', shopId: shop.shopId }, (transaction) => transaction.select().from(auditLog))
     expect(lines.find((line) => line.action === 'handover.sealed' && (line.detail as { factor?: string }).factor === 'bearer')).toBeDefined()
+  })
+
+  // docs/vehicle-plan.md step 3: a vehicle's dashboard is read by a person, on the phone as on the web.
+  it('hands a vehicle over: the session asks for the dashboard, sealing waits for it, and the reading is kept', async () => {
+    const cars = await handoverShop(jar, 'cars@phone.example', 'Phone Cars', { category: 'car' })
+    const { rentalId } = await cars.readyRental()
+    jar.clear()
+    const call = { token: await tokenOf('cars@phone.example'), shopId: cars.shopId }
+    const shown = await read(rentalRoute.GET(request(`rentals/${rentalId}`, call, 'GET'), { params: Promise.resolve({ rentalId }) }))
+    const itemId = ((shown.body.value?.['items'] ?? []) as { id: string }[])[0]?.id ?? ''
+    const started = await act('start-handover', { ...call, body: { rentalId, itemId, locale: 'en' } })
+    const sessionId = (started.body['value'] as { sessionId: string }).sessionId
+    const session = () => read(sessionRoute.GET(request(`sessions/${sessionId}`, call, 'GET'), { params: Promise.resolve({ sessionId }) }))
+    expect((await session()).body).toMatchObject({ ok: true, value: { takesReadings: true, reading: null, handoverReading: null } })
+
+    for (const view of ['left-side', 'right-side']) {
+      const photo = Buffer.from(`a photograph of the car's ${view}`)
+      const link = await act('request-handover-photo', { ...call, body: { sessionId, view, sha256: sha(photo), bytes: photo.length, locale: 'en' } })
+      const { key, headers } = link.body['value'] as { key: string; headers: Record<string, string> }
+      ;(await getServices()).simulatedEvidence?.receive(key, photo, headers['x-amz-checksum-sha256'] ?? '')
+      await act('record-handover-photo', { ...call, body: { sessionId, view, key, sharpness: 120, shadows: 20, highlights: 220, filled: 0.6, locale: 'en' } })
+    }
+    expect(await act('seal-handover', { ...call, body: { sessionId, locale: 'en' } })).toMatchObject({ body: { ok: false, failure: 'refused', reason: 'reading_missing' } })
+    // A tank is read in eighths, and nine of them is no reading.
+    expect(await act('record-handover-reading', { ...call, body: { sessionId, odometerKm: 48210, fuelEighths: 9, locale: 'en' } })).toMatchObject({ body: { ok: false } })
+    expect(await act('record-handover-reading', { ...call, body: { sessionId, odometerKm: 48210, fuelEighths: 8, locale: 'en' } })).toMatchObject({ status: 200, body: { ok: true } })
+    expect((await session()).body).toMatchObject({ value: { reading: { odometerKm: 48210, fuelEighths: 8 } } })
+    // The return's own action knows no handover.
+    expect(await act('record-return-reading', { ...call, body: { sessionId, odometerKm: 48300, fuelEighths: 8, locale: 'en' } })).toMatchObject({ body: { ok: false, reason: 'not_found' } })
+    expect(await act('seal-handover', { ...call, body: { sessionId, locale: 'en' } })).toMatchObject({ status: 200, body: { ok: true, value: { rentalOut: true } } })
   })
 
   it('shows the renter’s link as an address for the phone to draw, and gives a refusal as the web does', async () => {

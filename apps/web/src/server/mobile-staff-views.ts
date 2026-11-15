@@ -117,6 +117,9 @@ export const captureSessionView: StaffView<{ sessionId: string }, typeof capture
       missing: [...session.missing],
       ghost: await shown(ghost),
       canAct: context.role !== 'read_only',
+      takesReadings: session.takesReadings,
+      reading: session.reading === null ? null : { ...session.reading },
+      handoverReading: session.handoverReading === null ? null : { ...session.handoverReading },
     }
   },
 }

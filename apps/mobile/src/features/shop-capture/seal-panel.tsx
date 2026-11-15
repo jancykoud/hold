@@ -25,6 +25,8 @@ export function SealPanel({ session, uploads, seal, onPhotograph }: SealPanelPro
   const nextLabel = session.plan.find((view) => view.key === next)?.label;
   const uploading = Object.values(uploads).some((upload) => upload.status === 'uploading');
   const missing = session.missing.filter((view) => uploads[view]?.status !== 'done').length;
+  // A driven item is not sealed before a person has read its dashboard; Hold refuses it too.
+  const unread = session.takesReadings && session.reading === null;
   if (next !== undefined && nextLabel !== undefined) {
     return (
       <View className="gap-2">
@@ -38,10 +40,10 @@ export function SealPanel({ session, uploads, seal, onPhotograph }: SealPanelPro
   return (
     <View className="gap-2">
       <Text variant="small" tone="muted">
-        {uploading ? t('seal.waiting') : missing > 0 ? t('seal.missing', { count: missing }) : t('seal.ready')}
+        {uploading ? t('seal.waiting') : missing > 0 ? t('seal.missing', { count: missing }) : unread ? t('seal.unread') : t('seal.ready')}
       </Text>
       {seal.refusal ? <RefusalNotice refusal={seal.refusal} /> : null}
-      <Button icon="check" label={session.kind === 'handover' ? t('seal.handover') : t('seal.return')} onPress={() => void seal.seal()} loading={seal.sealing} disabled={uploading || missing > 0} />
+      <Button icon="check" label={session.kind === 'handover' ? t('seal.handover') : t('seal.return')} onPress={() => void seal.seal()} loading={seal.sealing} disabled={uploading || missing > 0 || unread} />
     </View>
   );
 }

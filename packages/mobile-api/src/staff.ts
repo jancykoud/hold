@@ -75,10 +75,13 @@ export const STAFF_ACTIONS = {
   'add-handover-mark': { input: handoverMarkInput, output: z.object({ markId: z.uuid() }) },
   'confirm-known-marks': { input: knownMarksInput, output: nothing },
   // The condition report's link, shown as a code once every item is handed over.
+  // A vehicle's dashboard as a person read it, kept until the photographs are sealed (vehicle-plan.md step 3).
+  'record-handover-reading': { input: readingInput, output: nothing },
   'seal-handover': { input: sessionInput, output: z.object({ rentalOut: z.boolean(), conditionLink: linkShown.extend({ sent: z.enum(['text', 'email']).nullable() }).optional() }) },
   'start-return': { input: rentalItemInput, output: z.object({ sessionId: z.uuid() }) },
   'request-return-photo': { input: photoLinkInput, output: z.object({ key: z.string(), url: z.url(), headers: z.record(z.string(), z.string()) }) },
   'record-return-photo': { input: photoRecordInput, output: z.object({ photoId: z.uuid() }) },
+  'record-return-reading': { input: readingInput, output: nothing },
   'seal-return': { input: sessionInput, output: z.object({ rentalId: z.uuid(), rentalReturned: z.boolean(), comparisonId: z.uuid().nullable() }) },
   'record-review': { input: reviewInput, output: nothing },
   'confirm-drop-off': { input: rentalInput, output: z.object({ rentalId: z.uuid() }) },
@@ -164,6 +167,8 @@ export const rentalViewSchema = rentalSummarySchema.omit({ items: true }).extend
 const regionSchema = z.object({ x: z.number(), y: z.number(), width: z.number(), height: z.number() })
 const shownPhoto = z.object({ view: z.string(), url: z.string().nullable(), simulated: z.boolean() })
 
+const readingSchema = z.object({ odometerKm: z.number().int(), fuelEighths: z.number().int() })
+
 export const captureSessionSchema = z.object({
   id: z.uuid(),
   kind: z.enum(['handover', 'return']),
@@ -177,6 +182,11 @@ export const captureSessionSchema = z.object({
   // For a return, the sealed handover's photograph of each view, shown faintly over the camera to match the angle.
   ghost: z.array(shownPhoto),
   canAct: z.boolean(),
+  // A driven item's dashboard is read by a person before its photographs are sealed: whether this session asks for it,
+  // what was read so far, and at a return what the handover read.
+  takesReadings: z.boolean(),
+  reading: readingSchema.nullable(),
+  handoverReading: readingSchema.nullable(),
 })
 
 export type StaffTokens = z.infer<typeof staffTokensSchema>

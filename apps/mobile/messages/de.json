@@ -439,7 +439,8 @@
         "review": "Notieren, was Sie gesehen haben",
         "back": "Zurück zur Miete",
         "sealedHandover": "Versiegelt. Diese Fotos können sich nicht mehr ändern.",
-        "sealedReturn": "Diese Rückgabefotos sind versiegelt. Es wurde nichts abgebucht."
+        "sealedReturn": "Diese Rückgabefotos sind versiegelt. Es wurde nichts abgebucht.",
+        "unread": "Lies das Armaturenbrett ab, bevor du versiegelst."
       }
     },
     "marks": {
@@ -519,8 +520,28 @@
         "role_may_not_retire": "Nur die Inhaberin, der Inhaber oder die Leitung kann einen Artikel ausmustern.",
         "item_in_use": "Eine mietende Person hat den Artikel, oder seine Rückgabe wird noch geprüft. Ändern Sie ihn, wenn er zurück und geprüft ist.",
         "message_invalid": "Schreiben Sie eine Nachricht mit bis zu 1000 Zeichen.",
-        "transition_not_allowed": "Die Miete ist nicht an diesem Schritt."
+        "transition_not_allowed": "Die Miete ist nicht an diesem Schritt.",
+        "not_read": "Diese Art von Artikel hat kein Armaturenbrett zum Ablesen.",
+        "odometer_invalid": "Der Kilometerstand muss eine ganze Zahl sein.",
+        "fuel_invalid": "Wähle den Füllstand, von leer bis voll.",
+        "odometer_below_handover": "Der Kilometerstand ist niedriger als bei der Übergabe. Prüfe die Zahl am Foto.",
+        "reading_missing": "Lies das Armaturenbrett ab, bevor du versiegelst."
       }
+    },
+    "readings": {
+      "title": "Armaturenbrett",
+      "lead": "Lies beides vom Foto des Armaturenbretts ab. Der Mieter sieht es im Zustandsbericht.",
+      "odometer": "Kilometerstand",
+      "fuelLabel": "Kraftstoff im Tank",
+      "fuelEmpty": "Leer",
+      "fuelFull": "Voll",
+      "fuelPart": "{eighths}/8",
+      "fuel": "{eighths, select, 0 {Tank leer} 8 {Tank voll} other {{eighths}/8 Tank}}",
+      "read": "{km} km, {fuel}",
+      "atHandover": "Bei der Übergabe: {reading}",
+      "none": "Es wurde nichts abgelesen.",
+      "save": "Ablesung speichern",
+      "saved": "Ablesung gespeichert."
     }
   },
   "camera": {

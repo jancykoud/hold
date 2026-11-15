@@ -439,7 +439,8 @@
         "review": "Note what you saw",
         "back": "Back to the rental",
         "sealedHandover": "Sealed. These photographs can no longer change.",
-        "sealedReturn": "These return photographs are sealed. Nothing has been charged."
+        "sealedReturn": "These return photographs are sealed. Nothing has been charged.",
+        "unread": "Read the dashboard before sealing."
       }
     },
     "marks": {
@@ -519,8 +520,28 @@
         "role_may_not_retire": "Only the owner or a manager can retire an item.",
         "item_in_use": "A renter has the item, or its return is still being checked. Change it once it is back and checked.",
         "message_invalid": "Write a message of up to 1000 characters.",
-        "transition_not_allowed": "The rental is not at that step."
+        "transition_not_allowed": "The rental is not at that step.",
+        "not_read": "This kind of item has no dashboard to read.",
+        "odometer_invalid": "The kilometres must be a whole number.",
+        "fuel_invalid": "Choose the fuel level, from empty to full.",
+        "odometer_below_handover": "The odometer reads less than at handover. Check the figure against the photograph.",
+        "reading_missing": "Read the dashboard before sealing."
       }
+    },
+    "readings": {
+      "title": "Dashboard",
+      "lead": "Read both from the dashboard photograph. The renter sees them on the condition report.",
+      "odometer": "Kilometres on the odometer",
+      "fuelLabel": "Fuel in the tank",
+      "fuelEmpty": "Empty",
+      "fuelFull": "Full",
+      "fuelPart": "{eighths}/8",
+      "fuel": "{eighths, select, 0 {empty tank} 8 {full tank} other {{eighths}/8 of a tank}}",
+      "read": "{km} km, {fuel}",
+      "atHandover": "At handover: {reading}",
+      "none": "No reading was taken.",
+      "save": "Save the reading",
+      "saved": "Reading saved."
     }
   },
   "camera": {

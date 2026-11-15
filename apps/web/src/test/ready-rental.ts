@@ -22,7 +22,8 @@ export type HandoverShop = {
 }
 
 // `demoSession`: a shop as a judge's demo opens it, which shows its texts on the renter's page instead of sending them.
-export async function handoverShop(jar: Map<string, string>, owner: string, shopName: string, options: { readonly demoSession?: boolean } = {}): Promise<HandoverShop> {
+// `category`: the kind of item the shop rents, an e-bike unless said; a car's dashboard is read at handover and return.
+export async function handoverShop(jar: Map<string, string>, owner: string, shopName: string, options: { readonly demoSession?: boolean; readonly category?: 'e_bike' | 'car' } = {}): Promise<HandoverShop> {
   const { database, simulatedPayPal } = await getServices()
   const subject = await signIn(jar, owner, 'passkey')
   const registered = await registerOwner(database, { subject, email: owner, name: 'Ana', language: 'en', shop: { name: shopName, timeZone: 'UTC', demoSession: options.demoSession ?? false } })
@@ -30,7 +31,7 @@ export async function handoverShop(jar: Map<string, string>, owner: string, shop
   await shop.connectPayPal(null, form({ clientId: 'sandbox-client-id', clientSecret: 'sandbox-client-secret', locale: 'en' }))
   await items.saveItemType(
     null,
-    form({ itemTypeId: '', name: 'City e-bike', category: 'e_bike', value: '2400', hold: '300', dayRate: '40', viewLabel: ['Left side', 'Right side'], viewOutline: ['whole_side', 'whole_side'], viewRequired: ['yes', 'yes'], locale: 'en' }),
+    form({ itemTypeId: '', name: 'City e-bike', category: options.category ?? 'e_bike', value: '2400', hold: '300', dayRate: '40', viewLabel: ['Left side', 'Right side'], viewOutline: ['whole_side', 'whole_side'], viewRequired: ['yes', 'yes'], ...(options.category === 'car' ? { includedKmPerDay: '200' } : {}), locale: 'en' }),
   )
   const typeId = (await inShop(database, { role: 'hold_app', shopId: registered.shopId, userId: registered.userId }, itemCatalog)).types[0]?.id ?? ''
   await items.addItems(null, form({ itemTypeId: typeId, count: '4', size: '', serial: '', locale: 'en' }))

@@ -52,7 +52,7 @@ function Session({ session, reload }: { session: CaptureSessionView; reload: () 
     <>
       <Stack.Screen options={{ title: session.itemLabel, headerShown: camera === undefined }} />
       {camera === undefined ? (
-        <SessionOverview session={session} uploads={uploads} onPhotograph={setCamera} onRetry={retry} />
+        <SessionOverview session={session} uploads={uploads} onPhotograph={setCamera} onRetry={retry} onChanged={reload} />
       ) : (
         <CaptureCamera session={session} view={camera} onAccept={(uri) => accept(camera, uri)} onClose={() => setCamera(undefined)} />
       )}

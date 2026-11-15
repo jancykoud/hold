@@ -76,6 +76,9 @@ export const HANDOVER: CaptureSessionView = {
   missing: ['frame_left', 'frame_right'],
   ghost: [],
   canAct: true,
+  takesReadings: false,
+  reading: null,
+  handoverReading: null,
 };
 
 export const ME: Me = { name: 'Jonas Weber', email: 'jonas@ribeira.example', shops: [{ shopId: SHOP_ID, name: 'Ribeira Bikes', role: 'counter_staff' }] };
