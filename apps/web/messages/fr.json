@@ -103,7 +103,7 @@
     },
     "assistant": {
       "title": "Louer par un assistant",
-      "description": "Parlez à un assistant qui loue un vélo électrique via le serveur MCP de Hold, comme le ferait l'assistant d'un voyageur."
+      "description": "Parlez à un assistant qui loue une voiture via le serveur MCP de Hold, comme le ferait l'assistant d'un voyageur."
     },
     "privacy": {
       "title": "Avis de confidentialité",
@@ -4102,16 +4102,16 @@
   "hostedAssistant": {
     "label": "Démonstration",
     "title": "Louer par un assistant",
-    "lead": "Demandez un vélo électrique, un kayak ou un appareil photo. L'assistant trouve une boutique, lit ses prix des dommages, obtient un devis et réserve, avec les mêmes outils que l'assistant de n'importe quel voyageur.",
+    "lead": "Demandez une voiture, un vélo électrique ou un appareil photo. L'assistant trouve une boutique, lit ses prix des dommages, obtient un devis et réserve, avec les mêmes outils que l'assistant de n'importe quel voyageur.",
     "demonstration": "Ceci est une démonstration. L'assistant se connecte au serveur MCP de Hold comme n'importe quel assistant extérieur, et chacun de ses appels est vérifié et enregistré. Vous approuvez vous-même chaque paiement, dans PayPal.",
     "chat": "Conversation",
-    "empty": "Essayez : « Réserve-moi un vélo électrique pour trois jours. »",
+    "empty": "Essayez : « Réserve-moi une voiture pour trois jours. »",
     "you": "Vous",
     "assistant": "Assistant",
     "simulated": "Simulé : un script, pas Claude",
     "used": "A utilisé {tool}",
     "message": "Votre message",
-    "placeholder": "Réserve-moi un vélo électrique pour trois jours",
+    "placeholder": "Réserve-moi une voiture pour trois jours",
     "askBooking": "Demander où en est ma dernière réservation",
     "askBookingQuestion": "Où en est ma dernière réservation ?",
     "send": "Envoyer",

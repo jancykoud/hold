@@ -103,7 +103,7 @@
     },
     "assistant": {
       "title": "Alquilar con un asistente",
-      "description": "Habla con un asistente que alquila una bici eléctrica a través del servidor MCP de Hold, como lo haría el asistente de un viajero."
+      "description": "Habla con un asistente que alquila un coche a través del servidor MCP de Hold, como lo haría el asistente de un viajero."
     },
     "privacy": {
       "title": "Aviso de privacidad",
@@ -4102,16 +4102,16 @@
   "hostedAssistant": {
     "label": "Demostración",
     "title": "Alquilar con un asistente",
-    "lead": "Pide una bici eléctrica, un kayak o una cámara. El asistente encuentra una tienda, lee sus precios de daños, obtiene un presupuesto y reserva, con las mismas herramientas que usaría el asistente de cualquier viajero.",
+    "lead": "Pide un coche, una bici eléctrica o una cámara. El asistente encuentra una tienda, lee sus precios de daños, obtiene un presupuesto y reserva, con las mismas herramientas que usaría el asistente de cualquier viajero.",
     "demonstration": "Esto es una demostración. El asistente se conecta al servidor MCP de Hold como cualquier asistente externo, y cada llamada que hace se comprueba y se registra. Tú apruebas cada pago, en PayPal.",
     "chat": "Conversación",
-    "empty": "Prueba: «Resérvame una bici eléctrica para tres días».",
+    "empty": "Prueba: «Resérvame un coche para tres días».",
     "you": "Tú",
     "assistant": "Asistente",
     "simulated": "Simulado: un guion, no Claude",
     "used": "Usó {tool}",
     "message": "Tu mensaje",
-    "placeholder": "Resérvame una bici eléctrica para tres días",
+    "placeholder": "Resérvame un coche para tres días",
     "askBooking": "Preguntar por mi última reserva",
     "askBookingQuestion": "¿Cómo va mi última reserva?",
     "send": "Enviar",

@@ -103,7 +103,7 @@
     },
     "assistant": {
       "title": "Über einen Assistenten mieten",
-      "description": "Sprechen Sie mit einem Assistenten, der über Holds MCP-Server ein E-Bike mietet, so wie es der eigene Assistent eines Reisenden täte."
+      "description": "Sprechen Sie mit einem Assistenten, der über Holds MCP-Server ein Auto mietet, so wie es der eigene Assistent eines Reisenden täte."
     },
     "privacy": {
       "title": "Datenschutzhinweis",
@@ -4102,16 +4102,16 @@
   "hostedAssistant": {
     "label": "Vorführung",
     "title": "Über einen Assistenten mieten",
-    "lead": "Fragen Sie nach einem E-Bike, einem Kajak oder einer Kamera. Der Assistent findet einen Verleih, liest dessen Schadenspreise, holt ein Angebot ein und bucht, mit denselben Werkzeugen wie der Assistent jedes Reisenden.",
+    "lead": "Fragen Sie nach einem Auto, einem E-Bike oder einer Kamera. Der Assistent findet einen Verleih, liest dessen Schadenspreise, holt ein Angebot ein und bucht, mit denselben Werkzeugen wie der Assistent jedes Reisenden.",
     "demonstration": "Dies ist eine Vorführung. Der Assistent verbindet sich wie jeder externe Assistent mit Holds MCP-Server, und jeder seiner Aufrufe wird geprüft und protokolliert. Jede Zahlung geben Sie selbst frei, bei PayPal.",
     "chat": "Unterhaltung",
-    "empty": "Versuchen Sie: „Buche mir ein E-Bike für drei Tage.“",
+    "empty": "Versuchen Sie: „Buche mir ein Auto für drei Tage.“",
     "you": "Sie",
     "assistant": "Assistent",
     "simulated": "Simuliert: ein Skript, nicht Claude",
     "used": "Hat {tool} benutzt",
     "message": "Ihre Nachricht",
-    "placeholder": "Buche mir ein E-Bike für drei Tage",
+    "placeholder": "Buche mir ein Auto für drei Tage",
     "askBooking": "Nach meiner letzten Buchung fragen",
     "askBookingQuestion": "Wie steht es um meine letzte Buchung?",
     "send": "Senden",

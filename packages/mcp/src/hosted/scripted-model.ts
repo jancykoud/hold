@@ -9,7 +9,13 @@ import type { AssistantModel, Block, Conversation, ModelReply } from './model.ts
 const SIMULATED_MODEL = 'simulated-script'
 type Result = Readonly<Record<string, unknown>>
 
+// The first that matches wins, so a motorbike is heard before the bike inside its name.
 const KINDS: readonly (readonly [RegExp, ItemCategory])[] = [
+  // The page suggests asking for a car in its four languages, so the script hears the word in each.
+  [/\b(car|hatchback|saloon|sedan|estate|suv|voiture|auto|coche)s?\b/i, 'car'],
+  [/\b(van|truck)s?\b/i, 'van'],
+  [/motorhome|camper|caravan/i, 'motorhome'],
+  [/motorbike|motorcycle|moped/i, 'motorbike'],
   [/e-?bike|electric bike/i, 'e_bike'],
   [/kayak|paddle|canoe|boat|surf/i, 'water'],
   [/ski|snowboard/i, 'snow'],
@@ -52,6 +58,20 @@ function shopMorning(timeZone: string, now: Date, days: number): string {
   return `${day}T10:00`
 }
 
+const kindIn = (text: string) => KINDS.find(([pattern]) => pattern.test(text))?.[1]
+
+// The kind of item the person last named, if they named one.
+function kindAskedFor(conversation: Conversation): ItemCategory | undefined {
+  const said = conversation.flatMap((message) => (message.role === 'user' ? message.content : [])).flatMap((block) => (block.type === 'text' ? [block.text] : []))
+  return said.map(kindIn).findLast((kind) => kind !== undefined)
+}
+
+// A free type of the kind the person asked for, or failing that the first type that is free.
+function freeType(types: readonly Result[], kind: ItemCategory | undefined): Result | undefined {
+  const free = types.filter((type) => Number(type['available']) > 0)
+  return free.find((type) => type['kind'] === kind) ?? free[0]
+}
+
 function afterTool(conversation: Conversation, now: Date): ModelReply {
   const last = exchanges(conversation).at(-1)
   if (last === undefined) return say('I could not reach Hold.')
@@ -67,13 +87,13 @@ function afterTool(conversation: Conversation, now: Date): ModelReply {
       return use('check_availability', { shop: shop['shop'], starts_at: shopMorning(timeZone, now, 1), ends_at: shopMorning(timeZone, now, 4) })
     }
     case 'check_availability': {
-      const free = (result['item_types'] as readonly Result[]).find((type) => Number(type['available']) > 0)
+      const free = freeType(result['item_types'] as readonly Result[], kindAskedFor(conversation))
       if (free === undefined) return say('Nothing is free at that shop for those days.')
       return use('get_damage_prices', { shop: result['shop'] })
     }
     case 'get_damage_prices': {
       const asked = latest(conversation, 'check_availability')
-      const free = (asked?.result['item_types'] as readonly Result[]).find((type) => Number(type['available']) > 0)
+      const free = freeType(asked?.result['item_types'] as readonly Result[], kindAskedFor(conversation))
       return use('quote_rental', { shop: asked?.input['shop'], starts_at: asked?.input['starts_at'], ends_at: asked?.input['ends_at'], items: [{ item_type_id: free?.['item_type_id'], count: 1 }] })
     }
     case 'quote_rental': {
@@ -101,7 +121,7 @@ function afterPerson(conversation: Conversation, text: string, system: string): 
   if (booking?.ok === true) return use('get_booking', { booking_secret: booking.result['booking_secret'] })
   const quote = latest(conversation, 'quote_rental')
   if (quote?.ok === true && YES.test(text)) return use('create_booking', { quote_id: quote.result['quote_id'] })
-  const kind = KINDS.find(([pattern]) => pattern.test(text))?.[1]
+  const kind = kindIn(text)
   const place = PLACE.exec(text)?.[1]?.trim()
   const own = OWN_SHOP.exec(system)?.[1]
   if (own !== undefined && place === undefined) return use('get_shop', { shop: own })

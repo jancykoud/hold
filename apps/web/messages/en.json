@@ -103,7 +103,7 @@
     },
     "assistant": {
       "title": "Rent through an assistant",
-      "description": "Talk to an assistant that rents an e-bike through Hold's MCP server, the way a traveller's own assistant would."
+      "description": "Talk to an assistant that rents a car through Hold's MCP server, the way a traveller's own assistant would."
     },
     "privacy": {
       "title": "Privacy notice",
@@ -4102,16 +4102,16 @@
   "hostedAssistant": {
     "label": "Demonstration",
     "title": "Rent through an assistant",
-    "lead": "Ask for an e-bike, a kayak or a camera. The assistant finds a shop, reads its damage prices, gets a quote and books, using the same tools any traveller's own assistant would use.",
+    "lead": "Ask for a car, an e-bike or a camera. The assistant finds a shop, reads its damage prices, gets a quote and books, using the same tools any traveller's own assistant would use.",
     "demonstration": "This is a demonstration. The assistant connects to Hold's MCP server like any outside assistant, and every call it makes is checked and logged. You approve every payment yourself, in PayPal.",
     "chat": "Conversation",
-    "empty": "Try: “Book me an e-bike for three days.”",
+    "empty": "Try: “Book me a car for three days.”",
     "you": "You",
     "assistant": "Assistant",
     "simulated": "Simulated: a script, not Claude",
     "used": "Used {tool}",
     "message": "Your message",
-    "placeholder": "Book me an e-bike for three days",
+    "placeholder": "Book me a car for three days",
     "askBooking": "Ask about my latest booking",
     "askBookingQuestion": "Where does my latest booking stand?",
     "send": "Send",
