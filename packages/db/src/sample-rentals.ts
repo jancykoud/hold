@@ -56,14 +56,47 @@ const CATALOG: Record<
 // What each sample item is called where the shop's words are not given: in English.
 export const SAMPLE_ITEM_NAMES = Object.fromEntries(Object.entries(CATALOG).map(([key, item]) => [key, item.name])) as Readonly<Record<SampleItem, string>>
 
+// What the sample rentals' people wrote and what their findings say: the words a visitor reads on a sample. English
+// here; demo-words.ts has them in the site's other languages.
+type MarkTexts = { readonly scuffMark: string; readonly scuffFinding: string; readonly chipFinding: string }
+export type SampleTexts = {
+  readonly contestReply: string
+  readonly renterMessage: string
+  readonly shopMessage: string
+  readonly sampleReason: string
+  readonly cleaningReason: { readonly car: string; readonly bike: string }
+  readonly marks: { readonly car: MarkTexts; readonly bike: MarkTexts }
+}
+export const SAMPLE_TEXTS: SampleTexts = {
+  contestReply: 'The key was never lost: it was in the glovebox when I handed the car back.',
+  renterMessage: 'The key was in the glovebox, under the manual. Could someone look there?',
+  shopMessage: 'Thank you, we will check the glovebox and the return photographs, and decide before the date above.',
+  sampleReason: 'Sample data, added to show how a claim looks.',
+  cleaningReason: { car: 'Sample data: mud on the carpets and the sills at the return.', bike: 'Sample data: mud on the chain and the frame at the return, cleaned at the counter.' },
+  marks: {
+    car: {
+      scuffMark: 'A faint scuff low on the rear door.',
+      scuffFinding: 'The faint scuff low on the rear door, recorded at the handover. It is not charged again.',
+      chipFinding: 'A chip in the paint of the rear door, through to the bare metal. It was not there at the handover.',
+    },
+    bike: {
+      scuffMark: 'A faint scuff on the down tube.',
+      scuffFinding: 'The faint scuff on the down tube, recorded at the handover. It is not charged again.',
+      chipFinding: 'A chip in the paint on the down tube, through to the bare metal. It was not there at the handover.',
+    },
+  },
+}
+
 // The suggested plan for a category, worded in English like the rest of the samples: "frame_left" reads "Frame left".
-function samplePlan(category: ItemCategory) {
+// A view the shop's words name takes that name; its key stays the English one, so the samples file their photographs
+// under the same view in every language.
+function samplePlan(category: ItemCategory, labels: Readonly<Record<string, string>> = {}) {
   const views = suggestedPhotoPlan(category).map((view) => {
     const words = view.key.replace(/_/g, ' ')
     return { label: words.charAt(0).toUpperCase() + words.slice(1), outline: view.outline, required: view.required }
   })
   const keys = viewKeys(views)
-  return views.map((view, index) => ({ ...view, key: keys[index] ?? view.label }))
+  return views.map((view, index) => ({ ...view, label: labels[suggestedPhotoPlan(category)[index]?.key ?? ''] ?? view.label, key: keys[index] ?? view.label }))
 }
 
 // The view the sample photographs are filed under: the left side for a kind whose plan has one, since they show a
@@ -111,7 +144,7 @@ type SampleRental = {
   // presented: shown to the renter and still waiting for their reply, so the advocates can be asked to argue it. also:
   // a second line, added by a person at the counter with no finding behind it.
   // prices: the published prices claimed by their words, where the first of each kind is not the one.
-  readonly claim?: { readonly state: Extract<ClaimState, 'awaiting_approval' | 'presented' | 'contested' | 'charged'>; readonly kind: PriceCategory; readonly also?: PriceCategory; readonly reply?: string; readonly prices?: { readonly first: string; readonly also: string } }
+  readonly claim?: { readonly state: Extract<ClaimState, 'awaiting_approval' | 'presented' | 'contested' | 'charged'>; readonly kind: PriceCategory; readonly also?: PriceCategory; readonly reply?: true; readonly prices?: { readonly first: string; readonly also: string } }
   // Photographed at the handover and the return, and compared: the claim rests on the finding.
   readonly photographed?: true
   // What the operations agent would propose about it, had it read sample rentals: shown as a sample, it moves nothing.
@@ -144,7 +177,7 @@ const SAMPLES: readonly SampleRental[] = [
     ends: [-2, 12, 0],
     state: 'settling',
     hold: 'placed',
-    claim: { state: 'contested', kind: 'loss', reply: 'The key was never lost: it was in the glovebox when I handed the car back.' },
+    claim: { state: 'contested', kind: 'loss', reply: true },
   },
   // Waits for the renter's reply: the claim a judge can hand to the two advocates (extensions.md section 9).
   // The claim, its two lines and their prices are the ones the recorded advocates argued (recorded-run.json): a bike.
@@ -169,6 +202,9 @@ export type SampleRentalsInput = {
   // The shop's own words, for a demo opened in another language than English: what each sample item is called, and
   // the two prices of the bike claim as its price list words them.
   readonly itemNames?: Readonly<Record<SampleItem, string>>
+  // What the samples' people wrote and their findings say, and the labels of a plan's views by their suggested key.
+  readonly texts?: SampleTexts
+  readonly viewLabels?: Readonly<Record<string, string>>
   readonly bikeClaim?: { readonly first: string; readonly also: string }
 }
 
@@ -198,6 +234,7 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
 
   const { shopId, userId, now } = input
   const names = input.itemNames ?? SAMPLE_ITEM_NAMES
+  const texts = input.texts ?? SAMPLE_TEXTS
   const raiser = input.raisedByUserId ?? userId
   const day = shopDay(input.timeZone, now)
   const moment = (at: Moment): Date => {
@@ -224,7 +261,7 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
   for (const [key, item] of Object.entries(CATALOG) as [SampleItem, (typeof CATALOG)[SampleItem]][]) {
     const [plan] = await transaction
       .insert(photoPlans)
-      .values({ shopId, name: names[key], views: samplePlan(item.category), createdAt: now })
+      .values({ shopId, name: names[key], views: samplePlan(item.category, input.viewLabels), createdAt: now })
       .returning({ id: photoPlans.id })
     if (plan === undefined) throw new Error('A sample photo plan was not created.')
     const [type] = await transaction
@@ -318,7 +355,7 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
       const droppedOffAt = moment(sample.droppedOff)
       const damage = terms.entries.find((each) => each.category === 'damage') ?? terms.entries[0]
       if (damage === undefined) throw new Error('The price list has no entries.')
-      await photographSample(transaction, { shopId, userId, item: droppedItem, planId: planIds.get(droppedItem.key) ?? '', view: sampleView(CATALOG[droppedItem.key].category), startsAt, endsAt: droppedOffAt, priceEntryId: damage.id, byRenter: true })
+      await photographSample(transaction, { shopId, userId, texts, item: droppedItem, planId: planIds.get(droppedItem.key) ?? '', view: sampleView(CATALOG[droppedItem.key].category), startsAt, endsAt: droppedOffAt, priceEntryId: damage.id, byRenter: true })
       await transaction.update(rentals).set({ droppedOffAt }).where(eq(rentals.id, rental.id))
       await audit('renter.self_return_sent', droppedOffAt, 'renter')
     }
@@ -326,7 +363,7 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
     if (sample.awaitsComparison === true && waitingItem !== undefined) {
       const damage = terms.entries.find((each) => each.category === 'damage') ?? terms.entries[0]
       if (damage === undefined) throw new Error('The price list has no entries.')
-      await photographSample(transaction, { shopId, userId, item: waitingItem, planId: planIds.get(waitingItem.key) ?? '', view: sampleView(CATALOG[waitingItem.key].category), startsAt, endsAt, priceEntryId: damage.id, compared: false })
+      await photographSample(transaction, { shopId, userId, texts, item: waitingItem, planId: planIds.get(waitingItem.key) ?? '', view: sampleView(CATALOG[waitingItem.key].category), startsAt, endsAt, priceEntryId: damage.id, compared: false })
     }
 
     let capturedCents = 0
@@ -349,7 +386,7 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
       const [photographed] = rentalItemIds
       const findingId =
         sample.photographed === true && photographed !== undefined
-          ? await photographSample(transaction, { shopId, userId, item: photographed, planId: planIds.get(photographed.key) ?? '', view: sampleView(CATALOG[photographed.key].category), startsAt, endsAt, priceEntryId: entry.id, ...(CATALOG[photographed.key].category === 'e_bike' ? { bike: true as const } : {}) })
+          ? await photographSample(transaction, { shopId, userId, texts, item: photographed, planId: planIds.get(photographed.key) ?? '', view: sampleView(CATALOG[photographed.key].category), startsAt, endsAt, priceEntryId: entry.id, ...(CATALOG[photographed.key].category === 'e_bike' ? { bike: true as const } : {}) })
           : undefined
       await transaction.insert(claimLines).values({
         shopId,
@@ -361,23 +398,23 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
         findingId: findingId ?? null,
         addedByUserId: raiser,
         // A line on a finding speaks through the finding; any other says it is a sample.
-        reason: findingId === undefined ? 'Sample data, added to show how a claim looks.' : null,
+        reason: findingId === undefined ? texts.sampleReason : null,
         createdAt: raisedAt,
       })
       if (also !== undefined) {
-        await transaction.insert(claimLines).values({ shopId, claimId: claim.id, priceEntryId: also.id, currency, amountCents: also.amountCents, source: 'person', findingId: null, addedByUserId: raiser, reason: named === undefined ? 'Sample data: mud on the carpets and the sills at the return.' : 'Sample data: mud on the chain and the frame at the return, cleaned at the counter.', createdAt: raisedAt })
+        await transaction.insert(claimLines).values({ shopId, claimId: claim.id, priceEntryId: also.id, currency, amountCents: also.amountCents, source: 'person', findingId: null, addedByUserId: raiser, reason: named === undefined ? texts.cleaningReason.car : texts.cleaningReason.bike, createdAt: raisedAt })
       }
       await audit('claim.raised', raisedAt, 'person', raiser)
       if (sample.claim.state === 'presented') await audit('claim.presented', raisedAt, 'person', raiser)
       if (sample.claim.reply !== undefined) {
         const repliedAt = inMonth(new Date(raisedAt.getTime() + 18 * 60 * MINUTE))
-        await transaction.insert(claimReplies).values({ shopId, claimId: claim.id, decision: 'contest', comment: sample.claim.reply, createdAt: repliedAt })
+        await transaction.insert(claimReplies).values({ shopId, claimId: claim.id, decision: 'contest', comment: texts.contestReply, createdAt: repliedAt })
         await audit('claim.contested', repliedAt, 'renter')
         // The shop's promise to decide it, still open, and what renter and shop wrote since (architecture.md 6.16).
         if (promise !== undefined) await transaction.update(claims).set({ decideBy: decideByFor({ contestedAt: repliedAt, days: promise.days, timeZone: input.timeZone, closes: promise.closes, validUntil: null }) }).where(eq(claims.id, claim.id))
         await transaction.insert(claimMessages).values([
-          { shopId, claimId: claim.id, author: 'renter', authorUserId: null, body: 'The key was in the glovebox, under the manual. Could someone look there?', createdAt: inMonth(new Date(repliedAt.getTime() + 60 * MINUTE)) },
-          { shopId, claimId: claim.id, author: 'shop', authorUserId: raiser, body: 'Thank you, we will check the glovebox and the return photographs, and decide before the date above.', createdAt: inMonth(new Date(repliedAt.getTime() + 3 * 60 * MINUTE)) },
+          { shopId, claimId: claim.id, author: 'renter', authorUserId: null, body: texts.renterMessage, createdAt: inMonth(new Date(repliedAt.getTime() + 60 * MINUTE)) },
+          { shopId, claimId: claim.id, author: 'shop', authorUserId: raiser, body: texts.shopMessage, createdAt: inMonth(new Date(repliedAt.getTime() + 3 * 60 * MINUTE)) },
         ])
       }
       if (sample.claim.state === 'charged') {
@@ -453,6 +490,7 @@ type PhotographedSample = {
   readonly compared?: false
   // The item is a bike: its photographs and the words for its marks are the bike's.
   readonly bike?: true
+  readonly texts?: SampleTexts
 }
 
 // One view photographed at the handover and again at the return, the faint scuff on record from the handover, and the
@@ -492,13 +530,13 @@ async function photographSample(transaction: Transaction, sample: PhotographedSa
     return row.id
   }
   const shot = sample.bike === true ? ({ handover: 'bikeHandover', damage: 'bikeDamage' } as const) : ({ handover: 'handover', damage: 'damage' } as const)
-  // What the marks are on, in the words of each finding.
-  const where = sample.bike === true ? { scuff: 'on the down tube', chip: 'on the down tube' } : { scuff: 'low on the rear door', chip: 'of the rear door' }
+  // What each finding says of the marks, in the shop's language.
+  const said = (sample.texts ?? SAMPLE_TEXTS).marks[sample.bike === true ? 'bike' : 'car']
   const handover = await session('handover', sample.startsAt, [[view, shot.handover]])
   const returned = await session('return', sample.endsAt, byRenter ? [[view, shot.damage], [DROP_POINT_VIEW, 'dropPoint']] : [[view, shot.damage]])
   const [scuff] = await transaction
     .insert(marks)
-    .values({ shopId, itemId: item.itemId, view, region: SCUFF, description: `A faint scuff ${where.scuff}.`, firstSeenSessionId: handover })
+    .values({ shopId, itemId: item.itemId, view, region: SCUFF, description: said.scuffMark, firstSeenSessionId: handover })
     .returning({ id: marks.id })
   if (scuff === undefined) throw new Error('A sample mark was not created.')
   if (sample.compared === false) {
@@ -517,7 +555,7 @@ async function photographSample(transaction: Transaction, sample: PhotographedSa
     region: SCUFF,
     class: 'known_mark',
     confidence: 0.9,
-    description: `The faint scuff ${where.scuff}, recorded at the handover. It is not charged again.`,
+    description: said.scuffFinding,
     matchedMarkId: scuff.id,
   })
   const [chip] = await transaction
@@ -529,7 +567,7 @@ async function photographSample(transaction: Transaction, sample: PhotographedSa
       region: CHIP,
       class: 'new_damage',
       confidence: 0.93,
-      description: `A chip in the paint ${where.chip}, through to the bare metal. It was not there at the handover.`,
+      description: said.chipFinding,
       secondLookConfirmed: true,
       suggestedPriceEntryId: sample.priceEntryId,
     })

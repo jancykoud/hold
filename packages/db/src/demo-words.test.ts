@@ -11,6 +11,14 @@ describe('the demo shop’s words', () => {
     expect(words.car.views).toHaveLength(DEMO_SHOP.vehicle.views.length)
     expect(Object.keys(words.sampleItems).sort()).toEqual(Object.keys(DEMO_WORDS.sampleItems).sort())
     for (const word of [...words.prices, ...words.bike.views, ...words.car.views, words.bike.name, words.car.name, words.dropPoint, words.wearPolicy, ...Object.values(words.sampleItems)]) expect(word.trim()).not.toBe('')
+    // Every sentence a sample shows is written, and none is left in English.
+    const sentences = (value: unknown): string[] => (typeof value === 'string' ? [value] : Object.values(value as object).flatMap(sentences))
+    const english = new Set(sentences(DEMO_WORDS.sampleTexts))
+    for (const sentence of sentences(words.sampleTexts)) {
+      expect(sentence.trim()).not.toBe('')
+      expect(english.has(sentence)).toBe(false)
+    }
+    expect(sentences(words.sampleTexts)).toHaveLength(english.size)
     // No two prices and no two views of one plan read alike: a plan's labels must differ, and so must a list's entries.
     for (const list of [words.prices, words.bike.views, words.car.views]) expect(new Set(list).size).toBe(list.length)
   })

@@ -9,7 +9,7 @@ import type { DemoWords } from './demo-words.ts'
 import { addItems, saveItemType } from './item-repository.ts'
 import { currentPriceList } from './price-list-repository.ts'
 import { bookableTypes } from './booking-repository.ts'
-import { auditLog, claimLines, claims, itemTypes, paypalAccounts, photoPlans, priceEntries, rentals, shops, users } from './schema/index.ts'
+import { auditLog, claimLines, claimReplies, claims, itemTypes, paypalAccounts, photoPlans, priceEntries, rentals, shops, users } from './schema/index.ts'
 import { inShop } from './scope.ts'
 import { createTestDatabase } from './testing/test-database.ts'
 import type { TestDatabase } from './testing/test-database.ts'
@@ -81,6 +81,7 @@ describe('a demo session', () => {
       dropPoint: 'Place 4 derrière le bureau.',
       wearPolicy: 'Les éclats plus petits qu’une pièce ne sont jamais facturés.',
       sampleItems: { ...DEMO_WORDS.sampleItems, saloon: 'Berline' },
+      sampleTexts: { ...DEMO_WORDS.sampleTexts, contestReply: 'La clé n’a jamais été perdue.' },
     }
     const opened = await openDemoSession(database, { ...people('fr0001'), slug: 'ribeira-rentals-fr0001', paypal: PAYPAL, now: NOW, words })
 
@@ -94,6 +95,10 @@ describe('a demo session', () => {
     const types = await database.select({ name: itemTypes.name, views: photoPlans.views }).from(itemTypes).innerJoin(photoPlans, eq(photoPlans.id, itemTypes.photoPlanId)).where(eq(itemTypes.shopId, opened.shopId))
     expect(types.map((type) => type.name)).toEqual(expect.arrayContaining(['Citadine', 'Vélo de ville', 'Berline']))
     expect(types.find((type) => type.name === 'Citadine')?.views.map((view: { readonly label: string }) => view.label)).toEqual(words.car.views)
+    // What the samples' people wrote is in the visitor's language too, and a sample car's views are named as the car's.
+    const replies = await database.select({ comment: claimReplies.comment }).from(claimReplies).where(eq(claimReplies.shopId, opened.shopId))
+    expect(replies.map((reply) => reply.comment)).toEqual(['La clé n’a jamais été perdue.'])
+    expect(types.find((type) => type.name === 'Berline')?.views.map((view: { readonly label: string }) => view.label)).toEqual(words.car.views)
     // The one claim on a bike is still priced by the bike's two entries, found by their place in the list, not their words.
     const lines = await database.select({ description: priceEntries.description }).from(claimLines).innerJoin(priceEntries, eq(priceEntries.id, claimLines.priceEntryId)).where(eq(claimLines.shopId, opened.shopId))
     expect(lines.map((line) => line.description)).toEqual(expect.arrayContaining(['fr: Scratch on the frame, through the paint', 'fr: Cleaning after a muddy ride']))

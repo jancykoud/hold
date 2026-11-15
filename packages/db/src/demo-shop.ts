@@ -1,11 +1,12 @@
 import { money } from '@hold/domain'
+import { suggestedPhotoPlan } from '@hold/domain'
 import type { PhotoPlanViewDraft, PriceEntryDraft } from '@hold/domain'
 import { sql } from 'drizzle-orm'
 import { addItems, saveItemType } from './item-repository.ts'
 import { publishPriceList } from './price-list-repository.ts'
 import { TRANSLATED_DEMO_WORDS } from './demo-words.ts'
 import type { DemoWords } from './demo-words.ts'
-import { addSampleRentals, BIKE_CLAIM, SAMPLE_ITEM_NAMES } from './sample-rentals.ts'
+import { addSampleRentals, BIKE_CLAIM, SAMPLE_ITEM_NAMES, SAMPLE_TEXTS } from './sample-rentals.ts'
 import { saveSelfReturnSettings } from './self-return-repository.ts'
 import { grantShopSettlement } from './settlement-mandate-repository.ts'
 import { staffRoles } from './schema/index.ts'
@@ -110,6 +111,7 @@ export const DEMO_WORDS: DemoWords = {
   dropPoint: DEMO_SHOP.dropPoint,
   wearPolicy: DEMO_SHOP.wearPolicy,
   sampleItems: SAMPLE_ITEM_NAMES,
+  sampleTexts: SAMPLE_TEXTS,
 }
 
 // The demo's words in a language the site is written in, and in English for any other.
@@ -166,7 +168,9 @@ export async function furnishDemoShop(transaction: Transaction, shopId: string, 
   const addedCars = await addItems(transaction, { itemTypeId: savedCar.id, count: car.count, size: '', serial: '' }, now)
   if (!addedCars.ok) throw new Error(`The demo cars were refused: ${addedCars.reason}.`)
   await saveSelfReturnSettings(transaction, shopId, { allowed: true, dropPoint: words.dropPoint, hours: { opens: DEMO_SHOP.opensAt, closes: DEMO_SHOP.closesAt } })
-  const samples = await addSampleRentals(transaction, { shopId, userId: ownerUserId, raisedByUserId: staff.userId, timeZone: DEMO_SHOP.timeZone, now, itemNames: words.sampleItems, bikeClaim: { first: priceOf(BIKE_CLAIM.first), also: priceOf(BIKE_CLAIM.also) } })
+  // A sample car's plan is the one Hold suggests for a car, in the same order as the demo car's, so it takes its labels.
+  const carViewLabels = words === DEMO_WORDS ? {} : Object.fromEntries(suggestedPhotoPlan('car').map((view, index) => [view.key, words.car.views[index] ?? view.key]))
+  const samples = await addSampleRentals(transaction, { shopId, userId: ownerUserId, raisedByUserId: staff.userId, timeZone: DEMO_SHOP.timeZone, now, itemNames: words.sampleItems, texts: words.sampleTexts, viewLabels: carViewLabels, bikeClaim: { first: priceOf(BIKE_CLAIM.first), also: priceOf(BIKE_CLAIM.also) } })
   if (!samples.ok) throw new Error(`The sample rentals were refused: ${samples.reason}.`)
   // The owner's limits for the shop's advocate, set as Tomás would on the contested-claims page, so a judge can hand
   // the sample claim that waits for a reply to the two advocates without a passkey first. Only a demo shop gets them.

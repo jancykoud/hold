@@ -1,4 +1,4 @@
-import type { SampleItem } from './sample-rentals.ts'
+import type { SampleItem, SampleTexts } from './sample-rentals.ts'
 
 // What a demo shop is written in. The figures, the kinds and the order are the demo's own (demo-shop.ts); these are
 // only its words, so a visitor who reads French meets a shop in French. The web app gives them from its messages.
@@ -13,6 +13,8 @@ export type DemoWords = {
   readonly dropPoint: string
   readonly wearPolicy: string
   readonly sampleItems: Readonly<Record<SampleItem, string>>
+  // What the sample rentals' people wrote and what their findings say.
+  readonly sampleTexts: SampleTexts
 }
 
 // The demo's words in the languages the site is written in, beside English (DEMO_WORDS in demo-shop.ts). Each list
@@ -48,6 +50,25 @@ export const TRANSLATED_DEMO_WORDS: Readonly<Record<'fr' | 'de' | 'es', DemoWord
     wearPolicy:
       'Les éclats plus petits qu’une pièce de monnaie, les légères traces sur les pneus et les enjoliveurs, et l’usure normale des sièges et des pédales ne sont jamais facturés. Une marque déjà notée à la remise n’est jamais facturée de nouveau.',
     sampleItems: { hatchback: 'Compacte', saloon: 'Berline', scooter: 'Scooter 125', estate: 'Break', seat: 'Siège enfant', suv: 'SUV', ebike: 'Vélo électrique' },
+    sampleTexts: {
+      contestReply: 'La clé n’a jamais été perdue : elle était dans la boîte à gants quand j’ai rendu la voiture.',
+      renterMessage: 'La clé était dans la boîte à gants, sous le manuel. Quelqu’un peut-il vérifier ?',
+      shopMessage: 'Merci, nous allons vérifier la boîte à gants et les photos du retour, et nous déciderons avant la date indiquée ci-dessus.',
+      sampleReason: 'Donnée d’exemple, ajoutée pour montrer à quoi ressemble une réclamation.',
+      cleaningReason: { car: 'Donnée d’exemple : de la boue sur les tapis et les seuils au retour.', bike: 'Donnée d’exemple : de la boue sur la chaîne et le cadre au retour, nettoyée au comptoir.' },
+      marks: {
+        car: {
+          scuffMark: 'Une légère éraflure au bas de la portière arrière.',
+          scuffFinding: 'La légère éraflure au bas de la portière arrière, notée à la remise. Elle n’est pas facturée de nouveau.',
+          chipFinding: 'Un éclat de peinture sur la portière arrière, jusqu’à la tôle. Il n’y était pas à la remise.',
+        },
+        bike: {
+          scuffMark: 'Une légère éraflure sur le tube diagonal.',
+          scuffFinding: 'La légère éraflure sur le tube diagonal, notée à la remise. Elle n’est pas facturée de nouveau.',
+          chipFinding: 'Un éclat de peinture sur le tube diagonal, jusqu’au métal. Il n’y était pas à la remise.',
+        },
+      },
+    },
   },
   de: {
     language: 'de',
@@ -73,6 +94,25 @@ export const TRANSLATED_DEMO_WORDS: Readonly<Record<'fr' | 'de' | 'es', DemoWord
     wearPolicy:
       'Steinschläge, die kleiner sind als eine Münze, leichte Spuren an Reifen und Radkappen und die normale Abnutzung von Sitzen und Pedalen werden nie berechnet. Eine Spur, die bei der Übergabe schon vermerkt war, wird nie erneut berechnet.',
     sampleItems: { hatchback: 'Kompaktwagen', saloon: 'Limousine', scooter: 'Roller 125', estate: 'Kombi', seat: 'Kindersitz', suv: 'SUV', ebike: 'E-Bike' },
+    sampleTexts: {
+      contestReply: 'Der Schlüssel war nie verloren: Er lag im Handschuhfach, als ich das Auto zurückgab.',
+      renterMessage: 'Der Schlüssel lag im Handschuhfach, unter dem Handbuch. Könnte jemand dort nachsehen?',
+      shopMessage: 'Danke, wir prüfen das Handschuhfach und die Fotos der Rückgabe und entscheiden vor dem oben genannten Datum.',
+      sampleReason: 'Beispieldaten, hinzugefügt, um zu zeigen, wie eine Forderung aussieht.',
+      cleaningReason: { car: 'Beispieldaten: Schlamm auf den Fußmatten und den Schwellern bei der Rückgabe.', bike: 'Beispieldaten: Schlamm an Kette und Rahmen bei der Rückgabe, am Tresen gereinigt.' },
+      marks: {
+        car: {
+          scuffMark: 'Eine leichte Schramme unten an der hinteren Tür.',
+          scuffFinding: 'Die leichte Schramme unten an der hinteren Tür, bei der Übergabe vermerkt. Sie wird nicht erneut berechnet.',
+          chipFinding: 'Ein Lackabplatzer an der hinteren Tür, bis auf das blanke Blech. Bei der Übergabe war er nicht da.',
+        },
+        bike: {
+          scuffMark: 'Eine leichte Schramme am Unterrohr.',
+          scuffFinding: 'Die leichte Schramme am Unterrohr, bei der Übergabe vermerkt. Sie wird nicht erneut berechnet.',
+          chipFinding: 'Ein Lackabplatzer am Unterrohr, bis auf das blanke Metall. Bei der Übergabe war er nicht da.',
+        },
+      },
+    },
   },
   es: {
     language: 'es',
@@ -98,5 +138,24 @@ export const TRANSLATED_DEMO_WORDS: Readonly<Record<'fr' | 'de' | 'es', DemoWord
     wearPolicy:
       'Los impactos más pequeños que una moneda, los roces leves en neumáticos y tapacubos y el desgaste normal de asientos y pedales nunca se cobran. Una marca ya anotada en la entrega nunca se cobra de nuevo.',
     sampleItems: { hatchback: 'Compacto', saloon: 'Berlina', scooter: 'Scooter 125', estate: 'Familiar', seat: 'Silla infantil', suv: 'SUV', ebike: 'Bici eléctrica' },
+    sampleTexts: {
+      contestReply: 'La llave nunca se perdió: estaba en la guantera cuando devolví el coche.',
+      renterMessage: 'La llave estaba en la guantera, debajo del manual. ¿Puede mirar alguien ahí?',
+      shopMessage: 'Gracias, revisaremos la guantera y las fotos de la devolución, y decidiremos antes de la fecha indicada arriba.',
+      sampleReason: 'Datos de ejemplo, añadidos para mostrar cómo es una reclamación.',
+      cleaningReason: { car: 'Datos de ejemplo: barro en las alfombrillas y los umbrales en la devolución.', bike: 'Datos de ejemplo: barro en la cadena y el cuadro en la devolución, limpiado en el mostrador.' },
+      marks: {
+        car: {
+          scuffMark: 'Un roce leve en la parte baja de la puerta trasera.',
+          scuffFinding: 'El roce leve en la parte baja de la puerta trasera, anotado en la entrega. No se cobra de nuevo.',
+          chipFinding: 'Un desconchón en la pintura de la puerta trasera, hasta la chapa. No estaba en la entrega.',
+        },
+        bike: {
+          scuffMark: 'Un roce leve en el tubo diagonal.',
+          scuffFinding: 'El roce leve en el tubo diagonal, anotado en la entrega. No se cobra de nuevo.',
+          chipFinding: 'Un desconchón en la pintura del tubo diagonal, hasta el metal. No estaba en la entrega.',
+        },
+      },
+    },
   },
 }
