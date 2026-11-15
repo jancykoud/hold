@@ -20,7 +20,8 @@ describe('Hero', () => {
 
   it('names who it is for above the claim', () => {
     renderWithIntl(<Hero />)
-    expect(screen.getByText('For bike, scooter and gear rental shops')).toBeInTheDocument()
+    // Vehicle rental first, since 15 November 2026 (docs/vehicle-plan.md), and every other rental business with it.
+    expect(screen.getByText('For vehicle rental companies, and every rental business')).toBeInTheDocument()
   })
 })
 
