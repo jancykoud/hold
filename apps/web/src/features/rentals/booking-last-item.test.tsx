@@ -32,6 +32,8 @@ describe('booking the last free item', () => {
     await waitFor(() => { expect(bookRental).toHaveBeenCalled() })
     // The booking is made on the server, which draws the page again: the car is taken, so none is free.
     rerender(<NewRentalScreen {...props(0)} />)
+    // The booking is under way: the page does not say nothing is free to the person who just took the last one.
+    expect(screen.queryByText('Nothing is free for these dates. Try other dates.')).not.toBeInTheDocument()
     answer({ ok: true, value: { rentalId: RENTAL, sent: 'email' } })
     await waitFor(() => { expect(push).toHaveBeenCalledWith(`/shop/rentals/${RENTAL}`) })
   })
