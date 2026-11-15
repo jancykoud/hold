@@ -109,6 +109,23 @@ test('on a phone, each price of the draft is a card', async ({ page }) => {
   await expectFitsEveryWidth(page)
 })
 
+// docs/vehicle-plan.md step 2: a price for damage may name its type of damage, kept when the list is published.
+test('an owner names the type of damage a price is for, publishes, and finds it kept on the next draft', async ({ page }) => {
+  test.setTimeout(120_000)
+  await ownerWithPrices(page)
+  await openPrices(page)
+  // On a phone each price is a card with its fields; the grid offers the same choice in its own column.
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.getByRole('combobox', { name: 'Type of damage' }).selectOption({ label: 'Scratch' })
+  await expectFitsEveryWidth(page)
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.getByRole('button', { name: 'Publish this price list' }).click()
+  await expect(page.getByText('Price list published.')).toBeVisible()
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Draft of version 3' })).toBeVisible()
+  await expect(page.getByRole('combobox', { name: 'Type of damage' })).toHaveValue('scratch')
+})
+
 for (const theme of ['light', 'dark'] as const) {
   test(`the price list editor passes the accessibility checks in the ${theme} theme`, async ({ page }) => {
     test.setTimeout(120_000)

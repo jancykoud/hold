@@ -9,6 +9,7 @@ type Line = ClaimWorkspace['lines'][number]
 // handover photograph beside the return one. A line's box is drawn only on the photograph it was found or drawn on.
 export function ClaimLines({ lines, currency, photoUrls }: { lines: readonly Line[]; currency: string; photoUrls: Readonly<Record<string, string>> }) {
   const t = useTranslations('claim')
+  const types = useTranslations('shop.prices.damageTypes')
   const locale = useLocale()
   const amount = (cents: number) => formatMoney(money(cents, currency), locale)
   if (lines.length === 0) return null
@@ -26,6 +27,7 @@ export function ClaimLines({ lines, currency, photoUrls }: { lines: readonly Lin
               <p className="min-w-0 text-[1.0625rem] font-extrabold tracking-tight wrap-long-words">{line.description}</p>
               <p className="text-xl font-extrabold tracking-tight tabular-nums">{amount(line.amountCents)}</p>
             </div>
+            {line.damageType === null ? null : <p className="justify-self-start rounded-lg bg-muted px-2.5 py-1 text-sm font-semibold">{t('damageType', { type: types(line.damageType) })}</p>}
             {line.source === 'agreed_in_rental' ? <p className="justify-self-start rounded-lg bg-success/10 px-2.5 py-1 text-sm font-semibold text-success">{t('agreed.drafted')}</p> : null}
             <div className="grid gap-1">
               <p className="whitespace-pre-wrap text-pretty wrap-long-words">{line.reason ?? line.findingDescription ?? line.incidentDescription}</p>

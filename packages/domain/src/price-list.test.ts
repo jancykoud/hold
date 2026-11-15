@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { money } from './money.ts'
-import { checkPriceList, priceCode, publishedText, UNIT_PRICE_CATEGORIES } from './price-list.ts'
+import { checkPriceList, DAMAGE_TYPES, priceCode, publishedText, UNIT_PRICE_CATEGORIES } from './price-list.ts'
 import type { PriceListDraft } from './price-list.ts'
 
 const chf = (cents: number) => money(cents, 'CHF')
@@ -58,5 +58,13 @@ describe('a price list', () => {
     const vehicle: PriceListDraft = { ...draft, entries: [...draft.entries, { description: 'Each kilometre beyond those included', category: 'mileage', amount: chf(30) }, { description: 'Each eighth of a tank missing', category: 'fuel', amount: chf(12_00) }] }
     expect(checkPriceList(vehicle)).toEqual([])
     expect(checkPriceList({ ...vehicle, entries: [...vehicle.entries, { description: 'Another price a kilometre', category: 'mileage', amount: chf(50) }] })).toEqual([{ kind: 'category_repeated', entry: 4 }])
+  })
+
+  // docs/vehicle-plan.md step 2: a price for damage may say what type of damage it prices, as a body shop names it.
+  it('lets a price for damage name its type of damage, and no other kind of price', () => {
+    expect(DAMAGE_TYPES).toEqual(['scratch', 'impact', 'dent', 'broken_glass'])
+    const typed: PriceListDraft = { ...draft, entries: [{ description: 'Scratch through the paint', category: 'damage', amount: chf(180_00), damageType: 'scratch' }, { description: 'Cracked windscreen', category: 'damage', amount: chf(420_00), damageType: 'broken_glass' }, { description: 'Lost key', category: 'loss', amount: chf(250_00) }] }
+    expect(checkPriceList(typed)).toEqual([])
+    expect(checkPriceList({ ...typed, entries: [...typed.entries, { description: 'Late by a day', category: 'lateness', amount: chf(60_00), damageType: 'dent' }] })).toEqual([{ kind: 'damage_type_misplaced', entry: 3 }])
   })
 })

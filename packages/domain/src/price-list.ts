@@ -14,9 +14,14 @@ export type PriceCategory = (typeof PRICE_CATEGORIES)[number]
 export const UNIT_PRICE_CATEGORIES = ['mileage', 'fuel'] as const satisfies readonly PriceCategory[]
 export type UnitPriceCategory = (typeof UNIT_PRICE_CATEGORIES)[number]
 
+// The types of damage a price for damage may name, as a body shop names them (docs/vehicle-plan.md step 2). A price
+// need not name one, and only a price for damage may.
+export const DAMAGE_TYPES = ['scratch', 'impact', 'dent', 'broken_glass'] as const
+export type DamageType = (typeof DAMAGE_TYPES)[number]
+
 export const PRICE_LIST_LIMITS = { entries: 60, description: 120, wearPolicy: 4000 } as const
 
-export type PriceEntryDraft = { readonly description: string; readonly category: PriceCategory; readonly amount: Money }
+export type PriceEntryDraft = { readonly description: string; readonly category: PriceCategory; readonly amount: Money; readonly damageType?: DamageType | undefined }
 
 export type PriceListDraft = {
   readonly currency: string
@@ -33,6 +38,7 @@ export type PriceListProblem =
   | { readonly kind: 'amount_zero'; readonly entry: number }
   | { readonly kind: 'wrong_currency'; readonly entry: number }
   | { readonly kind: 'category_repeated'; readonly entry: number }
+  | { readonly kind: 'damage_type_misplaced'; readonly entry: number }
   | { readonly kind: 'wear_policy_missing' }
   | { readonly kind: 'wear_policy_too_long' }
 
@@ -58,6 +64,7 @@ export function checkPriceList(draft: PriceListDraft): readonly PriceListProblem
     const unit = UNIT_PRICE_CATEGORIES.some((category) => category === entry.category)
     if (unit && priced.has(entry.category)) problems.push({ kind: 'category_repeated', entry: index })
     priced.add(entry.category)
+    if (entry.damageType !== undefined && entry.category !== 'damage') problems.push({ kind: 'damage_type_misplaced', entry: index })
     const problem = descriptionProblem(entry.description, seen)
     if (problem !== undefined) problems.push({ kind: problem, entry: index })
     if (entry.amount.cents === 0) problems.push({ kind: 'amount_zero', entry: index })

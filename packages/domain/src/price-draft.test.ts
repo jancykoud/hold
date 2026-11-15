@@ -35,6 +35,13 @@ describe('checking a draft row by row', () => {
 })
 
 describe('what changed between two versions', () => {
+  it('counts a price whose type of damage changed as changed, and says from what to what', () => {
+    const scratch = { description: 'Scratch through the paint', category: 'damage' as const, amountCents: 180_00 }
+    const diff = diffPriceLists({ entries: [scratch], wearPolicy: 'Chips are wear.' }, { entries: [{ ...scratch, damageType: 'scratch' as const }], wearPolicy: 'Chips are wear.' })
+    expect(diff.unchanged).toBe(0)
+    expect(diff.changed).toEqual([{ code: 'scratch-through-the-paint', description: 'Scratch through the paint', from: { category: 'damage', amountCents: 180_00 }, to: { category: 'damage', amountCents: 180_00, damageType: 'scratch' } }])
+  })
+
   const entry = (description: string, amountCents: number, category: 'damage' | 'loss' = 'damage') => ({ description, category, amountCents })
 
   it('matches entries by their code and lists what was added, removed and changed, and whether the wear policy changed', () => {

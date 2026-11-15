@@ -386,6 +386,13 @@
       "when": 1794725025968,
       "tag": "0054_readings_charged",
       "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "7",
+      "when": 1794726908100,
+      "tag": "0055_damage_types",
+      "breakpoints": true
     }
   ]
 }

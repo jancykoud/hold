@@ -1,6 +1,6 @@
 'use server'
 
-import { checkPriceList, isShopCurrency, mayInvite, parseAmount, PRICE_CATEGORIES, STAFF_ROLES } from '@hold/domain'
+import { checkPriceList, isShopCurrency, mayInvite, parseAmount, DAMAGE_TYPES, PRICE_CATEGORIES, STAFF_ROLES } from '@hold/domain'
 import { addSampleRentals as addSamples, createInvitation, publishPriceList, revokeInvitation, savePayPalAccount } from '@hold/db'
 import { getTranslations } from 'next-intl/server'
 import { z } from 'zod'
@@ -75,17 +75,20 @@ export const publishPrices = shopAction(
       description: list(z.string().max(500)),
       category: list(z.enum(PRICE_CATEGORIES)),
       amount: list(z.string().max(20)),
+      // The type of damage each row names, or nothing, in step with the rows. A form that sends none names none.
+      damageType: list(z.enum(['', ...DAMAGE_TYPES])),
     }),
   },
   async (context, input, transaction) => {
     if (!isShopCurrency(input.currency)) return new Refusal('currency_unknown')
     const rows = input.description.length
-    if (input.category.length !== rows || input.amount.length !== rows) return new Refusal('rows_mismatched')
+    if (input.category.length !== rows || input.amount.length !== rows || (input.damageType.length !== 0 && input.damageType.length !== rows)) return new Refusal('rows_mismatched')
     const entries = []
     for (let index = 0; index < rows; index += 1) {
       const amount = parseAmount(input.amount[index] ?? '', input.currency)
       if (amount === undefined) return new Refusal(`amount_invalid:${String(index)}`)
-      entries.push({ description: input.description[index] ?? '', category: input.category[index] ?? 'damage', amount })
+      const damageType = input.damageType[index] ?? ''
+      entries.push({ description: input.description[index] ?? '', category: input.category[index] ?? 'damage', amount, ...(damageType === '' ? {} : { damageType }) })
     }
     const thresholdText = input.threshold.trim()
     const threshold = thresholdText === '' ? undefined : parseAmount(thresholdText, input.currency)

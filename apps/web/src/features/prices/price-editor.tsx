@@ -86,6 +86,7 @@ export function PriceEditor({ shopId, baseVersion, published, fixedCurrency, thr
             <input type="hidden" name="description" value={row.description} />
             <input type="hidden" name="category" value={row.category} />
             <input type="hidden" name="amount" value={row.amount.trim()} />
+            <input type="hidden" name="damageType" value={row.category === 'damage' ? (row.damageType ?? '') : ''} />
           </span>
         ))}
         <div className="surface grid gap-5 p-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:p-5">

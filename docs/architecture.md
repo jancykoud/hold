@@ -217,7 +217,7 @@ hold/
 | **Item type** | A kind of thing rented, with its hold amount and photo plan |
 | **Item** | One physical thing, with its own history |
 | **Photo plan** | The views that must be photographed for an item type |
-| **Price list** | The shop's published prices for damage, loss, lateness and cleaning, and, for a vehicle, the price of one kilometre beyond those a rental includes and of one eighth of a tank missing (`UNIT_PRICE_CATEGORIES`, one entry of each at most, since 15 November 2026). Versioned. |
+| **Price list** | The shop's published prices for damage, loss, lateness and cleaning, and, for a vehicle, the price of one kilometre beyond those a rental includes and of one eighth of a tank missing (`UNIT_PRICE_CATEGORIES`, one entry of each at most, since 15 November 2026). A price for damage may name its type of damage, one of `DAMAGE_TYPES`: a scratch, an impact, a dent or broken glass; its claim line shows it. Versioned. |
 | **Wear policy** | What the shop counts as ordinary wear. Versioned. |
 | **Rental** | One renter taking one or more items for a period |
 | **Renter** | A person identified by their PayPal payment |

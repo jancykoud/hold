@@ -22,7 +22,7 @@ vi.mock('@/features/auth/passkey-button', () => ({ PasskeyButton: ({ label }: { 
 const terms = (messages: typeof en) => ({ prices: messages.renter.prices, pricesLead: messages.renter.pricesLead, wear: messages.renter.wear, wearLead: messages.renter.wearLead })
 const current: PublishedPriceList = {
   version: 1, currency: 'EUR', publishedAt: new Date('2026-10-01T10:00:00Z'), wearPolicy: 'Scuffs on tyres are wear.',
-  entries: [{ id: 'e1', code: 'deep-scratch-on-the-frame', description: 'Deep scratch on the frame', category: 'damage', amountCents: 35_00 }],
+  entries: [{ id: 'e1', code: 'deep-scratch-on-the-frame', description: 'Deep scratch on the frame', category: 'damage', amountCents: 35_00, damageType: null }],
 }
 const versions: PriceListVersion[] = [{ version: 1, currency: 'EUR', publishedAt: current.publishedAt, wearPolicy: current.wearPolicy, liveRentals: 9, entries: [{ description: 'Deep scratch on the frame', category: 'damage', amountCents: 35_00 }] }]
 

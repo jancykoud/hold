@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { appendRows, draftEntries, emptyDraft, insertRow, moveRow, pasteAt, removeRow, updateRow } from './editor-model'
+import type { Draft } from './editor-model'
 
 // The draft as plain values: every change makes a new draft, so the undo history can hold each one.
 describe('the draft', () => {
@@ -15,6 +16,18 @@ describe('the draft', () => {
     expect(draft.rows[1]?.amount).toBe('45')
     expect(removeRow(draft, 0).rows.map((row) => row.key)).toEqual([1])
     expect(moveRow(draft, 1, 0).rows.map((row) => row.key)).toEqual([1, 0])
+  })
+
+  // docs/vehicle-plan.md step 2: a price for damage may name its type of damage.
+  it('keeps the type of damage a price for damage names, drops it when the price stops being for damage, and gives it to a renter', () => {
+    const draft: Draft = { rows: [{ key: 0, description: 'Scratch through the paint', category: 'damage', amount: '180' }], wearPolicy: 'Chips are wear.' }
+    const typed = updateRow(draft, 0, { damageType: 'scratch' })
+    expect(typed.rows[0]).toMatchObject({ category: 'damage', damageType: 'scratch' })
+    expect(draftEntries(typed, 'EUR')).toEqual([{ description: 'Scratch through the paint', category: 'damage', amountCents: 180_00, damageType: 'scratch' }])
+    expect(updateRow(typed, 0, { damageType: undefined }).rows[0]).not.toHaveProperty('damageType')
+    const late = updateRow(typed, 0, { category: 'lateness' })
+    expect(late.rows[0]).not.toHaveProperty('damageType')
+    expect(draftEntries(late, 'EUR')).toEqual([{ description: 'Scratch through the paint', category: 'lateness', amountCents: 180_00 }])
   })
 
   it('adds a blank row at a place in the order, above or below another', () => {

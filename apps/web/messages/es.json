@@ -1686,7 +1686,8 @@
       "notifications_failed": "PayPal no aceptó la suscripción. Revisa las credenciales de la app y vuelve a intentarlo.",
       "rate_limited": "Demasiadas veces. Espere unos minutos y vuelva a intentarlo.",
       "email_daily_cap": "Los correos de hoy de esta tienda se han agotado, así que la invitación no se envió y no se guardó nada. Inténtelo mañana.",
-      "category_repeated": "El precio {row} es un segundo precio por kilómetro o por octavo de depósito. Deja solo uno de cada."
+      "category_repeated": "El precio {row} es un segundo precio por kilómetro o por octavo de depósito. Deja solo uno de cada.",
+      "damage_type_misplaced": "El precio {row} indica un tipo de daño, pero no es un precio de daño."
     },
     "security": {
       "title": "Seguridad",
@@ -1777,6 +1778,13 @@
           "gap": "Precio menos reparación",
           "standing": "Situación"
         }
+      },
+      "damageTypes": {
+        "none": "Sin tipo",
+        "scratch": "Arañazo",
+        "impact": "Golpe",
+        "dent": "Abolladura",
+        "broken_glass": "Rotura de cristal"
       }
     },
     "rentals": {
@@ -2748,7 +2756,8 @@
         "kind": "Tipo",
         "amount": "Importe, {currency}",
         "remove": "Quitar",
-        "more": "Más"
+        "more": "Más",
+        "damageType": "Tipo de daño"
       },
       "remove": "Quitar {description}",
       "removeUnnamed": "Quitar el precio {number}",
@@ -2788,7 +2797,8 @@
         "wearChanged": "La política de desgaste cambió.",
         "wearSame": "La política de desgaste es la misma.",
         "nothing": "Ningún precio cambió.",
-        "unchanged": "{count, plural, =0 {} one {# precio sigue igual.} other {# precios siguen igual.}}"
+        "unchanged": "{count, plural, =0 {} one {# precio sigue igual.} other {# precios siguen igual.}}",
+        "typeChange": "tipo de daño de {from} a {to}"
       },
       "languages": {
         "en": "English",
@@ -3693,7 +3703,8 @@
       "charge": "Cobrar {item}: {price}, {quantity} × {unit} = {amount}",
       "mileage": "{from} km en la entrega, {to} km en la devolución: {driven} km recorridos, {included} km incluidos.",
       "fuel": "{from}/8 del depósito en la entrega, {to}/8 en la devolución: faltan {missing}/8."
-    }
+    },
+    "damageType": "Tipo de daño: {type}"
   },
   "scorecard": {
     "title": "Qué tan fiable es la comparación",

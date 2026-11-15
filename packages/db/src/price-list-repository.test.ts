@@ -1,7 +1,7 @@
 import { money } from '@hold/domain'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { registerOwner } from './accounts.ts'
-import { currentPriceList, publishPriceList } from './price-list-repository.ts'
+import { currentPriceList, priceListVersions, publishPriceList } from './price-list-repository.ts'
 import { inShop } from './scope.ts'
 import type { Scope } from './scope.ts'
 import { createTestDatabase } from './testing/test-database.ts'
@@ -38,5 +38,25 @@ describe('a published price list', () => {
     expect(published).toEqual({ ok: true, version: 1 })
     const list = await inShop(database, owner, currentPriceList)
     expect(list?.entries.map((entry) => [entry.category, entry.amountCents])).toEqual([['damage', 180_00], ['mileage', 30], ['fuel', 12_00]])
+  })
+
+  // docs/vehicle-plan.md step 2: a price for damage may name its type, which every reader of the list is then given.
+  it('keeps the type of damage a price names, and none for a price that names none', async () => {
+    await inShop(database, owner, (transaction) =>
+      publishPriceList(transaction, owner.shopId, {
+        currency: 'EUR',
+        ownerApprovalThreshold: undefined,
+        entries: [
+          { description: 'Scratch through the paint', category: 'damage', amount: eur(180_00), damageType: 'scratch' },
+          { description: 'Cracked windscreen', category: 'damage', amount: eur(420_00), damageType: 'broken_glass' },
+          { description: 'Lost key', category: 'loss', amount: eur(250_00) },
+        ],
+        wearPolicy: 'Stone chips smaller than a coin are ordinary wear.',
+      }, NOW),
+    )
+    const list = await inShop(database, owner, currentPriceList)
+    expect(list?.entries.map((entry) => [entry.description, entry.damageType])).toEqual([['Scratch through the paint', 'scratch'], ['Cracked windscreen', 'broken_glass'], ['Lost key', null]])
+    const [latest] = await inShop(database, owner, priceListVersions)
+    expect(latest?.entries.map((entry) => entry.damageType)).toEqual(['scratch', 'broken_glass', undefined])
   })
 })

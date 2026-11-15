@@ -2,7 +2,7 @@
 
 import type { PriceListVersion } from '@hold/db'
 import { diffPriceLists, money } from '@hold/domain'
-import type { PriceCategory } from '@hold/domain'
+import type { DamageType, PriceCategory } from '@hold/domain'
 import { useFormatter, useLocale, useTranslations } from 'next-intl'
 import { useId, useState } from 'react'
 import { GitCompareArrows, History } from 'lucide-react'
@@ -11,7 +11,7 @@ import { Select } from '@/components/ui/select'
 import { StatusPill } from '@/components/ui/status-pill'
 import { formatMoney } from '@/lib/money'
 
-type Entries = readonly { readonly description: string; readonly category: PriceCategory; readonly amountCents: number }[]
+type Entries = readonly { readonly description: string; readonly category: PriceCategory; readonly amountCents: number; readonly damageType?: DamageType | undefined }[]
 
 type VersionsPanelProps = { versions: readonly PriceListVersion[]; currency: string; draft: { readonly entries: Entries; readonly wearPolicy: string } }
 
@@ -21,6 +21,7 @@ const DRAFT = 'draft'
 // and this draft: a renter is held to the version they agreed to, so a shop must see what a newer one changes.
 export function VersionsPanel({ versions, currency, draft }: VersionsPanelProps) {
   const t = useTranslations('shop.priceEditor')
+  const types = useTranslations('shop.prices.damageTypes')
   const format = useFormatter()
   const locale = useLocale()
   const id = useId()
@@ -36,7 +37,8 @@ export function VersionsPanel({ versions, currency, draft }: VersionsPanelProps)
     ...versions.map((version) => <option key={version.version} value={String(version.version)}>{t('versions.version', { version: version.version })}</option>),
   ]
   const changes = diff === undefined ? [] : ([
-    ['changed', 'progress', diff.changed.map((each) => ({ code: each.code, text: `${each.description} · ${t('diff.change', { from: amount(each.from.amountCents), to: amount(each.to.amountCents) })}` }))],
+    // A change of the type of damage alone would read as no change of amount, so it is said too.
+    ['changed', 'progress', diff.changed.map((each) => ({ code: each.code, text: `${each.description} · ${t('diff.change', { from: amount(each.from.amountCents), to: amount(each.to.amountCents) })}${each.from.damageType === each.to.damageType ? '' : ` · ${t('diff.typeChange', { from: types(each.from.damageType ?? 'none'), to: types(each.to.damageType ?? 'none') })}`}` }))],
     ['added', 'success', diff.added.map((each) => ({ code: each.code, text: `${each.description} · ${amount(each.amountCents)}` }))],
     ['removed', 'danger', diff.removed.map((each) => ({ code: each.code, text: `${each.description} · ${amount(each.amountCents)}` }))],
   ] as const)

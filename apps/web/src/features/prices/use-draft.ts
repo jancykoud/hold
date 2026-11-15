@@ -1,4 +1,4 @@
-import { PRICE_CATEGORIES } from '@hold/domain'
+import { DAMAGE_TYPES, PRICE_CATEGORIES } from '@hold/domain'
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import { z } from 'zod'
 import type { Draft } from './editor-model'
@@ -10,7 +10,7 @@ import { historyReducer, startHistory } from './history'
 const savedSchema = z.object({
   baseVersion: z.number().int().nullable(),
   draft: z.object({
-    rows: z.array(z.object({ key: z.number().int(), description: z.string().max(500), category: z.enum(PRICE_CATEGORIES), amount: z.string().max(40) })).min(1).max(200),
+    rows: z.array(z.object({ key: z.number().int(), description: z.string().max(500), category: z.enum(PRICE_CATEGORIES), amount: z.string().max(40), damageType: z.enum(DAMAGE_TYPES).optional() })).min(1).max(200),
     wearPolicy: z.string().max(5000),
   }),
 })

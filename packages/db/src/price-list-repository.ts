@@ -1,5 +1,5 @@
 import { draftCodes, priceCode, publishedText } from '@hold/domain'
-import type { Money, PriceCategory, PriceListDraft } from '@hold/domain'
+import type { DamageType, Money, PriceCategory, PriceListDraft } from '@hold/domain'
 import { and, asc, desc, eq, inArray, isNotNull, notInArray, sql } from 'drizzle-orm'
 import { priceEntries, priceLists, rentals, shops, wearPolicies } from './schema/index.ts'
 import type { Transaction } from './scope.ts'
@@ -8,7 +8,8 @@ export type PublishedPriceList = {
   readonly version: number
   readonly currency: string
   readonly publishedAt: Date
-  readonly entries: readonly { readonly id: string; readonly code: string; readonly description: string; readonly category: PriceCategory; readonly amountCents: number }[]
+  // damageType: the type of damage a price for damage names, or none.
+  readonly entries: readonly { readonly id: string; readonly code: string; readonly description: string; readonly category: PriceCategory; readonly amountCents: number; readonly damageType: DamageType | null }[]
   readonly wearPolicy: string
 }
 
@@ -42,6 +43,7 @@ export async function publishPriceList(
         code: codes[index] ?? priceCode(entry.description, index),
         description: entry.description.trim(),
         category: entry.category,
+        damageType: entry.damageType ?? null,
         currency: draft.currency,
         amountCents: entry.amount.cents,
         position: index,
@@ -65,7 +67,7 @@ export async function currentPriceList(transaction: Transaction): Promise<Publis
     .limit(1)
   if (list?.publishedAt == null) return undefined
   const entries = await transaction
-    .select({ id: priceEntries.id, code: priceEntries.code, description: priceEntries.description, category: priceEntries.category, amountCents: priceEntries.amountCents })
+    .select({ id: priceEntries.id, code: priceEntries.code, description: priceEntries.description, category: priceEntries.category, amountCents: priceEntries.amountCents, damageType: priceEntries.damageType })
     .from(priceEntries)
     .where(eq(priceEntries.priceListId, list.id))
     .orderBy(asc(priceEntries.position))
@@ -80,7 +82,7 @@ export type PriceListVersion = {
   readonly version: number
   readonly currency: string
   readonly publishedAt: Date
-  readonly entries: readonly { readonly description: string; readonly category: PriceCategory; readonly amountCents: number }[]
+  readonly entries: readonly { readonly description: string; readonly category: PriceCategory; readonly amountCents: number; readonly damageType?: DamageType | undefined }[]
   readonly wearPolicy: string
   // Rentals not yet closed, cancelled or let go that were agreed to this version: the renters held to it.
   readonly liveRentals: number
@@ -98,7 +100,7 @@ export async function priceListVersions(transaction: Transaction): Promise<Price
   if (lists.length === 0) return []
   const ids = lists.map((list) => list.id)
   const entries = await transaction
-    .select({ priceListId: priceEntries.priceListId, description: priceEntries.description, category: priceEntries.category, amountCents: priceEntries.amountCents })
+    .select({ priceListId: priceEntries.priceListId, description: priceEntries.description, category: priceEntries.category, amountCents: priceEntries.amountCents, damageType: priceEntries.damageType })
     .from(priceEntries)
     .where(inArray(priceEntries.priceListId, ids))
     .orderBy(asc(priceEntries.position))
@@ -112,7 +114,7 @@ export async function priceListVersions(transaction: Transaction): Promise<Price
     version: list.version,
     currency: list.currency,
     publishedAt: list.publishedAt,
-    entries: entries.filter((entry) => entry.priceListId === list.id).map(({ description, category, amountCents }) => ({ description, category, amountCents })),
+    entries: entries.filter((entry) => entry.priceListId === list.id).map(({ description, category, amountCents, damageType }) => ({ description, category, amountCents, ...(damageType === null ? {} : { damageType }) })),
     wearPolicy: wear.find((each) => each.version === list.version)?.rules ?? '',
     liveRentals: live.find((each) => each.priceListId === list.id)?.count ?? 0,
   }]))

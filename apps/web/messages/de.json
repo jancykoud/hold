@@ -1686,7 +1686,8 @@
       "notifications_failed": "PayPal hat das Abonnement nicht angenommen. Prüfen Sie die Zugangsdaten der App und versuchen Sie es erneut.",
       "rate_limited": "Zu oft angefragt. Warten Sie ein paar Minuten und versuchen Sie es erneut.",
       "email_daily_cap": "Die heutigen E-Mails dieses Shops sind aufgebraucht, daher wurde die Einladung nicht gesendet und nichts gespeichert. Versuchen Sie es morgen wieder.",
-      "category_repeated": "Preis {row} ist ein zweiter Preis pro Kilometer oder pro Achtel Tank. Behalte je einen."
+      "category_repeated": "Preis {row} ist ein zweiter Preis pro Kilometer oder pro Achtel Tank. Behalte je einen.",
+      "damage_type_misplaced": "Preis {row} nennt eine Art von Schaden, ist aber kein Preis für einen Schaden."
     },
     "security": {
       "title": "Sicherheit",
@@ -1777,6 +1778,13 @@
           "gap": "Preis abzüglich Reparatur",
           "standing": "Stand"
         }
+      },
+      "damageTypes": {
+        "none": "Keine Art",
+        "scratch": "Kratzer",
+        "impact": "Stoß",
+        "dent": "Delle",
+        "broken_glass": "Glasbruch"
       }
     },
     "rentals": {
@@ -2748,7 +2756,8 @@
         "kind": "Art",
         "amount": "Betrag, {currency}",
         "remove": "Entfernen",
-        "more": "Mehr"
+        "more": "Mehr",
+        "damageType": "Art des Schadens"
       },
       "remove": "{description} entfernen",
       "removeUnnamed": "Preis {number} entfernen",
@@ -2788,7 +2797,8 @@
         "wearChanged": "Die Abnutzungsregel hat sich geändert.",
         "wearSame": "Die Abnutzungsregel ist gleich.",
         "nothing": "Kein Preis hat sich geändert.",
-        "unchanged": "{count, plural, =0 {} one {# Preis bleibt, wie er war.} other {# Preise bleiben, wie sie waren.}}"
+        "unchanged": "{count, plural, =0 {} one {# Preis bleibt, wie er war.} other {# Preise bleiben, wie sie waren.}}",
+        "typeChange": "Art des Schadens von {from} zu {to}"
       },
       "languages": {
         "en": "English",
@@ -3693,7 +3703,8 @@
       "charge": "{item} berechnen: {price}, {quantity} × {unit} = {amount}",
       "mileage": "{from} km bei der Übergabe, {to} km bei der Rückgabe: {driven} km gefahren, {included} km inklusive.",
       "fuel": "{from}/8 Tank bei der Übergabe, {to}/8 bei der Rückgabe: {missing}/8 fehlen."
-    }
+    },
+    "damageType": "Art des Schadens: {type}"
   },
   "scorecard": {
     "title": "Wie zuverlässig ist der Vergleich",

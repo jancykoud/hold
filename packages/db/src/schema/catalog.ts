@@ -1,10 +1,10 @@
-import { ITEM_CATEGORIES, ITEM_STATUSES, PRICE_CATEGORIES } from '@hold/domain'
+import { DAMAGE_TYPES, ITEM_CATEGORIES, ITEM_STATUSES, PRICE_CATEGORIES } from '@hold/domain'
 import type { Accessory, ViewOutline } from '@hold/domain'
 import { sql } from 'drizzle-orm'
 import { boolean, check, integer, jsonb, pgTable, text, unique, uniqueIndex } from 'drizzle-orm/pg-core'
 import { shopIsolation } from './access.ts'
 import { at, cents, createdAt, currency, id, reference } from './columns.ts'
-import { allowed, itemCategory, itemStatus, priceCategory } from './enums.ts'
+import { allowed, damageType, itemCategory, itemStatus, priceCategory } from './enums.ts'
 import { shopReference } from './shops.ts'
 
 // One view of a photo plan, in the order the camera asks for it. Photographs are filed under its key.
@@ -123,10 +123,12 @@ export const priceEntries = pgTable(
     currency: currency().notNull(),
     amountCents: cents().notNull(),
     category: priceCategory().notNull(),
+    // The type of damage a price for damage names, as a body shop names it; none when it names none.
+    damageType: damageType(),
     // The order the shop wrote its prices in, which is the order renters read them.
     position: integer().notNull().default(0),
   },
-  (table) => [allowed(table.category, PRICE_CATEGORIES), unique().on(table.priceListId, table.code), shopIsolation(table.shopId)],
+  (table) => [allowed(table.category, PRICE_CATEGORIES), allowed(table.damageType, DAMAGE_TYPES), unique().on(table.priceListId, table.code), shopIsolation(table.shopId)],
 )
 
 export const wearPolicies = pgTable(

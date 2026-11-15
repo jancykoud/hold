@@ -1,6 +1,6 @@
 import { parseAmount } from './currency.ts'
 import { descriptionProblem, priceCode, UNIT_PRICE_CATEGORIES } from './price-list.ts'
-import type { DescriptionProblem, PriceCategory } from './price-list.ts'
+import type { DamageType, DescriptionProblem, PriceCategory } from './price-list.ts'
 
 // The price list as a shop edits it before publishing it (extensions.md section 12.5). The rules are publishing's own,
 // applied cell by cell, so the editor can say exactly which cell is wrong before anything is sent.
@@ -32,7 +32,8 @@ export function draftCodes(descriptions: readonly string[]): string[] {
   })
 }
 
-type VersionEntry = { readonly description: string; readonly category: PriceCategory; readonly amountCents: number }
+// damageType: the type of damage a price for damage names, when it names one.
+type VersionEntry = { readonly description: string; readonly category: PriceCategory; readonly amountCents: number; readonly damageType?: DamageType | undefined }
 type CodedEntry = VersionEntry & { readonly code: string }
 export type PriceListDiff = {
   readonly added: readonly CodedEntry[]
@@ -42,9 +43,12 @@ export type PriceListDiff = {
   readonly wearPolicyChanged: boolean
 }
 
+// The type of damage only where there is one, so a price without one reads as it always did.
+const typed = (entry: Pick<VersionEntry, 'damageType'>) => (entry.damageType === undefined ? {} : { damageType: entry.damageType })
+
 const coded = (entries: readonly VersionEntry[]): CodedEntry[] => {
   const codes = draftCodes(entries.map((entry) => entry.description))
-  return entries.map((entry, index) => ({ code: codes[index] ?? '', description: entry.description, category: entry.category, amountCents: entry.amountCents }))
+  return entries.map((entry, index) => ({ code: codes[index] ?? '', description: entry.description, category: entry.category, amountCents: entry.amountCents, ...typed(entry) }))
 }
 
 // What changed between two versions of a shop's terms, entry by entry, matched by code. A renter agreed to one version
@@ -58,8 +62,8 @@ export function diffPriceLists(before: { readonly entries: readonly VersionEntry
   for (const entry of newer) {
     const earlier = byCode.get(entry.code)
     if (earlier === undefined) continue
-    if (earlier.amountCents === entry.amountCents && earlier.category === entry.category) unchanged += 1
-    else changed.push({ code: entry.code, description: entry.description, from: { category: earlier.category, amountCents: earlier.amountCents }, to: { category: entry.category, amountCents: entry.amountCents } })
+    if (earlier.amountCents === entry.amountCents && earlier.category === entry.category && earlier.damageType === entry.damageType) unchanged += 1
+    else changed.push({ code: entry.code, description: entry.description, from: { category: earlier.category, amountCents: earlier.amountCents, ...typed(earlier) }, to: { category: entry.category, amountCents: entry.amountCents, ...typed(entry) } })
   }
   const newerCodes = new Set(newer.map((entry) => entry.code))
   return {

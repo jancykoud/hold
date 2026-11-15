@@ -1,12 +1,13 @@
 import { checkPriceRows, parseAmount } from '@hold/domain'
-import type { PriceCategory } from '@hold/domain'
+import type { DamageType, PriceCategory } from '@hold/domain'
 import { readAmount, readKind, readPastedLines } from './paste'
 import type { PastedRow } from './paste'
 
 // The draft of the next version of a shop's terms, as plain values: every change makes a new draft, so the undo
 // history can hold each one. An amount stays as typed until it is published; the checks read it from there.
 
-export type EditorRow = { readonly key: number; readonly description: string; readonly category: PriceCategory; readonly amount: string }
+// damageType: the type of damage a price for damage names, when it names one.
+export type EditorRow = { readonly key: number; readonly description: string; readonly category: PriceCategory; readonly amount: string; readonly damageType?: DamageType | undefined }
 export type Draft = { readonly rows: readonly EditorRow[]; readonly wearPolicy: string }
 
 const blank = (key: number): EditorRow => ({ key, description: '', category: 'damage', amount: '' })
@@ -25,8 +26,14 @@ export function addRow(draft: Draft): Draft {
   return { ...draft, rows: [...draft.rows, blank(nextKey(draft.rows))] }
 }
 
+// A row keeps a type of damage only while it is a price for damage and names one.
+function settled(row: EditorRow): EditorRow {
+  if (row.category === 'damage' && row.damageType !== undefined) return row
+  return { key: row.key, description: row.description, category: row.category, amount: row.amount }
+}
+
 export function updateRow(draft: Draft, key: number, change: Partial<Omit<EditorRow, 'key'>>): Draft {
-  return { ...draft, rows: draft.rows.map((row) => (row.key === key ? { ...row, ...change } : row)) }
+  return { ...draft, rows: draft.rows.map((row) => (row.key === key ? settled({ ...row, ...change }) : row)) }
 }
 
 // A blank row at a place in the order, above or below another.
@@ -49,12 +56,13 @@ export function moveRow(draft: Draft, key: number, toIndex: number): Draft {
 }
 
 // The entries as a renter would read them and a diff compares them, leaving out any row publishing would refuse.
-export function draftEntries(draft: Draft, currency: string): { description: string; category: PriceCategory; amountCents: number }[] {
+export function draftEntries(draft: Draft, currency: string): { description: string; category: PriceCategory; amountCents: number; damageType?: DamageType }[] {
   const problems = checkPriceRows(draft.rows, currency)
   return draft.rows.flatMap((row, index) => {
     const amount = parseAmount(row.amount, currency)
     const fine = Object.keys(problems[index] ?? {}).length === 0
-    return !fine || amount === undefined ? [] : [{ description: row.description.trim(), category: row.category, amountCents: amount.cents }]
+    const typed = settled(row)
+    return !fine || amount === undefined ? [] : [{ description: row.description.trim(), category: row.category, amountCents: amount.cents, ...(typed.damageType === undefined ? {} : { damageType: typed.damageType }) }]
   })
 }
 

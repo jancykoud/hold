@@ -1,6 +1,6 @@
 'use client'
 
-import { PRICE_CATEGORIES } from '@hold/domain'
+import { DAMAGE_TYPES, PRICE_CATEGORIES } from '@hold/domain'
 import type { PriceCategory, PriceCellProblems } from '@hold/domain'
 import type { CellClassParams, ColDef, GridApi, GridReadyEvent, RowDragEndEvent, ValueSetterParams } from 'ag-grid-community'
 import { AgGridReact } from 'ag-grid-react'
@@ -49,7 +49,16 @@ export function PriceGrid({ rows, currency, problems, onChange, onRemove, onMove
   const popupParent = usePopupParent()
   const categories = useTranslations('shop.prices.categories')
   const kinds = useMemo(() => Object.fromEntries(PRICE_CATEGORIES.map((category) => [category, categories(category)])) as Record<PriceCategory, string>, [categories])
+  const types = useTranslations('shop.prices.damageTypes')
+  // The empty choice reads as "no type", the others by their names.
+  const damageTypes = useMemo(() => ({ '': types('none'), ...Object.fromEntries(DAMAGE_TYPES.map((each) => [each, types(each)])) }), [types])
   const [api, setApi] = useState<GridApi<EditorRow> | null>(null)
+  // The type of damage a price for damage names: one of the types, or none, written as the empty choice.
+  const typeSetter = useCallback((params: ValueSetterParams<EditorRow>) => {
+    const chosen = DAMAGE_TYPES.find((each) => each === params.newValue)
+    if (chosen !== params.data.damageType) onChange(params.data.key, { damageType: chosen })
+    return false
+  }, [onChange])
   const setter = useCallback((field: 'description' | 'category' | 'amount') => (params: ValueSetterParams<EditorRow>) => {
     const value = typeof params.newValue === 'string' ? params.newValue : ''
     if (value !== params.data[field]) onChange(params.data.key, { [field]: field === 'category' ? (PRICE_CATEGORIES.find((each) => each === value) ?? 'damage') : value })
@@ -63,11 +72,13 @@ export function PriceGrid({ rows, currency, problems, onChange, onRemove, onMove
       { colId: 'order', headerName: t('columns.order'), rowDrag: true, width: 84, maxWidth: 84, valueGetter: ({ node }) => (node?.rowIndex ?? 0) + 1, sortable: false },
       { colId: 'description', headerName: t('columns.description'), field: 'description', editable: true, valueSetter: setter('description'), cellRenderer: DescriptionCell, cellClassRules: problemIn('description'), flex: 3, minWidth: 200, sortable: false },
       { colId: 'kind', headerName: t('columns.kind'), field: 'category', editable: true, valueSetter: setter('category'), cellEditor: 'agSelectCellEditor', cellEditorParams: { values: [...PRICE_CATEGORIES] }, refData: kinds, cellRenderer: KindCell, cellClassRules: problemIn('category'), flex: 1, minWidth: 140, sortable: false },
+      // Only a price for damage names a type of damage; any other row's cell is empty and takes no edit.
+      { colId: 'damageType', headerName: t('columns.damageType'), valueGetter: ({ data }) => (data?.category === 'damage' ? (data.damageType ?? '') : ''), editable: ({ data }) => data?.category === 'damage', valueSetter: typeSetter, cellEditor: 'agSelectCellEditor', cellEditorParams: { values: ['', ...DAMAGE_TYPES] }, refData: damageTypes, flex: 1, minWidth: 150, sortable: false },
       { colId: 'amount', headerName: t('columns.amount', { currency }), field: 'amount', editable: true, valueSetter: setter('amount'), cellRenderer: AmountCell, cellClassRules: problemIn('amount'), flex: 2, minWidth: 150, type: 'rightAligned', sortable: false },
       { colId: 'remove', headerName: t('columns.remove'), cellRenderer: RemoveCell, width: 92, maxWidth: 92, sortable: false },
       { colId: 'more', headerName: t('columns.more'), cellRenderer: MoreCell, ...CONTROL_COLUMN },
     ]
-  }, [t, currency, kinds, setter, problems])
+  }, [t, currency, kinds, damageTypes, setter, typeSetter, problems])
   const rowData = useMemo(() => [...rows], [rows])
   const state = useMemo(() => ({ currency, problems, onRemove, onInsert }), [currency, problems, onRemove, onInsert])
   const onRowDragEnd = useCallback((event: RowDragEndEvent<EditorRow>) => {

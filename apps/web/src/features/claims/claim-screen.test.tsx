@@ -119,7 +119,7 @@ describe('a claim argued by the advocates', () => {
 })
 
 it('shows paired evidence photographs before a staff approval', () => {
-  renderWithIntl(<ClaimScreen shopName="Ribeira Bikes" data={{ ...workspace, claim: { id: 'claim', state: 'awaiting_approval', totalCents: 3500, raisedByUserId: 'staff', replyDueAt: null }, lines: [{ id: 'line', amountCents: 3500, description: 'Scratch', reason: null, actorName: null, findingId: 'finding', findingDescription: 'New scratch', incidentDescription: null, source: 'finding', incidentId: null, region: null, beforeKey: 'before', afterKey: 'after' }] }} canAct photoUrls={{ before: '/before.jpg', after: '/after.jpg' }} />)
+  renderWithIntl(<ClaimScreen shopName="Ribeira Bikes" data={{ ...workspace, claim: { id: 'claim', state: 'awaiting_approval', totalCents: 3500, raisedByUserId: 'staff', replyDueAt: null }, lines: [{ id: 'line', amountCents: 3500, description: 'Scratch', damageType: null, reason: null, actorName: null, findingId: 'finding', findingDescription: 'New scratch', incidentDescription: null, source: 'finding', incidentId: null, region: null, beforeKey: 'before', afterKey: 'after' }] }} canAct photoUrls={{ before: '/before.jpg', after: '/after.jpg' }} />)
   expect(screen.getByRole('img', { name: 'At handover' })).toHaveAttribute('src', '/before.jpg')
   expect(screen.getByRole('img', { name: 'At return' })).toHaveAttribute('src', '/after.jpg')
 })
@@ -148,17 +148,28 @@ it('asks once, and for the claim, when a person with no passkey yet opens a clai
 })
 
 it('says a sample claim is a sample, and shows its two photographs with the new mark outlined', () => {
-  const sample = { ...workspace, simulated: true, rentalState: 'settling' as const, claim: { id: 'claim', state: 'awaiting_approval' as const, totalCents: 3500, raisedByUserId: 'staff', replyDueAt: null }, lines: [{ id: 'line', amountCents: 3500, description: 'Scratch on the frame, through the paint', reason: null, actorName: 'Tomás', findingId: 'finding', source: 'finding' as const, incidentId: null, findingDescription: 'A chip in the paint on the down tube.', incidentDescription: null, region: { x: 0.36, y: 0.5, width: 0.08, height: 0.16 }, beforeKey: 'sample/sample-handover.jpg', afterKey: 'sample/sample-return-damage.jpg' }] }
+  const sample = { ...workspace, simulated: true, rentalState: 'settling' as const, claim: { id: 'claim', state: 'awaiting_approval' as const, totalCents: 3500, raisedByUserId: 'staff', replyDueAt: null }, lines: [{ id: 'line', amountCents: 3500, description: 'Scratch on the frame, through the paint', damageType: null, reason: null, actorName: 'Tomás', findingId: 'finding', source: 'finding' as const, incidentId: null, findingDescription: 'A chip in the paint on the down tube.', incidentDescription: null, region: { x: 0.36, y: 0.5, width: 0.08, height: 0.16 }, beforeKey: 'sample/sample-handover.jpg', afterKey: 'sample/sample-return-damage.jpg' }] }
   renderWithIntl(<ClaimScreen shopName="Ribeira Bikes" data={sample} canAct={false} photoUrls={{ 'sample/sample-handover.jpg': '/images/sample-handover.jpg', 'sample/sample-return-damage.jpg': '/images/sample-return-damage.jpg' }} />)
   expect(screen.getByText('A sample rental')).toBeInTheDocument()
   expect(screen.getByText('A chip in the paint on the down tube.')).toBeInTheDocument()
   expect(screen.getAllByRole('img').map((image) => image.getAttribute('src'))).toEqual(expect.arrayContaining([expect.stringContaining('sample-handover.jpg'), expect.stringContaining('sample-return-damage.jpg')]))
 })
 
+// docs/vehicle-plan.md step 2: a line shows the type of damage its price names, in words.
+it('says the type of damage a line’s price names, and nothing for a price that names none', () => {
+  const line = { id: 'line', amountCents: 18000, description: 'Scratch through the paint', damageType: 'scratch' as const, reason: 'Along the left door.', actorName: 'Jonas', findingId: null, findingDescription: null, incidentDescription: null, source: 'person' as const, incidentId: null, region: null, beforeKey: null, afterKey: null }
+  const claim = { id: 'claim', state: 'awaiting_approval' as const, totalCents: 18000, raisedByUserId: 'staff', replyDueAt: null }
+  const { unmount } = renderWithIntl(<ClaimScreen shopName="Porto Cars" data={{ ...workspace, claim, lines: [line] }} canAct={false} />)
+  expect(screen.getByText('Type of damage: Scratch')).toBeInTheDocument()
+  unmount()
+  renderWithIntl(<ClaimScreen shopName="Porto Cars" data={{ ...workspace, claim, lines: [{ ...line, damageType: null }] }} canAct={false} />)
+  expect(screen.queryByText(/Type of damage/)).not.toBeInTheDocument()
+})
+
 // A finding's region is in the return photograph's frame. The handover photograph may be turned or zoomed against it,
 // so the same box drawn there would outline the wrong place.
 it('outlines the finding on the return photograph only', () => {
-  const line = { id: 'line', amountCents: 3500, description: 'Scratch', reason: null, actorName: null, findingId: 'finding', findingDescription: 'New scratch', incidentDescription: null, source: 'finding' as const, incidentId: null, region: { x: 0.36, y: 0.5, width: 0.08, height: 0.16 }, beforeKey: 'before', afterKey: 'after' }
+  const line = { id: 'line', amountCents: 3500, description: 'Scratch', damageType: null, reason: null, actorName: null, findingId: 'finding', findingDescription: 'New scratch', incidentDescription: null, source: 'finding' as const, incidentId: null, region: { x: 0.36, y: 0.5, width: 0.08, height: 0.16 }, beforeKey: 'before', afterKey: 'after' }
   const { container } = renderWithIntl(<ClaimScreen shopName="Ribeira Bikes" data={{ ...workspace, claim: { id: 'claim', state: 'awaiting_approval', totalCents: 3500, raisedByUserId: 'staff', replyDueAt: null }, lines: [line] }} canAct={false} photoUrls={{ before: '/before.jpg', after: '/after.jpg' }} />)
   const outlined = [...container.querySelectorAll('figure')].filter((figure) => figure.querySelector('[data-mark="line"]') !== null)
   expect(outlined.map((figure) => figure.querySelector('img')?.getAttribute('src'))).toEqual(['/after.jpg'])
@@ -186,7 +197,7 @@ describe('a line the renter agreed during the rental (X5.3)', () => {
     expect(lines(container)).toEqual([])
   })
   it('shows a drafted agreed line as agreed by the renter', () => {
-    renderWithIntl(<ClaimScreen shopName="Ribeira Bikes" data={{ ...agreed, claim: { id: 'claim', state: 'awaiting_approval', totalCents: 2000, raisedByUserId: 'staff', replyDueAt: null }, lines: [{ id: 'line', amountCents: 2000, description: 'Scratch', reason: null, actorName: 'Ana', findingId: null, findingDescription: null, incidentDescription: 'A scratch on the left side', source: 'agreed_in_rental', incidentId: 'incident', region: null, beforeKey: null, afterKey: null }] }} canAct />)
+    renderWithIntl(<ClaimScreen shopName="Ribeira Bikes" data={{ ...agreed, claim: { id: 'claim', state: 'awaiting_approval', totalCents: 2000, raisedByUserId: 'staff', replyDueAt: null }, lines: [{ id: 'line', amountCents: 2000, description: 'Scratch', damageType: null, reason: null, actorName: 'Ana', findingId: null, findingDescription: null, incidentDescription: 'A scratch on the left side', source: 'agreed_in_rental', incidentId: 'incident', region: null, beforeKey: null, afterKey: null }] }} canAct />)
     expect(screen.getByText('Agreed by the renter during the rental, confirmed by staff at the return.')).toBeInTheDocument()
     expect(screen.getByText('A scratch on the left side')).toBeInTheDocument()
   })

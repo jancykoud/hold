@@ -1686,7 +1686,8 @@
       "notifications_failed": "PayPal did not accept the subscription. Check the app's credentials, then try again.",
       "rate_limited": "Asked too often. Wait a few minutes and try again.",
       "email_daily_cap": "Today’s emails are used for this shop, so the invitation was not sent and nothing was kept. Try again tomorrow.",
-      "category_repeated": "Price {row} is a second price for a kilometre or for an eighth of a tank. Keep one of each."
+      "category_repeated": "Price {row} is a second price for a kilometre or for an eighth of a tank. Keep one of each.",
+      "damage_type_misplaced": "Price {row} names a type of damage, but is not a price for damage."
     },
     "security": {
       "title": "Security",
@@ -1777,6 +1778,13 @@
           "gap": "Price less repair",
           "standing": "Standing"
         }
+      },
+      "damageTypes": {
+        "none": "No type",
+        "scratch": "Scratch",
+        "impact": "Impact",
+        "dent": "Dent",
+        "broken_glass": "Broken glass"
       }
     },
     "rentals": {
@@ -2748,7 +2756,8 @@
         "kind": "Kind",
         "amount": "Amount, {currency}",
         "remove": "Remove",
-        "more": "More"
+        "more": "More",
+        "damageType": "Type of damage"
       },
       "remove": "Remove {description}",
       "removeUnnamed": "Remove price {number}",
@@ -2788,7 +2797,8 @@
         "wearChanged": "The wear policy changed.",
         "wearSame": "The wear policy is the same.",
         "nothing": "No price changed.",
-        "unchanged": "{count, plural, =0 {} one {# price stays as it was.} other {# prices stay as they were.}}"
+        "unchanged": "{count, plural, =0 {} one {# price stays as it was.} other {# prices stay as they were.}}",
+        "typeChange": "type of damage from {from} to {to}"
       },
       "languages": {
         "en": "English",
@@ -3693,7 +3703,8 @@
       "charge": "Charge {item}: {price}, {quantity} × {unit} = {amount}",
       "mileage": "{from} km at handover, {to} km at return: {driven} km driven, {included} km included.",
       "fuel": "{from}/8 of a tank at handover, {to}/8 at return: {missing}/8 missing."
-    }
+    },
+    "damageType": "Type of damage: {type}"
   },
   "scorecard": {
     "title": "How reliable is the comparison",

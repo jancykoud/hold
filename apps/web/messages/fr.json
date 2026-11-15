@@ -1686,7 +1686,8 @@
       "notifications_failed": "PayPal n'a pas accepté l'abonnement. Vérifiez les identifiants de l'app, puis réessayez.",
       "rate_limited": "Demandé trop souvent. Attendez quelques minutes et réessayez.",
       "email_daily_cap": "Les e-mails du jour de cette boutique sont épuisés, l’invitation n’a donc pas été envoyée et rien n’a été conservé. Réessayez demain.",
-      "category_repeated": "Le prix {row} est un second prix au kilomètre ou au huitième de réservoir. Gardez-en un seul de chaque."
+      "category_repeated": "Le prix {row} est un second prix au kilomètre ou au huitième de réservoir. Gardez-en un seul de chaque.",
+      "damage_type_misplaced": "Le prix {row} indique un type de dommage, mais n’est pas un prix de dommage."
     },
     "security": {
       "title": "Sécurité",
@@ -1777,6 +1778,13 @@
           "gap": "Prix moins réparation",
           "standing": "Situation"
         }
+      },
+      "damageTypes": {
+        "none": "Aucun type",
+        "scratch": "Rayure",
+        "impact": "Choc",
+        "dent": "Bosse",
+        "broken_glass": "Bris de glace"
       }
     },
     "rentals": {
@@ -2748,7 +2756,8 @@
         "kind": "Type",
         "amount": "Montant, {currency}",
         "remove": "Retirer",
-        "more": "Plus"
+        "more": "Plus",
+        "damageType": "Type de dommage"
       },
       "remove": "Retirer {description}",
       "removeUnnamed": "Retirer le prix {number}",
@@ -2788,7 +2797,8 @@
         "wearChanged": "La règle d’usure a changé.",
         "wearSame": "La règle d’usure est la même.",
         "nothing": "Aucun prix n’a changé.",
-        "unchanged": "{count, plural, =0 {} one {# prix reste tel quel.} other {# prix restent tels quels.}}"
+        "unchanged": "{count, plural, =0 {} one {# prix reste tel quel.} other {# prix restent tels quels.}}",
+        "typeChange": "type de dommage de {from} à {to}"
       },
       "languages": {
         "en": "English",
@@ -3693,7 +3703,8 @@
       "charge": "Facturer {item} : {price}, {quantity} × {unit} = {amount}",
       "mileage": "{from} km à la remise, {to} km au retour : {driven} km parcourus, {included} km inclus.",
       "fuel": "{from}/8 du réservoir à la remise, {to}/8 au retour : {missing}/8 manquants."
-    }
+    },
+    "damageType": "Type de dommage : {type}"
   },
   "scorecard": {
     "title": "Quelle est la fiabilité de la comparaison",

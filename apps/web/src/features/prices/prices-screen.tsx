@@ -33,7 +33,7 @@ export type PricesScreenProps = {
 // The version in force as the draft the editor starts from, each amount as the shop would type it.
 function publishedDraft(current: PublishedPriceList | undefined): Draft {
   if (current === undefined) return emptyDraft()
-  return { rows: current.entries.map((entry, key) => ({ key, description: entry.description, category: entry.category, amount: amountText(money(entry.amountCents, current.currency)) })), wearPolicy: current.wearPolicy }
+  return { rows: current.entries.map((entry, key) => ({ key, description: entry.description, category: entry.category, amount: amountText(money(entry.amountCents, current.currency)), ...(entry.damageType === null ? {} : { damageType: entry.damageType }) })), wearPolicy: current.wearPolicy }
 }
 
 // The shop's prices and wear policy: what is in force, the editor for the next version, and every version with what
@@ -49,7 +49,7 @@ export function PricesScreen({ shopName, shopId, current, versions, fixedCurrenc
             <p className="flex items-center gap-2 text-muted-foreground"><Eye aria-hidden="true" className="size-4 shrink-0" />{t('readOnly')}</p>
             {/* Counter staff quote from the list in force; the versions below are for whoever wants what changed. */}
             {current === undefined ? null : <TermsView currency={current.currency} prices={current.entries} wearPolicy={current.wearPolicy} words={{ prices: t('inForce.title'), pricesLead: t('inForce.lead'), wear: t('wear'), wearLead: t('inForce.wearLead') }} />}
-            <VersionsPanel versions={versions} currency={current?.currency ?? fixedCurrency ?? 'EUR'} draft={{ entries: current?.entries ?? [], wearPolicy: current?.wearPolicy ?? '' }} />
+            <VersionsPanel versions={versions} currency={current?.currency ?? fixedCurrency ?? 'EUR'} draft={{ entries: (current?.entries ?? []).map(({ damageType, ...entry }) => (damageType === null ? entry : { ...entry, damageType })), wearPolicy: current?.wearPolicy ?? '' }} />
           </>
         ) : gate.needed ? (
           <PasskeyGate {...gate} returnTo={shopRoutes.prices}>{null}</PasskeyGate>

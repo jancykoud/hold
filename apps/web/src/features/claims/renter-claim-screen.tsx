@@ -1,6 +1,6 @@
 'use client'
 import type { ClaimMessage, ClaimPromise } from '@hold/db'
-import type { ClaimState, ConditionReply, HoldState, Region } from '@hold/domain'
+import type { ClaimState, ConditionReply, DamageType, HoldState, Region } from '@hold/domain'
 import { formatMoney, money } from '@hold/domain'
 import { Clock, LoaderCircle, Scale } from 'lucide-react'
 import { useFormatter, useLocale, useTranslations } from 'next-intl'
@@ -26,7 +26,8 @@ import { RenterClaimReply } from './renter-claim-reply'
 import { RenterClaimSummary } from './renter-claim-summary'
 import { acknowledgeClaim, acceptClaim, contestClaim } from './renter-actions'
 
-type RenterClaimLine = { readonly id: string; readonly description: string; readonly reason: string; readonly amountCents: number; readonly actorName: string | null; readonly beforeUrl: string | null; readonly afterUrl: string | null; readonly region?: Region | null; readonly repair?: { readonly repairedAt: Date; readonly url: string | null } | null; readonly itemId?: string | null; readonly beforeProvenance?: ProvenanceView | null; readonly afterProvenance?: ProvenanceView | null }
+// damageType: the type of damage the line's price names, when it names one.
+type RenterClaimLine = { readonly id: string; readonly description: string; readonly damageType?: DamageType | null; readonly reason: string; readonly amountCents: number; readonly actorName: string | null; readonly beforeUrl: string | null; readonly afterUrl: string | null; readonly region?: Region | null; readonly repair?: { readonly repairedAt: Date; readonly url: string | null } | null; readonly itemId?: string | null; readonly beforeProvenance?: ProvenanceView | null; readonly afterProvenance?: ProvenanceView | null }
 
 // itemPhotos: each item's sealed handover and return photographs, for the lines a person added without a pair.
 export type RenterClaimData = { readonly shopName: string; readonly currency: string; readonly state: ClaimState; readonly totalCents: number; readonly captureCents: number; readonly releaseCents: number; readonly invoiceCents: number; readonly replyDueAt: Date | null; readonly holdState: HoldState; readonly canReply: boolean; readonly canAcknowledge?: boolean; readonly pendingSettlement?: boolean; readonly canAdvocate?: boolean; readonly assistantName?: string | null; readonly negotiation?: boolean; readonly lines: readonly RenterClaimLine[]; readonly itemPhotos?: readonly ItemPhotos[]; readonly confirmed?: { readonly reply: ConditionReply; readonly at: Date } | null; readonly timeZone?: string; readonly contest?: ContestView | undefined; readonly promise?: ClaimPromise | null; readonly messages?: readonly ClaimMessage[]; readonly canWrite?: boolean; readonly now?: Date }
@@ -35,6 +36,7 @@ export type RenterClaimData = { readonly shopName: string; readonly currency: st
 // who added it, then the photographs. A line with no pair of its own shows the item's handover and return.
 function ClaimLine({ token, line, itemPhotos, amount, timeZone }: { token: string; line: RenterClaimLine; itemPhotos: readonly ItemPhotos[]; amount: string; timeZone: string }) {
   const t = useTranslations('claim')
+  const types = useTranslations('shop.prices.damageTypes')
   const page = useTranslations('claim.renterPage')
   const paired = line.beforeUrl !== null || line.afterUrl !== null
   return (
@@ -43,6 +45,7 @@ function ClaimLine({ token, line, itemPhotos, amount, timeZone }: { token: strin
         <div className="grid min-w-0 gap-1">
           <h3 className="text-[1.0625rem] leading-tight font-extrabold tracking-tight wrap-long-words">{line.description}</h3>
           <p className="label text-[0.6875rem] text-muted-foreground">{page('fromList')}</p>
+          {line.damageType == null ? null : <p className="text-sm text-muted-foreground">{t('damageType', { type: types(line.damageType) })}</p>}
         </div>
         <p className="figures shrink-0 text-lg font-semibold">{amount}</p>
       </header>

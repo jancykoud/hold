@@ -1,6 +1,6 @@
 'use client'
 
-import { PRICE_CATEGORIES } from '@hold/domain'
+import { DAMAGE_TYPES, PRICE_CATEGORIES } from '@hold/domain'
 import type { PriceCellProblems } from '@hold/domain'
 import { Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -24,6 +24,7 @@ export function PriceCards({ rows, currency, problems, onChange, onRemove }: Pri
   const t = useTranslations('shop.prices')
   const editor = useTranslations('shop.priceEditor')
   const categories = useTranslations('shop.prices.categories')
+  const types = useTranslations('shop.prices.damageTypes')
   return (
     <ol className="stagger grid min-w-0 gap-3">
       {rows.map((row, index) => {
@@ -62,6 +63,15 @@ export function PriceCards({ rows, currency, problems, onChange, onRemove }: Pri
                 <Input key={`a-${row.amount}`} id={id('amount')} inputMode="decimal" defaultValue={row.amount} maxLength={40} className="figures" aria-invalid={found.amount !== undefined} onBlur={(event) => { if (event.target.value !== row.amount) onChange(row.key, { amount: event.target.value }) }} />
               </div>
             </div>
+            {row.category !== 'damage' ? null : (
+              <div className="grid min-w-0 gap-1.5">
+                <Label htmlFor={id('damageType')}>{editor('columns.damageType')}</Label>
+                <Select id={id('damageType')} value={row.damageType ?? ''} onChange={(event) => { onChange(row.key, { damageType: DAMAGE_TYPES.find((each) => each === event.target.value) }) }}>
+                  <option value="">{types('none')}</option>
+                  {DAMAGE_TYPES.map((each) => <option key={each} value={each}>{types(each)}</option>)}
+                </Select>
+              </div>
+            )}
             {found.category === undefined ? null : <p className="text-sm font-semibold text-destructive">{editor(`problemsText.${found.category}`, { currency })}</p>}
             {found.amount === undefined ? null : <p className="text-sm font-semibold text-destructive">{editor(`problemsText.${found.amount}`, { currency })}</p>}
           </li>
