@@ -234,29 +234,17 @@ function car(materials) {
   return group
 }
 
-export function createFilm(canvas, { width, height }) {
-  const tall = height > width
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true })
-  renderer.setPixelRatio(1)
-  renderer.setSize(width, height, false)
-  renderer.toneMapping = THREE.ACESFilmicToneMapping
-  renderer.toneMappingExposure = 1.05
-  renderer.outputColorSpace = THREE.SRGBColorSpace
-
-  const scene = new THREE.Scene()
-  scene.background = new THREE.Color(NIGHT)
-  scene.fog = new THREE.Fog(NIGHT, 9, 26)
-  const pmrem = new THREE.PMREMGenerator(renderer)
-  // What the paint reflects: a dark studio with a long soft box overhead, a strip of light down each side, and the
-  // warm colour of the scan behind the car.
-  const studio = new THREE.Scene()
-  studio.background = new THREE.Color(0x020203)
+// What the paint reflects: a dark studio with a long soft box overhead, a strip of light down each side, and the
+// warm colour of the scan behind the car.
+function studio(renderer) {
+  const room = new THREE.Scene()
+  room.background = new THREE.Color(0x020203)
   const lit = (colour, strength) => new THREE.MeshBasicMaterial({ color: new THREE.Color(colour).multiplyScalar(strength), side: THREE.DoubleSide })
   const box = (w, h, material, position, rotation) => {
     const panel = new THREE.Mesh(new THREE.PlaneGeometry(w, h), material)
     panel.position.set(...position)
     panel.rotation.set(...rotation)
-    studio.add(panel)
+    room.add(panel)
   }
   box(11, 2.6, lit(0xffffff, 5.5), [0, 6, 0.6], [Math.PI / 2, 0, 0])
   box(12, 0.5, lit(0xdfe8ff, 7), [0, 2.1, 6.5], [0, Math.PI, 0])
@@ -264,10 +252,12 @@ export function createFilm(canvas, { width, height }) {
   box(12, 0.5, lit(0xdfe8ff, 5), [0, 2.3, -6.5], [0, 0, 0])
   box(3, 2.2, lit(0xff7a3c, 3.4), [-8, 1.6, -2], [0, Math.PI / 2, 0])
   box(3, 1.6, lit(0xffffff, 2.4), [8, 1.8, 1.5], [0, -Math.PI / 2, 0])
-  scene.environment = pmrem.fromScene(studio, 0.03).texture
-  scene.environmentIntensity = 1
+  return new THREE.PMREMGenerator(renderer).fromScene(room, 0.03).texture
+}
 
-  const materials = {
+// What the car is made of.
+function paints() {
+  return {
     paint: new THREE.MeshPhysicalMaterial({ color: PAINT, metalness: 0.78, roughness: 0.24, clearcoat: 1, clearcoatRoughness: 0.035, envMapIntensity: 1.5 }),
     glass: new THREE.MeshPhysicalMaterial({ color: 0x05070b, metalness: 0.95, roughness: 0.04, clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 1.9 }),
     tyre: new THREE.MeshStandardMaterial({ color: 0x0d0d0e, roughness: 0.86, metalness: 0.02 }),
@@ -280,6 +270,24 @@ export function createFilm(canvas, { width, height }) {
     headlamp: new THREE.MeshBasicMaterial({ color: 0xfff6e6 }),
     tail: new THREE.MeshBasicMaterial({ color: 0xff3b1f }),
   }
+}
+
+export function createFilm(canvas, { width, height }) {
+  const tall = height > width
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true })
+  renderer.setPixelRatio(1)
+  renderer.setSize(width, height, false)
+  renderer.toneMapping = THREE.ACESFilmicToneMapping
+  renderer.toneMappingExposure = 1.05
+  renderer.outputColorSpace = THREE.SRGBColorSpace
+
+  const scene = new THREE.Scene()
+  scene.background = new THREE.Color(NIGHT)
+  scene.fog = new THREE.Fog(NIGHT, 9, 26)
+  scene.environment = studio(renderer)
+  scene.environmentIntensity = 1
+
+  const materials = paints()
   const coupe = car(materials)
   scene.add(coupe)
 
