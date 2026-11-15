@@ -34,7 +34,10 @@ async function inOneTransaction(read: (transaction: Transaction) => Promise<unkn
 }
 
 describe('the statements a shop page reads', () => {
-  it('reads the Today page’s figures and lists in eight, and its setup in one', async () => {
+  // Nine statements and the one that opens the transaction's scope. The ninth, since 15 November 2026, reads the month's
+  // claims with their contests, for the measure of how many are contested (shop-today.ts monthContests); the month's
+  // inspections are still read once, for their times and their retakes alike.
+  it('reads the Today page’s figures and lists in nine, and its setup in one', async () => {
     const window = { now: NOW, day: shopDay('Europe/Lisbon', NOW) }
     const today = await inShop(database, scope, (transaction) => shopToday(transaction, window))
     // The demo is busy enough that every list has something in it.
@@ -42,7 +45,7 @@ describe('the statements a shop page reads', () => {
     expect(today.activeHolds.length).toBeGreaterThan(0)
     expect(today.droppedOff.length).toBeGreaterThan(0)
 
-    expect(await inOneTransaction((transaction) => shopToday(transaction, window))).toEqual({ statements: 9, transactions: 1, longest: 9 })
+    expect(await inOneTransaction((transaction) => shopToday(transaction, window))).toEqual({ statements: 10, transactions: 1, longest: 10 })
     expect(await inOneTransaction(shopSetup)).toEqual({ statements: 2, transactions: 1, longest: 2 })
   })
 

@@ -249,13 +249,15 @@ async function counter(transaction: Transaction, window: TodayWindow): Promise<C
   return visits.sort((a, b) => a.at.getTime() - b.at.getTime())
 }
 
-// The month's inspections as measured: each sealed handover and return with the photographs a later one of the same
-// view replaced, and each claim shown to a renter in the month with when it was first contested and when the shop
-// decided it. The demonstration's are marked, and the domain leaves them out.
-async function measures(transaction: Transaction, window: TodayWindow) {
+// The month's sealed handovers and returns, read once: how long each took from its opening to its seal
+// (counterRoutine), and how many of its photographs a later one of the same view replaced (retakesOf). One of a sample
+// rental, or holding a sample photograph, is the demonstration's, and both leave it out.
+async function monthInspections(transaction: Transaction, window: TodayWindow) {
   const sessions = await transaction
     .select({
       kind: captureSessions.kind,
+      startedAt: captureSessions.startedAt,
+      sealedAt: captureSessions.sealedAt,
       simulated: sql<boolean>`(${rentals.simulated} or exists (select 1 from ${photos} where ${photos.sessionId} = ${captureSessions.id} and (${photos.quality} ->> 'simulated') = '1'))`,
       retakes: sql<number>`(select count(*)::int from ${photos} where ${photos.sessionId} = ${captureSessions.id} and ${photos.supersededAt} is not null)`,
     })
@@ -263,33 +265,22 @@ async function measures(transaction: Transaction, window: TodayWindow) {
     .innerJoin(rentalItems, eq(rentalItems.id, captureSessions.rentalItemId))
     .innerJoin(rentals, eq(rentals.id, rentalItems.rentalId))
     .where(and(gte(captureSessions.sealedAt, window.day.monthStart), lte(captureSessions.sealedAt, window.now), inArray(captureSessions.kind, ['handover', 'return'])))
-  const shown = await transaction
-    .select({ id: claims.id, simulated: rentals.simulated, presentedAt: claims.presentedAt, decidedAt: claims.decidedAt })
-    .from(claims)
-    .innerJoin(rentals, eq(rentals.id, claims.rentalId))
-    .where(and(gte(claims.presentedAt, window.day.monthStart), lte(claims.presentedAt, window.now)))
-  // Each claim's contests, the earliest first, read as the column they are, so every driver gives the same moment.
-  const contests = shown.length === 0 ? [] : await transaction.select({ claimId: claimReplies.claimId, at: claimReplies.createdAt }).from(claimReplies)
-    .where(and(inArray(claimReplies.claimId, shown.map((claim) => claim.id)), eq(claimReplies.decision, 'contest'))).orderBy(asc(claimReplies.createdAt))
-  const contested = (claimId: string) => contests.find((contest) => contest.claimId === claimId)?.at ?? null
-  return { retakes: retakesOf(sessions.map((session) => ({ ...session, sealed: true }))), contests: contestsOf(shown.map((claim) => ({ ...claim, contestedAt: contested(claim.id) }))) }
+  return { routine: counterRoutine(sessions), retakes: retakesOf(sessions.map((session) => ({ ...session, sealed: true }))) }
 }
 
-// The month's sealed sessions. One of a sample rental, or holding a sample photograph, is the demonstration's, and
-// counterRoutine leaves it out.
-async function routine(transaction: Transaction, window: TodayWindow) {
-  const sessions = await transaction
-    .select({
-      kind: captureSessions.kind,
-      startedAt: captureSessions.startedAt,
-      sealedAt: captureSessions.sealedAt,
-      simulated: sql<boolean>`(${rentals.simulated} or exists (select 1 from ${photos} where ${photos.sessionId} = ${captureSessions.id} and (${photos.quality} ->> 'simulated') = '1'))`,
-    })
-    .from(captureSessions)
-    .innerJoin(rentalItems, eq(rentalItems.id, captureSessions.rentalItemId))
-    .innerJoin(rentals, eq(rentals.id, rentalItems.rentalId))
-    .where(and(gte(captureSessions.sealedAt, window.day.monthStart), lte(captureSessions.sealedAt, window.now), inArray(captureSessions.kind, ['handover', 'return'])))
-  return counterRoutine(sessions)
+// The claims shown to a renter in the month, each with its contests, in one statement: a claim never contested comes
+// once with no contest, a contested one once for each. The earliest contest is the one the shop's decision answers.
+async function monthContests(transaction: Transaction, window: TodayWindow) {
+  const rows = await transaction
+    .select({ id: claims.id, simulated: rentals.simulated, presentedAt: claims.presentedAt, decidedAt: claims.decidedAt, contestedAt: claimReplies.createdAt })
+    .from(claims)
+    .innerJoin(rentals, eq(rentals.id, claims.rentalId))
+    .leftJoin(claimReplies, and(eq(claimReplies.claimId, claims.id), eq(claimReplies.decision, 'contest')))
+    .where(and(gte(claims.presentedAt, window.day.monthStart), lte(claims.presentedAt, window.now)))
+    .orderBy(asc(claims.id), asc(claimReplies.createdAt))
+  const shown = new Map<string, (typeof rows)[number]>()
+  for (const row of rows) if (!shown.has(row.id)) shown.set(row.id, row)
+  return contestsOf([...shown.values()])
 }
 
 async function activity(transaction: Transaction): Promise<ActivityLine[]> {
@@ -312,6 +303,7 @@ async function activity(transaction: Transaction): Promise<ActivityLine[]> {
 
 export async function shopToday(transaction: Transaction, window: TodayWindow): Promise<ShopToday> {
   const { rentals: total, simulated, rentalsOut, dueBackToday, itemsOut, ...month } = await figures(transaction, window)
+  const inspections = await monthInspections(transaction, window)
   return {
     rentalsOut,
     dueBackToday,
@@ -322,8 +314,8 @@ export async function shopToday(transaction: Transaction, window: TodayWindow): 
     late: await lateRentals(transaction, window.now),
     counter: await counter(transaction, window),
     month,
-    routine: await routine(transaction, window),
-    measures: await measures(transaction, window),
+    routine: inspections.routine,
+    measures: { retakes: inspections.retakes, contests: await monthContests(transaction, window) },
     activity: await activity(transaction),
     rentals: { total, simulated },
   }
