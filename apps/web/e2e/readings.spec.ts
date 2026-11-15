@@ -37,6 +37,8 @@ async function carShop(page: Page): Promise<void> {
 async function photographNeededViews(page: Page): Promise<void> {
   const views = page.getByRole('list', { name: 'Views' })
   await expect(views).toBeVisible()
+  // The car's suggested plan, in full (docs/vehicle-plan.md step 1).
+  await expect(views.getByRole('listitem')).toHaveCount(19)
   const needed = await views.getByText('Needed').count()
   expect(needed).toBeGreaterThan(0)
   for (let taken = 1; taken <= needed; taken += 1) {
@@ -61,6 +63,8 @@ test('a car is handed over and returned only once its dashboard is read, and the
   await feePaidAndHoldPlaced(page, browser)
   await page.getByRole('region', { name: 'Handover' }).getByRole('button', { name: /^Photograph / }).click()
   await expect(page).toHaveURL(/\/handover\/[0-9a-f-]{36}$/)
+  // The whole walk around is done at the width of a small phone, where the counter works.
+  await page.setViewportSize({ width: 360, height: 780 })
   await photographNeededViews(page)
 
   // Every needed view is photographed, and the handover still waits for the dashboard.
@@ -88,6 +92,7 @@ test('a car is handed over and returned only once its dashboard is read, and the
   await page.getByRole('link', { name: 'Back to the rental' }).last().click()
   await page.getByRole('button', { name: /^Start return for / }).click()
   await expect(page).toHaveURL(/\/return\/[0-9a-f-]{36}$/)
+  await page.setViewportSize({ width: 360, height: 780 })
   await photographNeededViews(page)
   const sealReturn = page.getByRole('button', { name: 'Seal return photographs' })
   await expect(sealReturn).toBeDisabled()
