@@ -15,10 +15,11 @@ function Statement({ label, rows, out, outLabel, foot, emphasis }: { label: stri
       </h3>
       <ul role="list" className="px-5 md:px-6">
         {rows.map((row) => (
-          <li key={row.what} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 border-b border-border/70 py-3.5">
-            <span className="figures col-span-2 text-[0.8125rem] text-muted-foreground">{row.when}</span>
+          <li key={row.what} className="flex flex-wrap items-end gap-x-4 border-b border-border/70 py-3.5">
+            {/* A long amount, such as a hold in the thousands in German, drops under its line and never pushes it out. */}
+            <span className="figures w-full text-[0.8125rem] text-muted-foreground">{row.when}</span>
             <span className="min-w-0 text-[1.0625rem]">{row.what}</span>
-            <span className={cn('figures self-end text-right font-medium', row.quiet && 'text-muted-foreground')}>{row.amount}</span>
+            <span className={cn('figures ml-auto text-right font-medium', row.quiet && 'text-muted-foreground')}>{row.amount}</span>
           </li>
         ))}
       </ul>

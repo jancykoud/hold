@@ -3,27 +3,28 @@ export const outcomeKeys = ['damage', 'clean'] as const
 
 export type OutcomeKey = (typeof outcomeKeys)[number]
 
-export const priceListKeys = ['scratchedFrame', 'missingCharger', 'bentWheel'] as const
+export const priceListKeys = ['scratch', 'dent', 'windscreenChip'] as const
 
 export type PriceListKey = (typeof priceListKeys)[number]
 
 export const exampleRental = {
   holdNumber: '2291',
   currency: 'EUR',
-  reservedCents: 30000,
-  feeCents: 12000,
+  reservedCents: 120000,
+  feeCents: 19500,
   rentalDays: 3,
-  photographCount: 6,
-  handoverSeconds: 40,
+  // Every view of the plan Hold suggests for a car (`suggestedPhotoPlan` in packages/domain).
+  photographCount: 19,
+  includedKmPerDay: 200,
   newMarkCount: 1,
   marksAtHandover: 2,
   handoverAt: new Date('2026-10-14T09:12:00Z'),
   returnAt: new Date('2026-10-17T17:48:00Z'),
   scuffFirstSeenAt: new Date('2026-09-02T10:30:00Z'),
-  priceListCents: { scratchedFrame: 3500, missingCharger: 6000, bentWheel: 9000 },
+  priceListCents: { scratch: 18000, dent: 32000, windscreenChip: 9000 },
   outcomes: {
-    damage: { takenCents: 3500, releasedCents: 26500 },
-    clean: { takenCents: 0, releasedCents: 30000 },
+    damage: { takenCents: 18000, releasedCents: 102000 },
+    clean: { takenCents: 0, releasedCents: 120000 },
   },
 } as const satisfies {
   outcomes: Record<OutcomeKey, { takenCents: number; releasedCents: number }>
@@ -39,6 +40,6 @@ export const exampleShop = {
   itemsOut: 14,
   dueBack: 6,
   claimsWaiting: 1,
-  holdsInPlaceCents: 420000,
+  holdsInPlaceCents: 1680000,
   expiringHold: { number: '2274', day: 26 },
 } as const

@@ -56,8 +56,7 @@ export const DEMO_SHOP = {
     ],
   },
   // A car beside the bikes: the condition report of a vehicle is what Hold is built for first. Its plan is the walk
-  // around a car in full, in English as the demo is, and each day includes 200 kilometres. The sample photographs are
-  // of a bike's frame, so a car's comparison is shown with them until real photographs of a vehicle exist.
+  // around a car in full, in English as the demo is, and each day includes 200 kilometres.
   vehicle: {
     name: 'Compact car',
     category: 'car',

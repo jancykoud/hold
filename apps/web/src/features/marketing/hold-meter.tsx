@@ -21,7 +21,7 @@ const swatches = {
 
 function Amount({ swatch, label, amount }: { swatch: string; label: string; amount: string }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-x-2">
       <span aria-hidden="true" className={cn('size-3 shrink-0 rounded-xs border border-current', swatch)} />
       <dt className="opacity-70">{label}</dt>
       <dd className="font-medium">{amount}</dd>

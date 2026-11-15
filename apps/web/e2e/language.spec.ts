@@ -38,7 +38,7 @@ test('choosing English again returns to the bare address', async ({ page }) => {
 
 test('amounts follow the reader language', async ({ page }) => {
   await page.goto('/de')
-  await expect(page.getByText('300 € reserviert · 35 € abgebucht · 265 € freigegeben')).toBeVisible()
+  await expect(page.getByText('1.200 € reserviert · 180 € abgebucht · 1.020 € freigegeben')).toBeVisible()
 })
 
 for (const [locale, title] of [

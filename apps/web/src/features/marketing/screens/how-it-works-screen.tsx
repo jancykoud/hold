@@ -39,7 +39,7 @@ export function HowItWorksScreen() {
             figures={[
               { value: money(exampleRental.reservedCents), label: t('figures.reserved') },
               { value: String(exampleRental.photographCount), label: t('figures.photographs') },
-              { value: String(exampleRental.handoverSeconds), label: t('figures.seconds') },
+              { value: String(exampleRental.includedKmPerDay), label: t('figures.kilometres') },
               { value: money(0), label: t('figures.charged') },
             ]}
           />

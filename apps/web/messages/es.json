@@ -206,7 +206,7 @@
     "shop": {
       "caption": "Jonas, en el mostrador",
       "context": "Devolución",
-      "item": "Bici eléctrica 14",
+      "item": "Utilitario 2",
       "title": "{count, plural, one {# marca nueva encontrada} other {# marcas nuevas encontradas}}",
       "newNote": "Nueva desde la entrega",
       "oldNote": "Ya estaba en la entrega",
@@ -454,13 +454,13 @@
       "figures": {
         "reserved": "reservados en la cuenta del propio cliente",
         "photographs": "fotografías en la entrega, repetidas en la devolución",
-        "seconds": "segundos para una entrega guiada en el mostrador",
+        "kilometres": "kilómetros incluidos al día, leídos en el salpicadero",
         "charged": "cobrados cuando el artículo vuelve como salió"
       },
       "moments": {
         "reserve": {
           "who": "El cliente, en su propio teléfono",
-          "body": "Priya alquila una bici eléctrica para tres días. Paga el precio del alquiler, lee la lista de precios por daños y aprueba una retención en PayPal. El dinero queda reservado en su propia cuenta y no se cobra nada.",
+          "body": "Priya alquila un utilitario para tres días. Paga el precio del alquiler, lee la lista de precios por daños y aprueba una retención en PayPal. El dinero queda reservado en su propia cuenta y no se cobra nada.",
           "points": {
             "a": "El precio del alquiler se paga. La fianza solo se retiene. La página lo distingue en una sola frase.",
             "b": "Los precios por daños se muestran y se aceptan antes de aprobar nada.",
@@ -469,7 +469,7 @@
         },
         "handOver": {
           "who": "El personal, en el mostrador",
-          "body": "Jonas abre el alquiler en su teléfono y una guía lo lleva por seis vistas de la bici. Tarda unos cuarenta segundos. Priya recibe el informe de estado en su teléfono y lo confirma.",
+          "body": "Jonas abre el alquiler en su teléfono y una guía lo lleva alrededor del coche en diecinueve vistas: la carrocería, cada rueda, los cristales, el interior y el salpicadero, donde anota los kilómetros y el combustible. Priya recibe el informe de estado en su teléfono y lo confirma.",
           "points": {
             "a": "Una silueta muestra cómo encuadrar cada vista, una tras otra.",
             "b": "Una fotografía borrosa u oscura se detecta al instante y se repite.",
@@ -478,7 +478,7 @@
         },
         "return": {
           "who": "El personal, en el mostrador",
-          "body": "Jonas toma las mismas seis fotografías. Hold alinea cada una con su pareja de la entrega y señala lo que ha cambiado. Desliza entre las dos fotografías para verlo.",
+          "body": "Jonas toma las mismas diecinueve fotografías. Hold alinea cada una con su pareja de la entrega y señala lo que ha cambiado. Desliza entre las dos fotografías para verlo.",
           "points": {
             "a": "La devolución repite la entrega foto por foto.",
             "b": "Cada diferencia recibe una de tres respuestas: sin cambios, desgaste normal o daño.",
@@ -496,32 +496,24 @@
         }
       },
       "reserveScreen": {
-        "caption": "Priya, antes de recoger la bici",
-        "item": "Bici eléctrica, {days} días",
+        "caption": "Priya, antes de recoger el coche",
+        "item": "Utilitario, {days} días",
         "fee": "Precio del alquiler",
         "feeState": "Pagado",
         "hold": "Retención",
         "holdState": "Reservada, no cobrada",
-        "promise": "Si la bici vuelve como salió, la retención se libera en cuanto la devuelves.",
+        "promise": "Si el coche vuelve como salió, la retención se libera en cuanto lo devuelves.",
         "approve": "Aprobar la retención en PayPal"
       },
       "holdCard": {
-        "note": "Hecha cuando Priya recoge la bici, en su propia cuenta de PayPal."
+        "note": "Hecha cuando Priya recoge el coche, en su propia cuenta de PayPal."
       },
       "captureScreen": {
         "caption": "Jonas, en la entrega",
         "context": "Entrega",
         "progress": "{current} de {total}",
         "hint": "Nítida y bien iluminada",
-        "shutter": "Tomar fotografía",
-        "views": {
-          "frameLeft": "Cuadro, lado izquierdo",
-          "frameRight": "Cuadro, lado derecho",
-          "frontWheel": "Rueda delantera",
-          "rearWheel": "Rueda trasera",
-          "display": "Pantalla",
-          "battery": "Batería"
-        }
+        "shutter": "Tomar fotografía"
       },
       "report": {
         "title": "Informe de estado",
@@ -532,11 +524,11 @@
         "phone": "En el teléfono de Priya",
         "clean": {
           "title": "Nada nuevo. Se libera en el mostrador.",
-          "message": "Tu bici ha vuelto bien. La retención de {amount} se ha liberado. No se ha cobrado nada."
+          "message": "Tu coche ha vuelto bien. La retención de {amount} se ha liberado. No se ha cobrado nada."
         },
         "damage": {
           "title": "Una marca nueva. Solo se cobra eso.",
-          "message": "Cuadro arañado, {taken}, de la lista de precios que aceptaste. Los otros {released} se han liberado."
+          "message": "Puerta arañada, {taken}, de la lista de precios que aceptaste. Los otros {released} se han liberado."
         }
       },
       "faq": {
@@ -654,9 +646,13 @@
         }
       },
       "types": {
-        "title": "Pensado para tiendas como estas.",
-        "lead": "Artículos que merece la pena proteger, pero baratos de alquilar. El único equipo es el teléfono que tu personal ya lleva.",
+        "title": "Pensado para empresas de alquiler como estas.",
+        "lead": "De una flota de coches a un puñado de bicis. El único equipo es el teléfono que tu personal ya lleva.",
         "items": {
+          "vehicles": {
+            "title": "Coches, furgonetas y autocaravanas",
+            "body": "Carrocería y cristales comparados vista a vista, con los kilómetros y el combustible leídos en el salpicadero."
+          },
           "bikes": {
             "title": "Bicis, bicis eléctricas y patinetes",
             "body": "Visitantes que pagan con tarjetas extranjeras y una flota en la que una bici eléctrica dañada cuesta las ganancias de una semana."
@@ -670,12 +666,8 @@
             "body": "Personal de temporada y cola en el mostrador."
           },
           "events": {
-            "title": "Material para fiestas y eventos",
-            "body": "Muchos artículos por alquiler, cada uno con su lista de precios."
-          },
-          "tools": {
-            "title": "Herramientas y maquinaria pequeña",
-            "body": "El desgaste normal tiene que distinguirse del daño, siempre de la misma forma."
+            "title": "Material para eventos y herramientas",
+            "body": "Muchos artículos por alquiler, y el desgaste normal distinguido del daño siempre de la misma forma."
           },
           "family": {
             "title": "Artículos de bebé, instrumentos y ropa de etiqueta",
@@ -716,7 +708,7 @@
           },
           "amounts": {
             "title": "Retenciones a la medida del artículo",
-            "body": "Un casco y una bici eléctrica no necesitan la misma protección."
+            "body": "Una silla infantil y un coche no necesitan la misma protección."
           }
         }
       },
@@ -727,7 +719,7 @@
         "caption": "Artículo de ejemplo. Fotografías ilustrativas.",
         "entries": {
           "scuff": {
-            "title": "Roce en el tubo diagonal, visto por primera vez",
+            "title": "Roce en la parte baja de la puerta, visto por primera vez",
             "note": "Anotado en una entrega. Nunca se ha cobrado."
           },
           "handover": {
@@ -735,7 +727,7 @@
             "note": "{count} fotografías. Nada nuevo desde la última devolución."
           },
           "scratch": {
-            "title": "Cuadro arañado, nuevo",
+            "title": "Puerta arañada, nuevo",
             "note": "{amount} de la lista de precios. Aprobado por una persona."
           }
         },
@@ -812,7 +804,7 @@
         "deposit": {
           "label": "Con fianza",
           "charged": "Fianza cobrada",
-          "returned": "Bici devuelta, reembolso solicitado",
+          "returned": "Coche devuelto, reembolso solicitado",
           "refunded": "Llega el reembolso",
           "waiting": "En espera",
           "foot": "Te quedas sin tu dinero durante todo el viaje. Con una tarjeta extranjera puedes perder en el cambio de divisa a la ida y a la vuelta."
@@ -821,7 +813,7 @@
           "label": "Con retención",
           "placed": "Retención hecha",
           "reserved": "{amount} reservados",
-          "released": "Bici devuelta, retención liberada",
+          "released": "Coche devuelto, retención liberada",
           "taken": "{amount} cobrados",
           "foot": "Nada salió de tu cuenta, así que no hay nada que reembolsar ni nada que esperar."
         }
@@ -914,7 +906,7 @@
         "items": {
           "damage": {
             "verdict": "Daño",
-            "title": "Cuadro arañado",
+            "title": "Puerta arañada",
             "body": "No estaba en la entrega. Se relaciona con la lista de precios y pasa a una persona."
           },
           "wear": {
@@ -924,7 +916,7 @@
           },
           "same": {
             "verdict": "Sin cambios",
-            "title": "Roce en el tubo diagonal",
+            "title": "Roce en la parte baja de la puerta",
             "body": "Ya estaba en la entrega. Queda en el historial del artículo y nunca se cobra."
           },
           "unsure": {
@@ -1097,7 +1089,7 @@
     },
     "demo": {
       "title": "Prueba una devolución.",
-      "lead": "Entra con un toque, alquila una bici y devuélvela con una foto de ejemplo. Cada llamada a PayPal es real, en el entorno de pruebas y con dinero de prueba.",
+      "lead": "Entra con un toque, alquila un coche y devuélvelo con una foto de ejemplo. Cada llamada a PayPal es real, en el entorno de pruebas y con dinero de prueba.",
       "status": {
         "title": "La tienda de demostración está abierta.",
         "body": "Un toque abre una tienda de demostración solo tuya, como Tomás, el dueño, o Jonas, en el mostrador: nada que escribir, ningún código que esperar y ningún cambio ajeno en tu camino. Un paso que mueve dinero pide una llave de acceso, que añades en tu propio dispositivo."
@@ -1328,11 +1320,11 @@
   "priceList": {
     "title": "Lista de precios por daños",
     "items": {
-      "scratchedFrame": "Cuadro arañado",
-      "missingCharger": "Cargador perdido",
-      "bentWheel": "Rueda doblada"
+      "scratch": "Arañazo en la carrocería",
+      "dent": "Abolladura en un panel de la carrocería",
+      "windscreenChip": "Impacto de piedra en el parabrisas"
     },
-    "wear": "El desgaste normal, como un ligero desgaste de los neumáticos o pequeños roces en los pedales, nunca se cobra.",
+    "wear": "El desgaste normal, como un ligero desgaste de los neumáticos o marcas finas alrededor de una manilla, nunca se cobra.",
     "agreed": "Aceptada por el cliente antes de aprobar la retención.",
     "example": "Lista de precios de ejemplo."
   },
@@ -1556,7 +1548,7 @@
       "staff": {
         "start": "Empezar una demo como Jonas, en el mostrador",
         "continue": "Seguir como Jonas, en el mostrador",
-        "hint": "Entrega y recibe las bicicletas y aprueba reclamaciones pequeñas."
+        "hint": "Entrega y recibe los vehículos y aprueba reclamaciones pequeñas."
       },
       "leadCurrent": "Este navegador guarda tu demostración. Vuelve a ella como cualquiera de las dos personas, o empieza una nueva.",
       "fresh": {
@@ -1891,7 +1883,7 @@
         "emailing": "Enviando…",
         "emailed": "Enviado a {email}.",
         "paid": "El precio está pagado. El mismo enlace muestra el alquiler y, en la recogida, pide la retención.",
-        "walkIn": "Cliente en el mostrador: aprueba la tarifa y la retención juntas, con una sola aprobación de PayPal, y la bici queda lista para entregar.",
+        "walkIn": "Cliente en el mostrador: aprueba la tarifa y la retención juntas, con una sola aprobación de PayPal, y el artículo queda listo para entregar.",
         "text": "Enviar por SMS a {phone}",
         "texted": "Enviado por SMS a {phone}.",
         "heldTitle": "El enlace no se envió por correo",
@@ -2239,7 +2231,7 @@
         "back": "Volver a artículos",
         "readOnly": "Solo el propietario o un encargado pueden cambiar los tipos de artículo.",
         "name": "Nombre",
-        "nameHelp": "Cómo lo llaman el personal y los clientes, como Bicicleta eléctrica urbana. Los artículos nuevos se numeran a partir de él.",
+        "nameHelp": "Cómo lo llaman el personal y los clientes, como Utilitario. Los artículos nuevos se numeran a partir de él.",
         "category": "Categoría",
         "amounts": "Importes",
         "amountsHelp": "La retención es lo que un cliente tiene reservado mientras el artículo está fuera. Nunca es más de lo que vale el artículo.",
@@ -3562,7 +3554,7 @@
     "boundary": "Revise las pruebas y los precios acordados. Aprobar presenta la reclamación al cliente sin cobrarle.",
     "passkeyBody": "Para aprobar una reclamación o liberar una retención hace falta tu llave de acceso, no solo un código por correo.",
     "sampleTitle": "Un alquiler de muestra",
-    "sampleBody": "Sus fotos y su comparación son de la demostración, y aquí no se mueve dinero de PayPal. Reserva una de las bicis de ciudad de la tienda para probar una retención real en el sandbox de PayPal.",
+    "sampleBody": "Sus fotos y su comparación son de la demostración, y aquí no se mueve dinero de PayPal. Reserva uno de los coches o una de las bicis de la tienda para probar una retención real en el sandbox de PayPal.",
     "summary": "Importes de liquidación",
     "reserved": "Importe reservado",
     "capture": "Cargo de la reserva",

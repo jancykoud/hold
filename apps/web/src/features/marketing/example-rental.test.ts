@@ -1,3 +1,4 @@
+import { suggestedPhotoPlan } from '@hold/domain'
 import { describe, expect, it } from 'vitest'
 import { exampleRental, outcomeKeys } from './example-rental'
 
@@ -13,6 +14,14 @@ describe('exampleRental', () => {
 
   it('never takes more than was reserved', () => {
     expect(exampleRental.outcomes.damage.takenCents).toBeLessThanOrEqual(exampleRental.reservedCents)
+  })
+
+  it('takes the published price of a scratch, and nothing else, when the car comes back scratched', () => {
+    expect(exampleRental.outcomes.damage.takenCents).toBe(exampleRental.priceListCents.scratch)
+  })
+
+  it('photographs every view of the plan Hold suggests for a car', () => {
+    expect(exampleRental.photographCount).toBe(suggestedPhotoPlan('car').length)
   })
 
   it('holds every amount as whole cents', () => {

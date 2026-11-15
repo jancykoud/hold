@@ -23,9 +23,9 @@ test('the divider moves with the arrow keys', async ({ page }) => {
 
 test('a clean return shows that nothing was taken', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByText('€300 reserved · €35 taken · €265 released')).toBeVisible()
+  await expect(page.getByText('€1,200 reserved · €180 taken · €1,020 released')).toBeVisible()
   await page.getByRole('button', { name: 'Clean return' }).click()
-  await expect(page.getByText('€300 reserved · €0 taken · €300 released')).toBeVisible()
+  await expect(page.getByText('€1,200 reserved · €0 taken · €1,200 released')).toBeVisible()
   await expect(page.getByText('No new marks')).toBeVisible()
 })
 

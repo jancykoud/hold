@@ -1,4 +1,4 @@
-import { Baby, Bike, Camera, Lock, PartyPopper, Ruler, Tent, UserCheck, Users, Wrench } from 'lucide-react'
+import { Baby, Bike, Camera, CarFront, Lock, PartyPopper, Ruler, Tent, UserCheck, Users } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { routes } from '@/lib/routes'
 import { audienceImages, shopPointKeys } from '../audience-points'
@@ -23,11 +23,11 @@ const safeguards = [
 ] as const
 
 const shopTypes = [
+  { key: 'vehicles', icon: CarFront },
   { key: 'bikes', icon: Bike },
   { key: 'cameras', icon: Camera },
   { key: 'outdoor', icon: Tent },
   { key: 'events', icon: PartyPopper },
-  { key: 'tools', icon: Wrench },
   { key: 'family', icon: Baby },
 ] as const
 

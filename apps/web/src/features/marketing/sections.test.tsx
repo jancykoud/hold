@@ -53,7 +53,7 @@ describe('StepList', () => {
 
   it('shows what each moment leaves behind', () => {
     renderWithIntl(<StepList />)
-    for (const state of ['€300 reserved', '6 photographs', '6 pairs compared', '€35 taken · €265 released']) {
+    for (const state of ['€1,200 reserved', '19 photographs', '19 pairs compared', '€180 taken · €1,020 released']) {
       expect(screen.getByText(state)).toBeInTheDocument()
     }
   })

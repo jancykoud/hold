@@ -1,7 +1,7 @@
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ReactElement } from 'react'
-import { BACKUP_KEPT_DAYS, EVIDENCE_KEPT_DAYS, EVIDENCE_LOCK_DAYS } from '@hold/domain'
+import { BACKUP_KEPT_DAYS, EVIDENCE_KEPT_DAYS, EVIDENCE_LOCK_DAYS, suggestedPhotoPlan } from '@hold/domain'
 import { describe, expect, it } from 'vitest'
 import { renderWithIntl } from '@/test/render'
 import { AdvocatesScreen } from './advocates-screen'
@@ -124,22 +124,22 @@ describe('HowItWorksScreen', () => {
 
   it('shows the renter the fee and the hold as two separate amounts before approving', () => {
     renderWithIntl(<HowItWorksScreen />)
-    const phone = within(screen.getByRole('figure', { name: 'Priya, before she collects the bike' }))
-    expect(phone.getByText('€120')).toBeInTheDocument()
-    expect(phone.getByText('€300')).toBeInTheDocument()
+    const phone = within(screen.getByRole('figure', { name: 'Priya, before she collects the car' }))
+    expect(phone.getByText('€195')).toBeInTheDocument()
+    expect(phone.getByText('€1,200')).toBeInTheDocument()
     expect(phone.getByText('Reserved, not charged')).toBeInTheDocument()
   })
 
-  it('lists the six views in the condition report', () => {
+  it('lists every view of the car\'s walk in the condition report', () => {
     renderWithIntl(<HowItWorksScreen />)
-    expect(within(screen.getByRole('group', { name: 'Condition report' })).getAllByRole('listitem')).toHaveLength(6)
+    expect(within(screen.getByRole('group', { name: 'Condition report' })).getAllByRole('listitem')).toHaveLength(suggestedPhotoPlan('car').length)
   })
 
   it('ends a clean return with nothing taken, and a damaged one with only the claim taken', () => {
     renderWithIntl(<HowItWorksScreen />)
-    expect(screen.getByText('Your bike is back safely. The €300 hold has been released. Nothing was charged.')).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: '€300 reserved, €0 taken, €300 released' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: '€300 reserved, €35 taken, €265 released' })).toBeInTheDocument()
+    expect(screen.getByText('Your car is back safely. The €1,200 hold has been released. Nothing was charged.')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: '€1,200 reserved, €0 taken, €1,200 released' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: '€1,200 reserved, €180 taken, €1,020 released' })).toBeInTheDocument()
   })
 
   it('answers the questions asked at the counter', () => {
@@ -162,16 +162,18 @@ describe('HowItWorksScreen', () => {
 })
 
 describe('ForShopsScreen', () => {
-  it('names the six kinds of shop it is built for', () => {
+  it('names the kinds of rental business it is built for, vehicles first', () => {
     renderWithIntl(<ForShopsScreen />)
+    const kinds = within(screen.getByRole('heading', { name: 'Built for rental businesses like these.' }).closest('section') ?? document.body).getAllByRole('heading', { level: 3 })
+    expect(kinds[0]).toHaveTextContent('Cars, vans and motorhomes')
     expect(screen.getByRole('heading', { level: 3, name: 'Bikes, e-bikes and scooters' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: 'Baby equipment, instruments and formalwear' })).toBeInTheDocument()
   })
 
   it('shows the owner the day at a glance, with what needs a decision', () => {
     renderWithIntl(<ForShopsScreen />)
-    expect(screen.getByText('Holds in place').nextElementSibling).toHaveTextContent('€4,200')
-    expect(screen.getByText('Hold 2291 · a claim of €35 awaits approval')).toBeInTheDocument()
+    expect(screen.getByText('Holds in place').nextElementSibling).toHaveTextContent('€16,800')
+    expect(screen.getByText('Hold 2291 · a claim of €180 awaits approval')).toBeInTheDocument()
     expect(screen.getByText('Hold 2274 · day 26 of 29')).toBeInTheDocument()
   })
 
@@ -206,14 +208,14 @@ describe('ForRentersScreen', () => {
     const [deposit, hold] = [screen.getByRole('heading', { name: 'With a deposit' }), screen.getByRole('heading', { name: 'With a hold' })].map(
       (heading) => within(heading.closest('li') ?? heading),
     )
-    expect(deposit?.getByText('−€300')).toBeInTheDocument()
-    expect(hold?.getByText('€300 reserved')).toBeInTheDocument()
+    expect(deposit?.getByText('−€1,200')).toBeInTheDocument()
+    expect(hold?.getByText('€1,200 reserved')).toBeInTheDocument()
     expect(hold?.getByText('€0')).toBeInTheDocument()
   })
 
   it('publishes the price of each kind of damage', () => {
     renderWithIntl(<ForRentersScreen />)
-    expect(screen.getByText('Missing charger').nextElementSibling).toHaveTextContent('€60')
+    expect(screen.getByText('Dent in a body panel').nextElementSibling).toHaveTextContent('€320')
   })
 
   it('shows the renter the screen they would see', () => {
@@ -274,7 +276,7 @@ describe('PaypalScreen', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Clean return' }))
     expect(screen.queryByText('/v2/payments/authorizations/{id}/capture')).not.toBeInTheDocument()
     expect(screen.getByText('/v2/payments/authorizations/{id}/void')).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: '€300 reserved, €0 taken, €300 released' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: '€1,200 reserved, €0 taken, €1,200 released' })).toBeInTheDocument()
   })
 
   it('lists every PayPal capability the rental uses', () => {
@@ -306,7 +308,7 @@ describe('DemoScreen', () => {
   it('keeps the contested hold whole until the claim is settled', () => {
     renderWithIntl(<DemoScreen />)
     expect(screen.getByText('Held until it is settled')).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: '€300 reserved, nothing taken' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: '€1,200 reserved, nothing taken' })).toBeInTheDocument()
   })
 
   it('labels what is simulated', () => {

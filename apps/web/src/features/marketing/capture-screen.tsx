@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import { ScreenAction, ScreenHeader } from './claim-screen-parts'
 import { evidencePhoto } from './evidence-photo'
 import { PhotoCrop } from './photo-crop'
-import { capturedViews, currentView, photoPlanKeys } from './photo-plan'
+import { capturedPictures, currentView, photoPlanKeys } from './photo-plan'
 
 // The corners of the outline that shows staff how to frame the view, in the wheel crop's own frame.
 const FRAME_CORNERS = ['M790 220 v-40 h40', 'M1050 180 h40 v40', 'M1090 530 v40 h-40', 'M830 570 h-40 v-40'] as const
@@ -12,15 +12,17 @@ const FRAME_CORNERS = ['M790 220 v-40 h40', 'M1050 180 h40 v40', 'M1090 530 v40 
 // One guided photograph: the outline to fill, the views already taken and the views still to come.
 export function CaptureScreen() {
   const t = useTranslations('pages.howItWorks.captureScreen')
+  const views = useTranslations('shop.items.suggestedViews')
+  const label = (key: string) => views(key as Parameters<typeof views>[0])
   const shop = useTranslations('bothSides.shop')
-  const current = photoPlanKeys.indexOf(currentView) + 1
+  const taken = photoPlanKeys.indexOf(currentView)
 
   return (
     <>
       <ScreenHeader left={t('context')} right={shop('item')} />
       <p className="flex items-baseline justify-between gap-2">
-        <span className="text-base font-bold tracking-tight">{t(`views.${currentView}`)}</span>
-        <span className="figures text-xs text-muted-foreground">{t('progress', { current, total: photoPlanKeys.length })}</span>
+        <span className="text-base font-bold tracking-tight">{label(currentView)}</span>
+        <span className="figures text-xs text-muted-foreground">{t('progress', { current: taken + 1, total: photoPlanKeys.length })}</span>
       </p>
       <div className="relative aspect-evidence-tall overflow-hidden rounded-lg bg-photo">
         <PhotoCrop viewBox={evidencePhoto.crops.wheel} src={evidencePhoto.handoverSrc}>
@@ -33,9 +35,10 @@ export function CaptureScreen() {
           {t('hint')}
         </span>
       </div>
-      <ol role="list" className="grid grid-cols-6 gap-1">
-        {photoPlanKeys.map((key) => {
-          const captured = capturedViews[key]
+      <ol role="list" className="grid grid-cols-10 gap-1">
+        {photoPlanKeys.map((key, index) => {
+          const captured = index < taken
+          const picture = capturedPictures[key]
           return (
             <li
               key={key}
@@ -45,11 +48,11 @@ export function CaptureScreen() {
                 key === currentView && 'border-2 border-solid border-primary',
               )}
             >
-              <span className="sr-only">{t(`views.${key}`)}</span>
+              <span className="sr-only">{label(key)}</span>
               {captured ? (
                 <>
-                  <PhotoCrop viewBox={captured.viewBox} src={evidencePhoto.handoverSrc} className={cn(captured.mirrored && '-scale-x-100')} />
-                  <Check aria-hidden="true" className="absolute right-0.5 bottom-0.5 size-3 text-photo-foreground" />
+                  {picture === undefined ? null : <PhotoCrop viewBox={picture} src={evidencePhoto.handoverSrc} />}
+                  <Check aria-hidden="true" className="absolute inset-0 m-auto size-3 text-photo-foreground" />
                 </>
               ) : null}
             </li>

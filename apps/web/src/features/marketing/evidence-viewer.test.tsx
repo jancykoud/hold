@@ -9,16 +9,16 @@ const slider = () => screen.getByRole('slider', { name: 'Slide between the hando
 describe('EvidenceViewer', () => {
   it('opens on the scratched door, priced from the list', () => {
     renderWithIntl(<EvidenceViewer />)
-    expect(screen.getByText('Scratched door, €35')).toBeInTheDocument()
-    expect(screen.getByText('€300 reserved · €35 taken · €265 released')).toBeInTheDocument()
+    expect(screen.getByText('Scratched door, €180')).toBeInTheDocument()
+    expect(screen.getByText('€1,200 reserved · €180 taken · €1,020 released')).toBeInTheDocument()
   })
 
   it('shows that a clean return takes nothing', async () => {
     renderWithIntl(<EvidenceViewer />)
     await userEvent.click(screen.getByRole('button', { name: 'Clean return' }))
     expect(screen.getByText('No new marks')).toBeInTheDocument()
-    expect(screen.getByText('€300 reserved · €0 taken · €300 released')).toBeInTheDocument()
-    expect(screen.queryByText('Scratched door, €35')).not.toBeInTheDocument()
+    expect(screen.getByText('€1,200 reserved · €0 taken · €1,200 released')).toBeInTheDocument()
+    expect(screen.queryByText('Scratched door, €180')).not.toBeInTheDocument()
   })
 
   it('removes the outline of the new mark on a clean return', async () => {

@@ -206,7 +206,7 @@
     "shop": {
       "caption": "Jonas, am Tresen",
       "context": "Rückgabe",
-      "item": "E-Bike 14",
+      "item": "Kleinwagen 2",
       "title": "{count, plural, one {# neue Spur gefunden} other {# neue Spuren gefunden}}",
       "newNote": "Neu seit der Übergabe",
       "oldNote": "War schon bei der Übergabe da",
@@ -454,13 +454,13 @@
       "figures": {
         "reserved": "auf dem eigenen Konto der mietenden Person reserviert",
         "photographs": "Fotos bei der Übergabe, wiederholt bei der Rückgabe",
-        "seconds": "Sekunden für eine geführte Übergabe am Tresen",
+        "kilometres": "Kilometer pro Tag inklusive, am Armaturenbrett abgelesen",
         "charged": "abgebucht, wenn der Artikel so zurückkommt, wie er war"
       },
       "moments": {
         "reserve": {
           "who": "Die mietende Person, am eigenen Telefon",
-          "body": "Priya bucht ein E-Bike für drei Tage. Sie zahlt den Mietpreis, liest die Preisliste für Schäden und genehmigt eine Reservierung in PayPal. Das Geld wird auf ihrem eigenen Konto reserviert, und nichts wird abgebucht.",
+          "body": "Priya bucht einen Kleinwagen für drei Tage. Sie zahlt den Mietpreis, liest die Preisliste für Schäden und genehmigt eine Reservierung in PayPal. Das Geld wird auf ihrem eigenen Konto reserviert, und nichts wird abgebucht.",
           "points": {
             "a": "Der Mietpreis wird bezahlt. Die Kaution wird nur reserviert. Die Seite sagt in einem Satz, was was ist.",
             "b": "Die Preise für Schäden werden gezeigt und akzeptiert, bevor irgendetwas genehmigt wird.",
@@ -469,7 +469,7 @@
         },
         "handOver": {
           "who": "Das Personal, am Tresen",
-          "body": "Jonas öffnet die Miete auf seinem Telefon und wird durch sechs Ansichten des Fahrrads geführt. Das dauert etwa vierzig Sekunden. Priya erhält das Zustands­protokoll auf ihrem Telefon und bestätigt es.",
+          "body": "Jonas öffnet die Miete auf seinem Telefon und wird in neunzehn Ansichten um das Auto geführt: die Karosserie, jedes Rad, die Scheiben, der Innenraum und das Armaturenbrett, an dem er Kilometerstand und Tankfüllung einträgt. Priya erhält das Zustands­protokoll auf ihrem Telefon und bestätigt es.",
           "points": {
             "a": "Ein Umriss zeigt, wie jede Ansicht auszurichten ist, eine nach der anderen.",
             "b": "Ein unscharfes oder dunkles Foto fällt sofort auf und wird neu gemacht.",
@@ -478,7 +478,7 @@
         },
         "return": {
           "who": "Das Personal, am Tresen",
-          "body": "Jonas macht dieselben sechs Fotos. Hold richtet jedes an seinem Gegenstück von der Übergabe aus und umrandet, was sich geändert hat. Schieben Sie zwischen den beiden Fotos hin und her, um es zu sehen.",
+          "body": "Jonas macht dieselben neunzehn Fotos. Hold richtet jedes an seinem Gegenstück von der Übergabe aus und umrandet, was sich geändert hat. Schieben Sie zwischen den beiden Fotos hin und her, um es zu sehen.",
           "points": {
             "a": "Die Rückgabe wiederholt die Übergabe Foto für Foto.",
             "b": "Jeder Unterschied bekommt eine von drei Antworten: keine Änderung, normale Abnutzung oder Schaden.",
@@ -496,32 +496,24 @@
         }
       },
       "reserveScreen": {
-        "caption": "Priya, bevor sie das Fahrrad abholt",
-        "item": "E-Bike, {days} Tage",
+        "caption": "Priya, bevor sie das Auto abholt",
+        "item": "Kleinwagen, {days} Tage",
         "fee": "Mietpreis",
         "feeState": "Bezahlt",
         "hold": "Reservierung",
         "holdState": "Reserviert, nicht abgebucht",
-        "promise": "Kommt das Fahrrad so zurück, wie es war, wird die Reservierung bei der Rückgabe sofort freigegeben.",
+        "promise": "Kommt das Auto so zurück, wie es war, wird die Reservierung bei der Rückgabe sofort freigegeben.",
         "approve": "Reservierung in PayPal genehmigen"
       },
       "holdCard": {
-        "note": "Gesetzt, wenn Priya das Fahrrad abholt, auf ihrem eigenen PayPal-Konto."
+        "note": "Gesetzt, wenn Priya das Auto abholt, auf ihrem eigenen PayPal-Konto."
       },
       "captureScreen": {
         "caption": "Jonas, bei der Übergabe",
         "context": "Übergabe",
         "progress": "{current} von {total}",
         "hint": "Scharf und gut beleuchtet",
-        "shutter": "Foto aufnehmen",
-        "views": {
-          "frameLeft": "Rahmen, linke Seite",
-          "frameRight": "Rahmen, rechte Seite",
-          "frontWheel": "Vorderrad",
-          "rearWheel": "Hinterrad",
-          "display": "Display",
-          "battery": "Akku"
-        }
+        "shutter": "Foto aufnehmen"
       },
       "report": {
         "title": "Zustands­protokoll",
@@ -532,11 +524,11 @@
         "phone": "Auf Priyas Telefon",
         "clean": {
           "title": "Nichts Neues. Am Tresen freigegeben.",
-          "message": "Ihr Fahrrad ist gut zurück. Die Reservierung über {amount} wurde freigegeben. Nichts wurde abgebucht."
+          "message": "Ihr Auto ist gut zurück. Die Reservierung über {amount} wurde freigegeben. Nichts wurde abgebucht."
         },
         "damage": {
           "title": "Eine neue Spur. Nur dafür wird abgebucht.",
-          "message": "Zerkratzter Rahmen, {taken}, aus der Preisliste, der Sie zugestimmt haben. Die übrigen {released} wurden freigegeben."
+          "message": "Zerkratzte Tür, {taken}, aus der Preisliste, der Sie zugestimmt haben. Die übrigen {released} wurden freigegeben."
         }
       },
       "faq": {
@@ -654,9 +646,13 @@
         }
       },
       "types": {
-        "title": "Gemacht für Verleihe wie diese.",
-        "lead": "Artikel, die Schutz verdienen, aber günstig genug sind, um sie spontan zu mieten. Das einzige Gerät ist das Telefon, das Ihr Personal schon dabeihat.",
+        "title": "Gemacht für Vermieter wie diese.",
+        "lead": "Von der Autoflotte bis zum Fahrradständer. Das einzige Gerät ist das Telefon, das Ihr Personal schon dabeihat.",
         "items": {
+          "vehicles": {
+            "title": "Autos, Transporter und Wohnmobile",
+            "body": "Karosserie und Scheiben Ansicht für Ansicht verglichen, mit Kilometerstand und Tankfüllung vom Armaturenbrett."
+          },
           "bikes": {
             "title": "Fahrräder, E-Bikes und Roller",
             "body": "Gäste, die mit ausländischen Karten zahlen, und eine Flotte, in der ein beschädigtes E-Bike den Verdienst einer Woche kostet."
@@ -670,12 +666,8 @@
             "body": "Saisonkräfte und eine Schlange am Tresen."
           },
           "events": {
-            "title": "Party- und Eventausstattung",
-            "body": "Viele Artikel pro Miete, jeder mit eigener Preisliste."
-          },
-          "tools": {
-            "title": "Werkzeuge und Kleingeräte",
-            "body": "Normale Abnutzung muss von Schäden unterschieden werden, jedes Mal auf dieselbe Weise."
+            "title": "Eventausstattung und Werkzeuge",
+            "body": "Viele Artikel pro Miete, und normale Abnutzung wird jedes Mal auf dieselbe Weise von Schäden unterschieden."
           },
           "family": {
             "title": "Babyausstattung, Instrumente und Festkleidung",
@@ -716,7 +708,7 @@
           },
           "amounts": {
             "title": "Beträge, die zum Artikel passen",
-            "body": "Ein Helm und ein E-Bike brauchen nicht denselben Schutz."
+            "body": "Ein Kindersitz und ein Auto brauchen nicht denselben Schutz."
           }
         }
       },
@@ -727,7 +719,7 @@
         "caption": "Beispiel­artikel. Fotos zur Veranschau­lichung.",
         "entries": {
           "scuff": {
-            "title": "Schramme am Unterrohr, erstmals gesehen",
+            "title": "Schramme unten an der Tür, erstmals gesehen",
             "note": "Bei einer Übergabe festgehalten. Seither nie berechnet."
           },
           "handover": {
@@ -735,7 +727,7 @@
             "note": "{count} Fotos. Nichts Neues seit der letzten Rückgabe."
           },
           "scratch": {
-            "title": "Zerkratzter Rahmen, neu",
+            "title": "Zerkratzte Tür, neu",
             "note": "{amount} aus der Preisliste. Von einem Menschen genehmigt."
           }
         },
@@ -812,7 +804,7 @@
         "deposit": {
           "label": "Mit Kaution",
           "charged": "Kaution abgebucht",
-          "returned": "Fahrrad zurück, Rückerstattung beantragt",
+          "returned": "Auto zurück, Rückerstattung beantragt",
           "refunded": "Rückerstattung trifft ein",
           "waiting": "Warten",
           "foot": "Ihr Geld ist für die ganze Reise weg. Mit einer ausländischen Karte können Sie beim Wechselkurs in beide Richtungen verlieren."
@@ -821,7 +813,7 @@
           "label": "Mit Reservierung",
           "placed": "Reservierung gesetzt",
           "reserved": "{amount} reserviert",
-          "released": "Fahrrad zurück, Reservierung freigegeben",
+          "released": "Auto zurück, Reservierung freigegeben",
           "taken": "{amount} abgebucht",
           "foot": "Nichts hat Ihr Konto verlassen. Es gibt also nichts zu erstatten und nichts abzuwarten."
         }
@@ -914,7 +906,7 @@
         "items": {
           "damage": {
             "verdict": "Schaden",
-            "title": "Zerkratzter Rahmen",
+            "title": "Zerkratzte Tür",
             "body": "War bei der Übergabe nicht da. Der Preisliste zugeordnet und an einen Menschen weitergegeben."
           },
           "wear": {
@@ -924,7 +916,7 @@
           },
           "same": {
             "verdict": "Keine Änderung",
-            "title": "Schramme am Unterrohr",
+            "title": "Schramme unten an der Tür",
             "body": "War schon bei der Übergabe da. Sie bleibt im Verlauf des Artikels und wird nie berechnet."
           },
           "unsure": {
@@ -1097,7 +1089,7 @@
     },
     "demo": {
       "title": "Probieren Sie eine Rückgabe aus.",
-      "lead": "Melden Sie sich mit einem Tippen an, mieten Sie ein Rad und geben Sie es mit einem Beispielfoto zurück. Jeder PayPal-Aufruf ist echt, in der Sandbox und mit Testgeld.",
+      "lead": "Melden Sie sich mit einem Tippen an, mieten Sie ein Auto und geben Sie es mit einem Beispielfoto zurück. Jeder PayPal-Aufruf ist echt, in der Sandbox und mit Testgeld.",
       "status": {
         "title": "Der Demo-Verleih ist geöffnet.",
         "body": "Ein Tippen startet Ihren eigenen Demo-Verleih, als Tomás, der Inhaber, oder als Jonas an der Theke: nichts einzugeben, kein Code abzuwarten und keine fremden Änderungen im Weg. Ein Schritt, der Geld bewegt, verlangt einen Passkey, den Sie auf Ihrem eigenen Gerät hinzufügen."
@@ -1328,11 +1320,11 @@
   "priceList": {
     "title": "Preisliste für Schäden",
     "items": {
-      "scratchedFrame": "Zerkratzter Rahmen",
-      "missingCharger": "Fehlendes Ladegerät",
-      "bentWheel": "Verbogenes Laufrad"
+      "scratch": "Kratzer in der Karosserie",
+      "dent": "Delle in einem Karosserieteil",
+      "windscreenChip": "Steinschlag in der Windschutzscheibe"
     },
-    "wear": "Normale Abnutzung, etwa leicht abgefahrene Reifen oder kleine Schrammen an den Pedalen, wird nie berechnet.",
+    "wear": "Normale Abnutzung, etwa leicht abgefahrene Reifen oder feine Spuren um einen Türgriff, wird nie berechnet.",
     "agreed": "Die mietende Person stimmt zu, bevor sie die Reservierung genehmigt.",
     "example": "Beispiel­preisliste."
   },
@@ -1556,7 +1548,7 @@
       "staff": {
         "start": "Demo als Jonas starten, an der Theke",
         "continue": "Als Jonas weitermachen, an der Theke",
-        "hint": "Gibt Räder aus, nimmt sie zurück und genehmigt kleine Forderungen."
+        "hint": "Gibt Fahrzeuge aus, nimmt sie zurück und genehmigt kleine Forderungen."
       },
       "leadCurrent": "Dieser Browser hat Ihre eigene Demo. Kehren Sie als eine der beiden Personen zurück, oder starten Sie eine neue.",
       "fresh": {
@@ -1891,7 +1883,7 @@
         "emailing": "Wird gesendet…",
         "emailed": "Gesendet an {email}.",
         "paid": "Der Mietpreis ist bezahlt. Derselbe Link zeigt die Miete und fragt bei der Abholung nach der Reservierung.",
-        "walkIn": "Laufkundschaft: Gebühr und Reservierung werden zusammen mit einer PayPal-Genehmigung genehmigt, danach ist das Rad bereit zur Übergabe.",
+        "walkIn": "Laufkundschaft: Gebühr und Reservierung werden zusammen mit einer PayPal-Genehmigung genehmigt, danach ist der Artikel bereit zur Übergabe.",
         "text": "Per SMS an {phone} senden",
         "texted": "Per SMS an {phone} gesendet.",
         "heldTitle": "Der Link wurde nicht gemailt",
@@ -2239,7 +2231,7 @@
         "back": "Zurück zu den Artikeln",
         "readOnly": "Nur Inhaber oder Leitung können Artikeltypen ändern.",
         "name": "Name",
-        "nameHelp": "Wie Personal und Mietende ihn nennen, zum Beispiel City-E-Bike. Neue Artikel werden danach nummeriert.",
+        "nameHelp": "Wie Personal und Mietende ihn nennen, zum Beispiel Kleinwagen. Neue Artikel werden danach nummeriert.",
         "category": "Art",
         "amounts": "Beträge",
         "amountsHelp": "Die Reservierung ist der Betrag, den eine mietende Person reserviert hat, solange der Artikel verliehen ist. Sie liegt nie über dem Wert des Artikels.",
@@ -3562,7 +3554,7 @@
     "boundary": "Prüfen Sie die Belege und vereinbarten Preise. Die Genehmigung legt die Forderung vor und belastet noch nichts.",
     "passkeyBody": "Um eine Forderung zu genehmigen oder eine Reservierung freizugeben, braucht es Ihren Passkey, nicht nur einen Code per E-Mail.",
     "sampleTitle": "Eine Beispielmiete",
-    "sampleBody": "Ihre Fotos und ihr Vergleich gehören zur Demonstration, und hier bewegt sich kein PayPal-Geld. Buchen Sie eines der Stadträder des Geschäfts, um eine echte Reservierung in der PayPal-Sandbox zu testen.",
+    "sampleBody": "Ihre Fotos und ihr Vergleich gehören zur Demonstration, und hier bewegt sich kein PayPal-Geld. Buchen Sie eines der Autos oder Fahrräder des Geschäfts, um eine echte Reservierung in der PayPal-Sandbox zu testen.",
     "summary": "Abrechnungsbeträge",
     "reserved": "Reservierte Kaution",
     "capture": "Belastung der Kaution",

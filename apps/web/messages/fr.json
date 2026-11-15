@@ -206,7 +206,7 @@
     "shop": {
       "caption": "Jonas, au comptoir",
       "context": "Retour",
-      "item": "Vélo électrique 14",
+      "item": "Citadine 2",
       "title": "{count, plural, one {# nouvelle marque trouvée} other {# nouvelles marques trouvées}}",
       "newNote": "Nouveau depuis la remise",
       "oldNote": "Déjà présente à la remise",
@@ -454,13 +454,13 @@
       "figures": {
         "reserved": "réservés sur le propre compte du client",
         "photographs": "photographies à la remise, refaites au retour",
-        "seconds": "secondes pour une remise guidée au comptoir",
+        "kilometres": "kilomètres inclus par jour, relevés au tableau de bord",
         "charged": "débité quand l'article revient tel qu'il est parti"
       },
       "moments": {
         "reserve": {
           "who": "Le client, sur son propre téléphone",
-          "body": "Priya réserve un vélo électrique pour trois jours. Elle paie le prix de la location, lit la liste de prix des dommages et approuve une autorisation dans PayPal. L'argent est réservé sur son propre compte, et rien n'est débité.",
+          "body": "Priya réserve une citadine pour trois jours. Elle paie le prix de la location, lit la liste de prix des dommages et approuve une autorisation dans PayPal. L'argent est réservé sur son propre compte, et rien n'est débité.",
           "points": {
             "a": "Le prix de la location est payé. La caution est seulement réservée. La page distingue les deux en une phrase.",
             "b": "Les prix des dommages sont affichés et acceptés avant toute approbation.",
@@ -469,7 +469,7 @@
         },
         "handOver": {
           "who": "Le personnel, au comptoir",
-          "body": "Jonas ouvre la location sur son téléphone et se laisse guider à travers six vues du vélo. Cela prend une quarantaine de secondes. Priya reçoit l'état des lieux sur son téléphone et le confirme.",
+          "body": "Jonas ouvre la location sur son téléphone et se laisse guider autour de la voiture en dix-neuf vues : la carrosserie, chaque roue, les vitres, l'intérieur et le tableau de bord, où il saisit le kilométrage et le carburant. Priya reçoit l'état des lieux sur son téléphone et le confirme.",
           "points": {
             "a": "Un contour montre comment cadrer chaque vue, l'une après l'autre.",
             "b": "Une photographie floue ou sombre est repérée aussitôt et refaite.",
@@ -478,7 +478,7 @@
         },
         "return": {
           "who": "Le personnel, au comptoir",
-          "body": "Jonas prend les six mêmes photographies. Hold aligne chacune sur sa jumelle de la remise et entoure ce qui a changé. Faites glisser entre les deux photographies pour le voir.",
+          "body": "Jonas prend les dix-neuf mêmes photographies. Hold aligne chacune sur sa jumelle de la remise et entoure ce qui a changé. Faites glisser entre les deux photographies pour le voir.",
           "points": {
             "a": "Le retour reprend la remise, vue par vue.",
             "b": "Chaque différence reçoit l'une de trois réponses : aucun changement, usure normale ou dommage.",
@@ -496,32 +496,24 @@
         }
       },
       "reserveScreen": {
-        "caption": "Priya, avant de retirer le vélo",
-        "item": "Vélo électrique, {days} jours",
+        "caption": "Priya, avant de prendre la voiture",
+        "item": "Citadine, {days} jours",
         "fee": "Prix de la location",
         "feeState": "Payé",
         "hold": "Autorisation",
         "holdState": "Réservé, non débité",
-        "promise": "Si le vélo revient tel qu'il est parti, l'autorisation est libérée dès que vous le rendez.",
+        "promise": "Si la voiture revient telle qu'elle est partie, l'autorisation est libérée dès que vous la rendez.",
         "approve": "Approuver l'autorisation dans PayPal"
       },
       "holdCard": {
-        "note": "Posée quand Priya retire le vélo, sur son propre compte PayPal."
+        "note": "Posée quand Priya prend la voiture, sur son propre compte PayPal."
       },
       "captureScreen": {
         "caption": "Jonas, à la remise",
         "context": "Remise",
         "progress": "{current} sur {total}",
         "hint": "Nette et bien éclairée",
-        "shutter": "Prendre la photographie",
-        "views": {
-          "frameLeft": "Cadre, côté gauche",
-          "frameRight": "Cadre, côté droit",
-          "frontWheel": "Roue avant",
-          "rearWheel": "Roue arrière",
-          "display": "Écran",
-          "battery": "Batterie"
-        }
+        "shutter": "Prendre la photographie"
       },
       "report": {
         "title": "État des lieux",
@@ -532,11 +524,11 @@
         "phone": "Sur le téléphone de Priya",
         "clean": {
           "title": "Rien de nouveau. Tout est libéré au comptoir.",
-          "message": "Votre vélo est bien rentré. L'autorisation de {amount} a été libérée. Rien n'a été débité."
+          "message": "Votre voiture est bien rentrée. L'autorisation de {amount} a été libérée. Rien n'a été débité."
         },
         "damage": {
           "title": "Une nouvelle marque. Seul ce montant est prélevé.",
-          "message": "Cadre rayé, {taken}, d'après la liste de prix que vous avez acceptée. Les {released} restants ont été libérés."
+          "message": "Portière rayée, {taken}, d'après la liste de prix que vous avez acceptée. Les {released} restants ont été libérés."
         }
       },
       "faq": {
@@ -655,8 +647,12 @@
       },
       "types": {
         "title": "Conçu pour des loueurs comme ceux-ci.",
-        "lead": "Des articles qui méritent d'être protégés, mais assez abordables pour être loués sans y penser. Le seul matériel est le téléphone que votre personnel a déjà.",
+        "lead": "D'une flotte de voitures à un râtelier de vélos. Le seul matériel est le téléphone que votre personnel a déjà.",
         "items": {
+          "vehicles": {
+            "title": "Voitures, utilitaires et camping-cars",
+            "body": "Carrosserie et vitrages comparés vue par vue, avec le kilométrage et le carburant relevés au tableau de bord."
+          },
           "bikes": {
             "title": "Vélos, vélos électriques et trottinettes",
             "body": "Des visiteurs qui paient avec des cartes étrangères, et une flotte où un vélo électrique abîmé coûte une semaine de recettes."
@@ -670,12 +666,8 @@
             "body": "Du personnel saisonnier et une file d'attente au comptoir."
           },
           "events": {
-            "title": "Matériel de fête et d'événement",
-            "body": "Beaucoup d'articles par location, chacun avec sa liste de prix."
-          },
-          "tools": {
-            "title": "Outils et petit matériel",
-            "body": "L'usure normale doit être distinguée du dommage, de la même façon à chaque fois."
+            "title": "Matériel d'événement et outils",
+            "body": "Beaucoup d'articles par location, et une usure normale distinguée du dommage de la même façon à chaque fois."
           },
           "family": {
             "title": "Puériculture, instruments et tenues de soirée",
@@ -716,7 +708,7 @@
           },
           "amounts": {
             "title": "Des montants d'autorisation adaptés à l'article",
-            "body": "Un casque et un vélo électrique n'ont pas besoin de la même protection."
+            "body": "Un siège enfant et une voiture n'ont pas besoin de la même protection."
           }
         }
       },
@@ -727,7 +719,7 @@
         "caption": "Article d'exemple. Photographies illustratives.",
         "entries": {
           "scuff": {
-            "title": "Éraflure du tube diagonal, première apparition",
+            "title": "Éraflure au bas de la portière, première apparition",
             "note": "Notée lors d'une remise. Jamais facturée depuis."
           },
           "handover": {
@@ -735,7 +727,7 @@
             "note": "{count} photographies. Rien de nouveau depuis le dernier retour."
           },
           "scratch": {
-            "title": "Cadre rayé, nouveau",
+            "title": "Portière rayée, nouveau",
             "note": "{amount} d'après la liste de prix. Approuvé par une personne."
           }
         },
@@ -812,7 +804,7 @@
         "deposit": {
           "label": "Avec une caution",
           "charged": "Caution débitée",
-          "returned": "Vélo rendu, remboursement demandé",
+          "returned": "Voiture rendue, remboursement demandé",
           "refunded": "Le remboursement arrive",
           "waiting": "En attente",
           "foot": "Votre argent est parti pour tout le voyage. Avec une carte étrangère, vous pouvez perdre au change dans les deux sens."
@@ -821,7 +813,7 @@
           "label": "Avec une autorisation",
           "placed": "Autorisation posée",
           "reserved": "{amount} réservés",
-          "released": "Vélo rendu, autorisation libérée",
+          "released": "Voiture rendue, autorisation libérée",
           "taken": "{amount} prélevés",
           "foot": "Rien n'a quitté votre compte : rien à rembourser, rien à attendre."
         }
@@ -914,7 +906,7 @@
         "items": {
           "damage": {
             "verdict": "Dommage",
-            "title": "Cadre rayé",
+            "title": "Portière rayée",
             "body": "Absent à la remise. Associé à la liste de prix et transmis à une personne."
           },
           "wear": {
@@ -924,7 +916,7 @@
           },
           "same": {
             "verdict": "Aucun changement",
-            "title": "Éraflure du tube diagonal",
+            "title": "Éraflure au bas de la portière",
             "body": "Déjà présente à la remise. Elle reste dans l'historique de l'article et n'est jamais facturée."
           },
           "unsure": {
@@ -1097,7 +1089,7 @@
     },
     "demo": {
       "title": "Essayez un retour.",
-      "lead": "Connectez-vous d'un appui, louez un vélo et rendez-le avec une photographie d'exemple. Chaque appel à PayPal est réel, dans l'environnement de test, avec de l'argent fictif.",
+      "lead": "Connectez-vous d'un appui, louez une voiture et rendez-la avec une photographie d'exemple. Chaque appel à PayPal est réel, dans l'environnement de test, avec de l'argent fictif.",
       "status": {
         "title": "La boutique de démonstration est ouverte.",
         "body": "Un appui lance votre propre boutique de démonstration, comme Tomás, le propriétaire, ou Jonas, au comptoir : rien à saisir, aucun code à attendre, et aucune modification d'autrui sur votre chemin. Une étape qui déplace de l'argent demande une clé d'accès, que vous ajoutez sur votre propre appareil."
@@ -1328,11 +1320,11 @@
   "priceList": {
     "title": "Liste de prix des dommages",
     "items": {
-      "scratchedFrame": "Cadre rayé",
-      "missingCharger": "Chargeur manquant",
-      "bentWheel": "Roue voilée"
+      "scratch": "Rayure sur la carrosserie",
+      "dent": "Bosse sur un élément de carrosserie",
+      "windscreenChip": "Éclat sur le pare-brise"
     },
-    "wear": "L'usure normale, comme une légère usure des pneus ou de petites éraflures sur les pédales, n'est jamais facturée.",
+    "wear": "L'usure normale, comme une légère usure des pneus ou de fines traces autour d'une poignée de porte, n'est jamais facturée.",
     "agreed": "Acceptée par le client avant l'approbation de l'autorisation.",
     "example": "Liste de prix d'exemple."
   },
@@ -1556,7 +1548,7 @@
       "staff": {
         "start": "Lancer une démo en tant que Jonas, au comptoir",
         "continue": "Continuer en tant que Jonas, au comptoir",
-        "hint": "Remet et reprend les vélos, et approuve les petites réclamations."
+        "hint": "Remet et reprend les véhicules, et approuve les petites réclamations."
       },
       "leadCurrent": "Ce navigateur garde votre démonstration. Revenez-y comme l’une ou l’autre personne, ou lancez-en une nouvelle.",
       "fresh": {
@@ -1891,7 +1883,7 @@
         "emailing": "Envoi…",
         "emailed": "Envoyé à {email}.",
         "paid": "Le prix est réglé. Le même lien montre la location et, au retrait, demande l'empreinte.",
-        "walkIn": "Client au comptoir : il approuve les frais et l'empreinte ensemble, en une seule approbation PayPal, puis le vélo est prêt à être remis.",
+        "walkIn": "Client au comptoir : il approuve les frais et l'empreinte ensemble, en une seule approbation PayPal, puis l'article est prêt à être remis.",
         "text": "Envoyer par SMS au {phone}",
         "texted": "Envoyé par SMS au {phone}.",
         "heldTitle": "Le lien n’a pas été envoyé par e-mail",
@@ -2239,7 +2231,7 @@
         "back": "Retour aux articles",
         "readOnly": "Seuls le propriétaire ou un responsable peuvent modifier les types d'article.",
         "name": "Nom",
-        "nameHelp": "Comment le personnel et les clients l'appellent, par exemple Vélo électrique de ville. Les nouveaux articles sont numérotés d'après lui.",
+        "nameHelp": "Comment le personnel et les clients l'appellent, par exemple Citadine. Les nouveaux articles sont numérotés d'après lui.",
         "category": "Catégorie",
         "amounts": "Montants",
         "amountsHelp": "L'empreinte est ce qu'un client a réservé pendant que l'article est sorti. Elle ne dépasse jamais la valeur de l'article.",
@@ -3562,7 +3554,7 @@
     "boundary": "Vérifiez les preuves et les prix convenus. L’approbation présente la réclamation au locataire sans le débiter.",
     "passkeyBody": "Pour approuver une réclamation ou libérer une réservation, il faut votre clé d'accès, pas seulement un code reçu par e-mail.",
     "sampleTitle": "Une location d’exemple",
-    "sampleBody": "Ses photos et sa comparaison sont celles de la démonstration, et rien ici ne déplace d’argent PayPal. Réservez l’un des vélos de ville de la boutique pour essayer une vraie réservation dans le sandbox PayPal.",
+    "sampleBody": "Ses photos et sa comparaison sont celles de la démonstration, et rien ici ne déplace d’argent PayPal. Réservez l’une des voitures ou l’un des vélos de la boutique pour essayer une vraie réservation dans le sandbox PayPal.",
     "summary": "Montants du règlement",
     "reserved": "Montant réservé",
     "capture": "Débit sur la réserve",

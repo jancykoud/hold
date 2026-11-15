@@ -206,7 +206,7 @@
     "shop": {
       "caption": "Jonas, at the counter",
       "context": "Return",
-      "item": "E-bike 14",
+      "item": "Compact car 2",
       "title": "{count, plural, one {# new mark found} other {# new marks found}}",
       "newNote": "New since handover",
       "oldNote": "Already there at handover",
@@ -454,13 +454,13 @@
       "figures": {
         "reserved": "reserved in the renter's own account",
         "photographs": "photographs at handover, repeated at return",
-        "seconds": "seconds for a guided handover at the counter",
+        "kilometres": "kilometres included each day, read at the dashboard",
         "charged": "charged when the item comes back as it left"
       },
       "moments": {
         "reserve": {
           "who": "The renter, on their own phone",
-          "body": "Priya books an e-bike for three days. She pays the rental fee, reads the damage price list and approves a hold in PayPal. The money is reserved in her own account, and nothing is charged.",
+          "body": "Priya books a compact car for three days. She pays the rental fee, reads the damage price list and approves a hold in PayPal. The money is reserved in her own account, and nothing is charged.",
           "points": {
             "a": "The rental fee is paid. The deposit is only held. The page says which is which in one sentence.",
             "b": "The damage prices are shown and agreed before anything is approved.",
@@ -469,7 +469,7 @@
         },
         "handOver": {
           "who": "Staff, at the counter",
-          "body": "Jonas opens the rental on his phone and is led through six views of the bike. It takes about forty seconds. Priya gets the condition report on her phone and confirms it.",
+          "body": "Jonas opens the rental on his phone and is led around the car in nineteen views: the bodywork, each wheel, the glass, the inside and the dashboard, where he enters the mileage and the fuel. Priya gets the condition report on her phone and confirms it.",
           "points": {
             "a": "An outline shows how to frame each view, one after another.",
             "b": "A blurred or dark photograph is caught at once and taken again.",
@@ -478,7 +478,7 @@
         },
         "return": {
           "who": "Staff, at the counter",
-          "body": "Jonas takes the same six photographs. Hold lines each one up with its twin from the handover and outlines what changed. Drag between the two photographs to see it.",
+          "body": "Jonas takes the same nineteen photographs. Hold lines each one up with its twin from the handover and outlines what changed. Drag between the two photographs to see it.",
           "points": {
             "a": "The return repeats the handover shot for shot.",
             "b": "Each difference gets one of three answers: no change, ordinary wear or damage.",
@@ -496,32 +496,24 @@
         }
       },
       "reserveScreen": {
-        "caption": "Priya, before she collects the bike",
-        "item": "E-bike, {days} days",
+        "caption": "Priya, before she collects the car",
+        "item": "Compact car, {days} days",
         "fee": "Rental fee",
         "feeState": "Paid",
         "hold": "Hold",
         "holdState": "Reserved, not charged",
-        "promise": "If the bike comes back as it left, the hold is released the moment you return it.",
+        "promise": "If the car comes back as it left, the hold is released the moment you return it.",
         "approve": "Approve the hold in PayPal"
       },
       "holdCard": {
-        "note": "Placed when Priya collects the bike, in her own PayPal account."
+        "note": "Placed when Priya collects the car, in her own PayPal account."
       },
       "captureScreen": {
         "caption": "Jonas, at handover",
         "context": "Handover",
         "progress": "{current} of {total}",
         "hint": "Sharp and well lit",
-        "shutter": "Take photograph",
-        "views": {
-          "frameLeft": "Frame, left side",
-          "frameRight": "Frame, right side",
-          "frontWheel": "Front wheel",
-          "rearWheel": "Rear wheel",
-          "display": "Display",
-          "battery": "Battery"
-        }
+        "shutter": "Take photograph"
       },
       "report": {
         "title": "Condition report",
@@ -532,11 +524,11 @@
         "phone": "On Priya's phone",
         "clean": {
           "title": "Nothing new. Released at the counter.",
-          "message": "Your bike is back safely. The {amount} hold has been released. Nothing was charged."
+          "message": "Your car is back safely. The {amount} hold has been released. Nothing was charged."
         },
         "damage": {
           "title": "One new mark. Only that is taken.",
-          "message": "Scratched frame, {taken}, from the price list you accepted. The other {released} has been released."
+          "message": "Scratched door, {taken}, from the price list you accepted. The other {released} has been released."
         }
       },
       "faq": {
@@ -654,9 +646,13 @@
         }
       },
       "types": {
-        "title": "Built for shops like these.",
-        "lead": "Items worth protecting, but cheap enough to rent casually. The only equipment is the phone your staff already carry.",
+        "title": "Built for rental businesses like these.",
+        "lead": "From a fleet of cars to a rack of bikes. The only equipment is the phone your staff already carry.",
         "items": {
+          "vehicles": {
+            "title": "Cars, vans and motorhomes",
+            "body": "Bodywork and glass compared view by view, with the mileage and the fuel read at the dashboard."
+          },
           "bikes": {
             "title": "Bikes, e-bikes and scooters",
             "body": "Visitors paying with foreign cards, and a fleet where one damaged e-bike costs a week's earnings."
@@ -670,12 +666,8 @@
             "body": "Seasonal staff and a queue at the counter."
           },
           "events": {
-            "title": "Party and event equipment",
-            "body": "Many items per rental, each with its own price list."
-          },
-          "tools": {
-            "title": "Tools and small equipment",
-            "body": "Ordinary wear has to be told apart from damage, the same way every time."
+            "title": "Event equipment and tools",
+            "body": "Many items per rental, and ordinary wear told apart from damage the same way every time."
           },
           "family": {
             "title": "Baby equipment, instruments and formalwear",
@@ -716,7 +708,7 @@
           },
           "amounts": {
             "title": "Hold amounts that fit the item",
-            "body": "A helmet and an e-bike do not need the same protection."
+            "body": "A child seat and a car do not need the same protection."
           }
         }
       },
@@ -727,7 +719,7 @@
         "caption": "Example item. Illustrative photographs.",
         "entries": {
           "scuff": {
-            "title": "Down tube scuff, first seen",
+            "title": "Scuff low on the door, first seen",
             "note": "Recorded at a handover. Never charged since."
           },
           "handover": {
@@ -735,7 +727,7 @@
             "note": "{count} photographs. Nothing new since the last return."
           },
           "scratch": {
-            "title": "Scratched frame, new",
+            "title": "Scratched door, new",
             "note": "{amount} from the price list. Approved by a person."
           }
         },
@@ -812,7 +804,7 @@
         "deposit": {
           "label": "With a deposit",
           "charged": "Deposit charged",
-          "returned": "Bike returned, refund requested",
+          "returned": "Car returned, refund requested",
           "refunded": "Refund arrives",
           "waiting": "Waiting",
           "foot": "Your money is gone for the whole trip. With a foreign card you can lose on the exchange rate in both directions."
@@ -821,7 +813,7 @@
           "label": "With a hold",
           "placed": "Hold placed",
           "reserved": "{amount} reserved",
-          "released": "Bike returned, hold released",
+          "released": "Car returned, hold released",
           "taken": "{amount} taken",
           "foot": "Nothing left your account, so there is nothing to refund and nothing to wait for."
         }
@@ -914,7 +906,7 @@
         "items": {
           "damage": {
             "verdict": "Damage",
-            "title": "Scratched frame",
+            "title": "Scratched door",
             "body": "Not there at handover. Matched to the price list and sent to a person."
           },
           "wear": {
@@ -924,7 +916,7 @@
           },
           "same": {
             "verdict": "No change",
-            "title": "Down tube scuff",
+            "title": "Scuff low on the door",
             "body": "Already there at handover. It stays on the item's record and is never charged."
           },
           "unsure": {
@@ -1097,7 +1089,7 @@
     },
     "demo": {
       "title": "Try a return yourself.",
-      "lead": "Sign in with one tap, rent a bike and return it with a sample photograph. Every PayPal call is real, in the sandbox, with test money.",
+      "lead": "Sign in with one tap, rent a car and return it with a sample photograph. Every PayPal call is real, in the sandbox, with test money.",
       "status": {
         "title": "The demo shop is open.",
         "body": "One tap starts a demo shop of your own, as Tomás, the owner, or Jonas, at the counter: nothing to type, no code to wait for, and nobody else’s changes in your way. A step that moves money asks for a passkey, which you add on your own device."
@@ -1328,11 +1320,11 @@
   "priceList": {
     "title": "Damage price list",
     "items": {
-      "scratchedFrame": "Scratched frame",
-      "missingCharger": "Missing charger",
-      "bentWheel": "Bent wheel"
+      "scratch": "Scratch on the bodywork",
+      "dent": "Dent in a body panel",
+      "windscreenChip": "Stone chip in the windscreen"
     },
-    "wear": "Ordinary wear, such as light tyre wear or small scuffs on the pedals, is never charged.",
+    "wear": "Ordinary wear, such as light tyre wear or fine marks around a door handle, is never charged.",
     "agreed": "Agreed by the renter before the hold is approved.",
     "example": "Example price list."
   },
@@ -1556,7 +1548,7 @@
       "staff": {
         "start": "Start a demo as Jonas, at the counter",
         "continue": "Continue as Jonas, at the counter",
-        "hint": "Hands bikes over, takes them back and approves small claims."
+        "hint": "Hands vehicles over, takes them back and approves small claims."
       },
       "leadCurrent": "This browser has a demo of your own. Come back to it as either person, or start a fresh one.",
       "fresh": {
@@ -1891,7 +1883,7 @@
         "emailing": "Sending…",
         "emailed": "Sent to {email}.",
         "paid": "The fee is paid. The same link shows the rental and, at pickup, asks for the hold.",
-        "walkIn": "A walk-in: the renter approves the fee and the hold together, in one PayPal approval, and the bike is then ready to hand over.",
+        "walkIn": "A walk-in: the renter approves the fee and the hold together, in one PayPal approval, and the item is then ready to hand over.",
         "text": "Text it to {phone}",
         "texted": "Texted to {phone}.",
         "heldTitle": "The link was not emailed",
@@ -2239,7 +2231,7 @@
         "back": "Back to items",
         "readOnly": "Only the owner or a manager can change item types.",
         "name": "Name",
-        "nameHelp": "What staff and renters call it, such as City e-bike. New items are numbered after it.",
+        "nameHelp": "What staff and renters call it, such as Compact car. New items are numbered after it.",
         "category": "Kind",
         "amounts": "Amounts",
         "amountsHelp": "The hold is what a renter has reserved while the item is out. It is never more than the item is worth.",
@@ -3562,7 +3554,7 @@
     "boundary": "Review the evidence and agreed prices. Approval shares the claim with the renter; it does not charge them.",
     "passkeyBody": "Approving a claim or releasing a hold needs your passkey, not only an emailed code.",
     "sampleTitle": "A sample rental",
-    "sampleBody": "Its photographs and its comparison are the demonstration’s own, and nothing here moves PayPal money. Book one of the shop’s city bikes to try a real hold in the PayPal sandbox.",
+    "sampleBody": "Its photographs and its comparison are the demonstration’s own, and nothing here moves PayPal money. Book one of the shop’s cars or bikes to try a real hold in the PayPal sandbox.",
     "summary": "Settlement amounts",
     "reserved": "Reserved hold",
     "capture": "Charge from hold",
