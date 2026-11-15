@@ -44,17 +44,17 @@ export function PricesScreen({ shopName, shopId, current, versions, fixedCurrenc
   return (
     <ShopFrame shopName={shopName} title={t('title')} description={current === undefined ? t('none') : t('current', { version: current.version, date: format.dateTime(current.publishedAt, { dateStyle: 'medium' }) })}>
       <div className="grid min-w-0 gap-8">
-        {!canPublish ? (
+        {/* Changing the prices waits for a passkey; reading them never does. */}
+        {canPublish && gate.needed ? <PasskeyGate {...gate} returnTo={shopRoutes.prices}>{null}</PasskeyGate> : null}
+        {canPublish && !gate.needed ? (
+          <PriceEditor shopId={shopId} baseVersion={current?.version ?? null} published={publishedDraft(current)} fixedCurrency={fixedCurrency} threshold={threshold} versions={versions} previewTerms={previewTerms} />
+        ) : (
           <>
-            <p className="flex items-center gap-2 text-muted-foreground"><Eye aria-hidden="true" className="size-4 shrink-0" />{t('readOnly')}</p>
+            {canPublish ? null : <p className="flex items-center gap-2 text-muted-foreground"><Eye aria-hidden="true" className="size-4 shrink-0" />{t('readOnly')}</p>}
             {/* Counter staff quote from the list in force; the versions below are for whoever wants what changed. */}
             {current === undefined ? null : <TermsView currency={current.currency} prices={current.entries} wearPolicy={current.wearPolicy} words={{ prices: t('inForce.title'), pricesLead: t('inForce.lead'), wear: t('wear'), wearLead: t('inForce.wearLead') }} />}
             <VersionsPanel versions={versions} currency={current?.currency ?? fixedCurrency ?? 'EUR'} draft={{ entries: (current?.entries ?? []).map(({ damageType, ...entry }) => (damageType === null ? entry : { ...entry, damageType })), wearPolicy: current?.wearPolicy ?? '' }} />
           </>
-        ) : gate.needed ? (
-          <PasskeyGate {...gate} returnTo={shopRoutes.prices}>{null}</PasskeyGate>
-        ) : (
-          <PriceEditor shopId={shopId} baseVersion={current?.version ?? null} published={publishedDraft(current)} fixedCurrency={fixedCurrency} threshold={threshold} versions={versions} previewTerms={previewTerms} />
         )}
         {fixedCurrency === null ? null : <RepairCostSection rows={repairCosts} currency={fixedCurrency} />}
       </div>

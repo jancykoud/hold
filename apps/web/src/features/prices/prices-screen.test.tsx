@@ -100,6 +100,17 @@ describe('the price list editor', () => {
     expect(within(preview).queryByText(/damageTypes/)).not.toBeInTheDocument()
   })
 
+  // Changing the prices waits for a passkey; reading them does not. An owner who has not confirmed yet still sees
+  // what is in force, as counter staff do, with the way to confirm above it.
+  it('shows an owner the prices in force while the passkey is still asked for, and no editor', () => {
+    renderWithIntl(<PricesScreen {...props()} gate={{ needed: true, hasPasskey: false, email: 'owner@example.com' }} />)
+    expect(screen.getByText('Confirm it is you.')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'The prices in force' })).toBeInTheDocument()
+    expect(screen.getByText('Deep scratch on the frame')).toBeInTheDocument()
+    expect(screen.getByText('€35.00')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Publish this price list' })).not.toBeInTheDocument()
+  })
+
   it('lists each version with the open rentals agreed to it, and shows what the draft would change', async () => {
     renderWithIntl(<PricesScreen {...props()} />)
     const versionsPart = screen.getByRole('region', { name: 'Versions' })
