@@ -228,7 +228,7 @@
       "staff": {
         "start": "Start a demo as Jonas, at the counter",
         "continue": "Continue as Jonas, at the counter",
-        "hint": "Hands bikes over, takes them back and approves small claims.",
+        "hint": "Hands vehicles over, takes them back and approves small claims.",
         "name": "Jonas, at the counter"
       },
       "fresh": "Start a fresh demo",

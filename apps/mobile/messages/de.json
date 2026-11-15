@@ -228,7 +228,7 @@
       "staff": {
         "start": "Demo als Jonas starten, an der Theke",
         "continue": "Als Jonas weitermachen, an der Theke",
-        "hint": "Gibt Räder aus, nimmt sie zurück und genehmigt kleine Forderungen.",
+        "hint": "Gibt Fahrzeuge aus, nimmt sie zurück und genehmigt kleine Forderungen.",
         "name": "Jonas, an der Theke"
       },
       "fresh": "Neue Demo starten",

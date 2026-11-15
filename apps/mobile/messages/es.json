@@ -228,7 +228,7 @@
       "staff": {
         "start": "Empezar una demo como Jonas, en el mostrador",
         "continue": "Seguir como Jonas, en el mostrador",
-        "hint": "Entrega y recibe las bicicletas y aprueba reclamaciones pequeñas.",
+        "hint": "Entrega y recibe los vehículos y aprueba reclamaciones pequeñas.",
         "name": "Jonas, en el mostrador"
       },
       "fresh": "Empezar una demo nueva",
