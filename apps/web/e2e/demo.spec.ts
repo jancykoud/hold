@@ -7,7 +7,7 @@ import { bookAtTheCounter, feePaidAndHoldPlaced, renterBrowser } from './support
 import { expectInShop, startDemo } from './support/sign-in'
 import { expect, test } from './support/test'
 
-// Each judge's demo is their own (architecture.md section 20.3): one tap opens a new Ribeira Bikes with new accounts,
+// Each judge's demo is their own (architecture.md section 20.3): one tap opens a new Ribeira Rentals with new accounts,
 // and nobody else's demo is reachable from it.
 
 // The address of one sample rental in the shop the page is signed in to.
@@ -53,7 +53,7 @@ test('the browser that started a demo comes back to it as Jonas, in the same sho
 
   await page.goto('/sign-in')
   await page.getByRole('region', { name: 'Try the demo shop' }).getByRole('button', { name: 'Continue as Jonas, at the counter' }).click()
-  await expectInShop(page, 'Ribeira Bikes')
+  await expectInShop(page, 'Ribeira Rentals')
   await expect(page.getByRole('button', { name: 'Account of Jonas' })).toBeVisible()
   expect((await page.goto(rental))?.status()).toBe(200)
 
@@ -78,7 +78,7 @@ test('starting a fresh demo opens a new shop with new accounts', async ({ page, 
 
   await page.goto('/sign-in')
   await page.getByRole('button', { name: 'Start a fresh demo' }).click()
-  await expectInShop(page, 'Ribeira Bikes')
+  await expectInShop(page, 'Ribeira Rentals')
   expect(await page.getByRole('button', { name: 'Account of Tomás' }).textContent()).not.toBe(firstAccount)
   expect((await page.goto(first))?.status()).toBe(404)
   // The 404 is the point: the first demo's rental is not this demo's.

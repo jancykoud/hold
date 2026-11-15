@@ -36,19 +36,21 @@ import type { Transaction } from './scope.ts'
 // claims to decide and a hold near its end. Every rental is marked simulated, every PayPal reference starts with
 // SIMULATED, and every audit line says so, so nothing here can pass for a real rental or a real payment.
 
-type SampleItem = 'hybrid' | 'ebike' | 'kayak' | 'gravel' | 'seat' | 'emtb'
+type SampleItem = 'hatchback' | 'saloon' | 'scooter' | 'estate' | 'seat' | 'suv' | 'ebike'
 
 // Each sample rental's fee is one day of each of its items.
 const CATALOG: Record<
   SampleItem,
   { readonly name: string; readonly category: ItemCategory; readonly holdCents: number; readonly dayRateCents: number; readonly valueCents: number }
 > = {
-  hybrid: { name: 'Hybrid bike', category: 'bike', holdCents: 250_00, dayRateCents: 25_00, valueCents: 900_00 },
-  ebike: { name: 'E-bike', category: 'e_bike', holdCents: 300_00, dayRateCents: 45_00, valueCents: 2400_00 },
-  kayak: { name: 'Tandem kayak', category: 'water', holdCents: 450_00, dayRateCents: 60_00, valueCents: 1300_00 },
-  gravel: { name: 'Gravel bike', category: 'bike', holdCents: 300_00, dayRateCents: 35_00, valueCents: 1600_00 },
+  hatchback: { name: 'Hatchback', category: 'car', holdCents: 800_00, dayRateCents: 45_00, valueCents: 14_000_00 },
+  saloon: { name: 'Saloon', category: 'car', holdCents: 1_200_00, dayRateCents: 65_00, valueCents: 22_000_00 },
+  scooter: { name: 'Scooter 125', category: 'motorbike', holdCents: 500_00, dayRateCents: 35_00, valueCents: 3_500_00 },
+  estate: { name: 'Estate car', category: 'car', holdCents: 1_200_00, dayRateCents: 70_00, valueCents: 24_000_00 },
   seat: { name: 'Child seat', category: 'other', holdCents: 50_00, dayRateCents: 8_00, valueCents: 120_00 },
-  emtb: { name: 'E-mountain bike', category: 'e_bike', holdCents: 500_00, dayRateCents: 70_00, valueCents: 4200_00 },
+  suv: { name: 'SUV', category: 'car', holdCents: 1_500_00, dayRateCents: 85_00, valueCents: 32_000_00 },
+  // One bike beside the vehicles: the claim on it is the one the recorded advocates argue, line for line.
+  ebike: { name: 'E-bike', category: 'e_bike', holdCents: 300_00, dayRateCents: 45_00, valueCents: 2400_00 },
 }
 
 // The suggested plan for a category, worded in English like the rest of the samples: "frame_left" reads "Frame left".
@@ -61,10 +63,24 @@ function samplePlan(category: ItemCategory) {
   return views.map((view, index) => ({ ...view, key: keys[index] ?? view.label }))
 }
 
+// The view the sample photographs are filed under: the left side for a kind whose plan has one, since they show a
+// car's left flank, and the plan's first view for any other.
+function sampleView(category: ItemCategory): string {
+  const plan = samplePlan(category)
+  return (plan.find((view) => view.key === 'side-left') ?? plan[0])?.key ?? 'side-left'
+}
+
 // The sample photographs, one car's flank taken at the handover and again at the return with a chip in the paint, and
 // the car left at a drop point (apps/web/scripts/sample-photos.ts). Their display keys are reserved: the web app serves them from its own sample images, so
 // no shop's bucket holds them.
-export const SAMPLE_PHOTOS = { handover: 'sample/sample-handover.jpg', damage: 'sample/sample-return-damage.jpg', dropPoint: 'sample/sample-drop-point.jpg' } as const
+export const SAMPLE_PHOTOS = {
+  handover: 'sample/sample-handover.jpg',
+  damage: 'sample/sample-return-damage.jpg',
+  dropPoint: 'sample/sample-drop-point.jpg',
+  // A bike's frame at the handover, and at the return with a chip in its paint: the pair of the one bike claim.
+  bikeHandover: 'sample/sample-bike-handover.jpg',
+  bikeDamage: 'sample/sample-bike-return-damage.jpg',
+} as const
 
 // The file that holds a reserved sample key's photograph, named as the key without its "sample/" prefix, or nothing for
 // any other key, however it is spelled. Workers that read samples carry these files beside their code.
@@ -91,7 +107,8 @@ type SampleRental = {
   // The first published price of this kind is the one claimed.
   // presented: shown to the renter and still waiting for their reply, so the advocates can be asked to argue it. also:
   // a second line, added by a person at the counter with no finding behind it.
-  readonly claim?: { readonly state: Extract<ClaimState, 'awaiting_approval' | 'presented' | 'contested' | 'charged'>; readonly kind: PriceCategory; readonly also?: PriceCategory; readonly reply?: string }
+  // prices: the published prices claimed by their words, where the first of each kind is not the one.
+  readonly claim?: { readonly state: Extract<ClaimState, 'awaiting_approval' | 'presented' | 'contested' | 'charged'>; readonly kind: PriceCategory; readonly also?: PriceCategory; readonly reply?: string; readonly prices?: { readonly first: string; readonly also: string } }
   // Photographed at the handover and the return, and compared: the claim rests on the finding.
   readonly photographed?: true
   // What the operations agent would propose about it, had it read sample rentals: shown as a sample, it moves nothing.
@@ -103,30 +120,34 @@ type SampleRental = {
   readonly awaitsComparison?: true
 }
 
+// The bike claim's two prices, by their words in the demo shop's price list (demo-shop.ts).
+const BIKE_CLAIM = { first: 'Scratch on the frame, through the paint', also: 'Cleaning after a muddy ride' } as const
+
 const SAMPLES: readonly SampleRental[] = [
-  { renter: 'Lukas Weber', items: ['hybrid'], starts: { fromNow: -110 }, ends: [3, 18, 0], state: 'out', hold: 'placed' },
-  { renter: 'Sofia Marques', items: ['ebike', 'ebike'], starts: [-1, 10, 0], ends: { fromNow: 45 }, state: 'out', hold: 'placed' },
+  { renter: 'Lukas Weber', items: ['hatchback'], starts: { fromNow: -110 }, ends: [3, 18, 0], state: 'out', hold: 'placed' },
+  { renter: 'Sofia Marques', items: ['saloon', 'saloon'], starts: [-1, 10, 0], ends: { fromNow: 45 }, state: 'out', hold: 'placed' },
   // Placed so that its assured period ends later today, after the return.
-  { renter: 'Inês Costa', items: ['kayak'], starts: { fromNow: 360 - 3 * 24 * 60 }, ends: { fromNow: 90 }, state: 'out', hold: 'placed' },
-  { renter: 'Hannah Svensson', items: ['gravel'], starts: { fromNow: 210 }, ends: [2, 18, 0], state: 'awaiting_hold', hold: 'requested' },
-  { renter: 'Ahmed Khan', items: ['hybrid', 'seat'], starts: [-1, 16, 30], ends: { fromNow: 300 }, state: 'out', hold: 'placed' },
-  { renter: 'Lea Fischer', items: ['emtb'], starts: [-4, 10, 0], ends: [-1, 18, 0], state: 'overdue', hold: 'placed' },
-  { renter: 'Chloé Martin', items: ['ebike'], starts: [-3, 10, 0], ends: [-1, 22, 0], state: 'dropped_off', hold: 'placed', droppedOff: [-1, 21, 40] },
-  { renter: 'Marco Rossi', items: ['ebike'], starts: [-26, 10, 0], ends: [-1, 17, 0], state: 'returned', hold: 'placed', proposal: 'replacement_hold', awaitsComparison: true },
-  { renter: 'Priya Natarajan', items: ['hybrid'], starts: [-6, 10, 0], ends: [-1, 17, 30], state: 'settling', hold: 'placed', claim: { state: 'awaiting_approval', kind: 'damage' }, photographed: true },
+  { renter: 'Inês Costa', items: ['scooter'], starts: { fromNow: 360 - 3 * 24 * 60 }, ends: { fromNow: 90 }, state: 'out', hold: 'placed' },
+  { renter: 'Hannah Svensson', items: ['estate'], starts: { fromNow: 210 }, ends: [2, 18, 0], state: 'awaiting_hold', hold: 'requested' },
+  { renter: 'Ahmed Khan', items: ['hatchback', 'seat'], starts: [-1, 16, 30], ends: { fromNow: 300 }, state: 'out', hold: 'placed' },
+  { renter: 'Lea Fischer', items: ['suv'], starts: [-4, 10, 0], ends: [-1, 18, 0], state: 'overdue', hold: 'placed' },
+  { renter: 'Chloé Martin', items: ['saloon'], starts: [-3, 10, 0], ends: [-1, 22, 0], state: 'dropped_off', hold: 'placed', droppedOff: [-1, 21, 40] },
+  { renter: 'Marco Rossi', items: ['saloon'], starts: [-26, 10, 0], ends: [-1, 17, 0], state: 'returned', hold: 'placed', proposal: 'replacement_hold', awaitsComparison: true },
+  { renter: 'Priya Natarajan', items: ['hatchback'], starts: [-6, 10, 0], ends: [-1, 17, 30], state: 'settling', hold: 'placed', claim: { state: 'awaiting_approval', kind: 'damage' }, photographed: true },
   {
     renter: 'Tom Becker',
-    items: ['gravel'],
+    items: ['estate'],
     starts: [-5, 10, 0],
     ends: [-2, 12, 0],
     state: 'settling',
     hold: 'placed',
-    claim: { state: 'contested', kind: 'loss', reply: 'The lock was in the bag when I handed it back.' },
+    claim: { state: 'contested', kind: 'loss', reply: 'The key was never lost: it was in the glovebox when I handed the car back.' },
   },
   // Waits for the renter's reply: the claim a judge can hand to the two advocates (extensions.md section 9).
-  { renter: 'Elena Duarte', items: ['ebike'], starts: [-4, 10, 0], ends: [-1, 18, 0], state: 'settling', hold: 'placed', claim: { state: 'presented', kind: 'damage', also: 'cleaning' }, photographed: true },
-  { renter: 'Julia Novak', items: ['ebike'], starts: [-9, 10, 0], ends: [-7, 17, 0], state: 'closed', hold: 'released' },
-  { renter: 'Daniel Ortiz', items: ['hybrid'], starts: [-8, 9, 0], ends: [-6, 18, 0], state: 'closed', hold: 'captured', claim: { state: 'charged', kind: 'damage' }, photographed: true, proposal: 'dispute_answer' },
+  // The claim, its two lines and their prices are the ones the recorded advocates argued (recorded-run.json): a bike.
+  { renter: 'Elena Duarte', items: ['ebike'], starts: [-4, 10, 0], ends: [-1, 18, 0], state: 'settling', hold: 'placed', claim: { state: 'presented', kind: 'damage', also: 'cleaning', prices: BIKE_CLAIM }, photographed: true },
+  { renter: 'Julia Novak', items: ['saloon'], starts: [-9, 10, 0], ends: [-7, 17, 0], state: 'closed', hold: 'released' },
+  { renter: 'Daniel Ortiz', items: ['hatchback'], starts: [-8, 9, 0], ends: [-6, 18, 0], state: 'closed', hold: 'captured', claim: { state: 'charged', kind: 'damage' }, photographed: true, proposal: 'dispute_answer' },
 ]
 
 const MINUTE = 60 * 1000
@@ -155,7 +176,7 @@ async function publishedTerms(transaction: Transaction) {
   const [wear] = await transaction.select({ id: wearPolicies.id }).from(wearPolicies).where(and(eq(wearPolicies.version, list.version), isNotNull(wearPolicies.publishedAt)))
   if (wear === undefined) return undefined
   const entries = await transaction
-    .select({ id: priceEntries.id, amountCents: priceEntries.amountCents, category: priceEntries.category })
+    .select({ id: priceEntries.id, amountCents: priceEntries.amountCents, category: priceEntries.category, description: priceEntries.description })
     .from(priceEntries)
     .where(eq(priceEntries.priceListId, list.id))
     .orderBy(asc(priceEntries.position))
@@ -289,7 +310,7 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
       const droppedOffAt = moment(sample.droppedOff)
       const damage = terms.entries.find((each) => each.category === 'damage') ?? terms.entries[0]
       if (damage === undefined) throw new Error('The price list has no entries.')
-      await photographSample(transaction, { shopId, userId, item: droppedItem, planId: planIds.get(droppedItem.key) ?? '', view: samplePlan(CATALOG[droppedItem.key].category)[0]?.key ?? 'frame', startsAt, endsAt: droppedOffAt, priceEntryId: damage.id, byRenter: true })
+      await photographSample(transaction, { shopId, userId, item: droppedItem, planId: planIds.get(droppedItem.key) ?? '', view: sampleView(CATALOG[droppedItem.key].category), startsAt, endsAt: droppedOffAt, priceEntryId: damage.id, byRenter: true })
       await transaction.update(rentals).set({ droppedOffAt }).where(eq(rentals.id, rental.id))
       await audit('renter.self_return_sent', droppedOffAt, 'renter')
     }
@@ -297,15 +318,16 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
     if (sample.awaitsComparison === true && waitingItem !== undefined) {
       const damage = terms.entries.find((each) => each.category === 'damage') ?? terms.entries[0]
       if (damage === undefined) throw new Error('The price list has no entries.')
-      await photographSample(transaction, { shopId, userId, item: waitingItem, planId: planIds.get(waitingItem.key) ?? '', view: samplePlan(CATALOG[waitingItem.key].category)[0]?.key ?? 'frame', startsAt, endsAt, priceEntryId: damage.id, compared: false })
+      await photographSample(transaction, { shopId, userId, item: waitingItem, planId: planIds.get(waitingItem.key) ?? '', view: sampleView(CATALOG[waitingItem.key].category), startsAt, endsAt, priceEntryId: damage.id, compared: false })
     }
 
     let capturedCents = 0
     if (sample.claim !== undefined) {
       const kind = sample.claim.kind
-      const entry = terms.entries.find((each) => each.category === kind) ?? terms.entries[0]
+      const named = sample.claim.prices
+      const entry = (named === undefined ? undefined : terms.entries.find((each) => each.description === named.first)) ?? terms.entries.find((each) => each.category === kind) ?? terms.entries[0]
       if (entry === undefined) throw new Error('The price list has no entries.')
-      const also = sample.claim.also === undefined ? undefined : terms.entries.find((each) => each.category === sample.claim?.also)
+      const also = sample.claim.also === undefined ? undefined : ((named === undefined ? undefined : terms.entries.find((each) => each.description === named.also)) ?? terms.entries.find((each) => each.category === sample.claim?.also))
       const raisedAt = inMonth(new Date(endsAt.getTime() + 60 * MINUTE))
       const presented = sample.claim.state !== 'awaiting_approval'
       // A claim still waiting for its reply stays open for a week, so a judge who comes back to the demo can still
@@ -319,7 +341,7 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
       const [photographed] = rentalItemIds
       const findingId =
         sample.photographed === true && photographed !== undefined
-          ? await photographSample(transaction, { shopId, userId, item: photographed, planId: planIds.get(photographed.key) ?? '', view: samplePlan(CATALOG[photographed.key].category)[0]?.key ?? 'frame', startsAt, endsAt, priceEntryId: entry.id })
+          ? await photographSample(transaction, { shopId, userId, item: photographed, planId: planIds.get(photographed.key) ?? '', view: sampleView(CATALOG[photographed.key].category), startsAt, endsAt, priceEntryId: entry.id, ...(CATALOG[photographed.key].category === 'e_bike' ? { bike: true as const } : {}) })
           : undefined
       await transaction.insert(claimLines).values({
         shopId,
@@ -335,7 +357,7 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
         createdAt: raisedAt,
       })
       if (also !== undefined) {
-        await transaction.insert(claimLines).values({ shopId, claimId: claim.id, priceEntryId: also.id, currency, amountCents: also.amountCents, source: 'person', findingId: null, addedByUserId: raiser, reason: 'Sample data: mud on the chain and the frame at the return, cleaned at the counter.', createdAt: raisedAt })
+        await transaction.insert(claimLines).values({ shopId, claimId: claim.id, priceEntryId: also.id, currency, amountCents: also.amountCents, source: 'person', findingId: null, addedByUserId: raiser, reason: named === undefined ? 'Sample data: mud on the carpets and the sills at the return.' : 'Sample data: mud on the chain and the frame at the return, cleaned at the counter.', createdAt: raisedAt })
       }
       await audit('claim.raised', raisedAt, 'person', raiser)
       if (sample.claim.state === 'presented') await audit('claim.presented', raisedAt, 'person', raiser)
@@ -384,7 +406,7 @@ export async function addSampleRentals(transaction: Transaction, input: SampleRe
 }
 
 // The answer the sample dispute proposal offers to send. It names no amount: an amount comes only from the records.
-const SAMPLE_DISPUTE_ANSWER = 'The renter returned the bike with a scratch through the paint on the frame. It is in the return photograph and not in the handover photograph, and both are in the evidence pack attached. The renter saw both photographs and the price from the published list, and accepted the claim before it was charged.'
+const SAMPLE_DISPUTE_ANSWER = 'The renter returned the car with a scratch through the paint of the rear door. It is in the return photograph and not in the handover photograph, and both are in the evidence pack attached. The renter saw both photographs and the price from the published list, and accepted the claim before it was charged.'
 
 // The detector's own words for each sample, as the operations agent writes them when no model ran.
 const SAMPLE_REASONS = { hold_ending: 'The hold ends within three days and the rental is still open.', dispute_open: 'A PayPal dispute is waiting for a response.' } as const
@@ -421,6 +443,8 @@ type PhotographedSample = {
   readonly byRenter?: true
   // Left for a person to start: the comparison waits, with no result and no message to the worker.
   readonly compared?: false
+  // The item is a bike: its photographs and the words for its marks are the bike's.
+  readonly bike?: true
 }
 
 // One view photographed at the handover and again at the return, the faint scuff on record from the handover, and the
@@ -459,11 +483,14 @@ async function photographSample(transaction: Transaction, sample: PhotographedSa
     await transaction.update(items).set({ chainHeadFingerprint: fingerprint }).where(eq(items.id, item.itemId))
     return row.id
   }
-  const handover = await session('handover', sample.startsAt, [[view, 'handover']])
-  const returned = await session('return', sample.endsAt, byRenter ? [[view, 'damage'], [DROP_POINT_VIEW, 'dropPoint']] : [[view, 'damage']])
+  const shot = sample.bike === true ? ({ handover: 'bikeHandover', damage: 'bikeDamage' } as const) : ({ handover: 'handover', damage: 'damage' } as const)
+  // What the marks are on, in the words of each finding.
+  const where = sample.bike === true ? { scuff: 'on the down tube', chip: 'on the down tube' } : { scuff: 'low on the rear door', chip: 'of the rear door' }
+  const handover = await session('handover', sample.startsAt, [[view, shot.handover]])
+  const returned = await session('return', sample.endsAt, byRenter ? [[view, shot.damage], [DROP_POINT_VIEW, 'dropPoint']] : [[view, shot.damage]])
   const [scuff] = await transaction
     .insert(marks)
-    .values({ shopId, itemId: item.itemId, view, region: SCUFF, description: 'A faint scuff low on the rear door.', firstSeenSessionId: handover })
+    .values({ shopId, itemId: item.itemId, view, region: SCUFF, description: `A faint scuff ${where.scuff}.`, firstSeenSessionId: handover })
     .returning({ id: marks.id })
   if (scuff === undefined) throw new Error('A sample mark was not created.')
   if (sample.compared === false) {
@@ -482,7 +509,7 @@ async function photographSample(transaction: Transaction, sample: PhotographedSa
     region: SCUFF,
     class: 'known_mark',
     confidence: 0.9,
-    description: 'The faint scuff low on the rear door, recorded at the handover. It is not charged again.',
+    description: `The faint scuff ${where.scuff}, recorded at the handover. It is not charged again.`,
     matchedMarkId: scuff.id,
   })
   const [chip] = await transaction
@@ -494,7 +521,7 @@ async function photographSample(transaction: Transaction, sample: PhotographedSa
       region: CHIP,
       class: 'new_damage',
       confidence: 0.93,
-      description: 'A chip in the paint of the rear door, through to the bare metal. It was not there at the handover.',
+      description: `A chip in the paint ${where.chip}, through to the bare metal. It was not there at the handover.`,
       secondLookConfirmed: true,
       suggestedPriceEntryId: sample.priceEntryId,
     })

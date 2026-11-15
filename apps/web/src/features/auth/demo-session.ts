@@ -8,7 +8,7 @@ import { LIMITS } from './sign-in-flow'
 import type { FlowDependencies, FlowNotice, Requester } from './sign-in-flow'
 
 // One tap starts a demo of the judge's own (architecture.md section 20.3): two new accounts, Tomás the owner and Jonas
-// at the counter, and a new Ribeira Bikes they alone work in. No address to type and no code to read. The passwords
+// at the counter, and a new Ribeira Rentals they alone work in. No address to type and no code to read. The passwords
 // exist only in the session this returns, which the browser keeps sealed, so only that browser can sign in to them
 // again, to switch between Tomás and Jonas. Every check after sign-in is the same as for anyone else, and a money step
 // still needs a passkey.
@@ -78,7 +78,7 @@ export async function startDemo(dependencies: DemoDependencies, key: DemoAccount
     opened = await sessions.open({
       owner: { subject: owner, email: people.owner.email },
       staff: { subject: staff, email: people.staff.email },
-      slug: `ribeira-bikes-${code}`,
+      slug: `ribeira-rentals-${code}`,
       paypal: await sessions.paypal(),
       now: dependencies.now(),
     })

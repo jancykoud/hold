@@ -11,7 +11,7 @@ import { expect, test } from './support/test'
 async function startDemo(page: Page, as: 'Tomás, the owner' | 'Jonas, at the counter'): Promise<void> {
   await page.goto('/sign-in')
   await page.getByRole('region', { name: 'Try the demo shop' }).getByRole('button', { name: `Start a demo as ${as}` }).click()
-  await expectInShop(page, 'Ribeira Bikes')
+  await expectInShop(page, 'Ribeira Rentals')
   await page.getByRole('navigation', { name: 'Shop pages' }).getByRole('link', { name: 'Money' }).click()
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Money')
 }
@@ -23,20 +23,20 @@ const month = () => new Intl.DateTimeFormat('en', { month: 'long', year: 'numeri
 
 test('an owner sees where the shop’s money is, rental by rental, each agreeing with its hold, its claim and PayPal', async ({ page }) => {
   await startDemo(page, 'Tomás, the owner')
-  await expect(page.getByTestId('money-held')).toHaveText('€3,550.00')
-  await expect(page.getByTestId('money-to-shop')).toHaveText('€613.00')
-  await expect(page.getByTestId('money-back')).toHaveText('€515.00')
+  await expect(page.getByTestId('money-held')).toHaveText('€10,750.00')
+  await expect(page.getByTestId('money-to-shop')).toHaveText('€998.00')
+  await expect(page.getByTestId('money-back')).toHaveText('€1,820.00')
   await expect(groups(page)).toHaveCount(13)
   await expect(dataRows(page)).toHaveCount(28)
   const daniel = groups(page).filter({ hasText: 'Daniel Ortiz' })
-  await expect(daniel).toContainText('To the shop €60.00')
-  await expect(daniel).toContainText('Back to the renter €215.00')
+  await expect(daniel).toContainText('To the shop €225.00')
+  await expect(daniel).toContainText('Back to the renter €620.00')
   await expect(daniel).toContainText('Held now €0.00')
   await expect(daniel).toContainText('Agrees with its hold, its claim and PayPal')
 
   const capture = dataRows(page).filter({ hasText: 'Taken from the hold' })
-  await capture.getByRole('button', { name: 'Open Taken from the hold, €35.00' }).click()
-  const opened = grid(page).getByRole('region', { name: 'Taken from the hold, €35.00' })
+  await capture.getByRole('button', { name: 'Open Taken from the hold, €180.00' }).click()
+  const opened = grid(page).getByRole('region', { name: 'Taken from the hold, €180.00' })
   await expect(opened.getByText(/^Read back from PayPal and written/)).toBeVisible()
   await expect(opened.getByText(/^SIMULATED-[0-9a-f-]{36}-captured$/)).toBeVisible()
   await expect(opened.getByRole('list', { name: 'Audit trail' })).toContainText('hold.captured')
@@ -47,8 +47,8 @@ test('by month, the grid adds up what went to the shop and back to renters, and 
   await page.getByRole('button', { name: 'By month' }).click()
   await expect(groups(page)).toHaveCount(1)
   await expect(groups(page).first()).toContainText(month())
-  await expect(groups(page).first()).toContainText('To the shop €613.00')
-  await expect(groups(page).first()).toContainText('Back to renters €515.00')
+  await expect(groups(page).first()).toContainText('To the shop €998.00')
+  await expect(groups(page).first()).toContainText('Back to renters €1,820.00')
 
   await page.getByRole('button', { name: 'Held now 10' }).click()
   await expect(dataRows(page)).toHaveCount(20)

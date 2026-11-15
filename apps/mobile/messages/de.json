@@ -217,7 +217,7 @@
     },
     "demo": {
       "title": "Den Demo-Verleih ausprobieren",
-      "lead": "Jede Demo ist Ihr eigenes Ribeira Bikes, mit laufenden Mieten. Ein Tippen startet sie: nichts eingeben, auf keinen Code warten.",
+      "lead": "Jede Demo ist Ihr eigenes Ribeira Rentals, mit laufenden Mieten. Ein Tippen startet sie: nichts eingeben, auf keinen Code warten.",
       "leadCurrent": "Dieses Telefon hat Ihre eigene Demo. Kehren Sie als eine der beiden Personen zurück, oder starten Sie eine neue.",
       "owner": {
         "start": "Demo als Tomás starten, der Inhaber",

@@ -91,6 +91,10 @@ export const SAMPLE_PHOTO_SHA256 = {
   handover: 'f5150fdfec12ae1415ef6e07fe5de09fa8744589ad0156444b412ef76faeb10d',
   damage: 'f98edc83d613ea116fb657eacb3941ab86f87e04ee46bc35890ffc5548e2c898',
   contested: '05f7803c98b53a5618b471c3e055b32fed8834d072927720d2d93a6b5d069a60',
+  // The bike's pair, the demonstration's photographs until 15 November 2026, kept for the one sample claim the recorded
+  // advocates argue: a scratch on a bike's frame (apps/web/src/features/negotiation/recorded-run.json).
+  bikeHandover: '7ac39badb505d60e5c4c92018f9ae4410ffb80912d2c7fbbc9cd9202990e8080',
+  bikeDamage: '74072fc7d4f92e0398252661a83c83eb2427a99039f8ffcac9cc62a66a41cd39',
   dropPoint: '32124aff9b95a24ea0498f429507ff8d168e408f32161e0532e1fd6df1c264ac',
 } as const
 

@@ -33,5 +33,5 @@ export async function signUpAs(page: Page, email: string, shopName = 'Ribeira Bi
 export async function startDemo(page: Page, as: 'Tomás, the owner' | 'Jonas, at the counter'): Promise<void> {
   await page.goto('/sign-in')
   await page.getByRole('region', { name: 'Try the demo shop' }).getByRole('button', { name: `Start a demo as ${as}` }).click()
-  await expectInShop(page, 'Ribeira Bikes')
+  await expectInShop(page, 'Ribeira Rentals')
 }

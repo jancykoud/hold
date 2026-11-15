@@ -67,14 +67,14 @@ describe('starting a demo', () => {
 
     expect(session.owner.email).toMatch(/^tomas\.[a-z0-9]+@demo\.hold\.example$/)
     expect(session.staff.email).toMatch(/^jonas\.[a-z0-9]+@demo\.hold\.example$/)
-    expect((await findPerson(database, subject))?.shops).toEqual([{ shopId: session.shopId, name: 'Ribeira Bikes', role: 'owner' }])
+    expect((await findPerson(database, subject))?.shops).toEqual([{ shopId: session.shopId, name: 'Ribeira Rentals', role: 'owner' }])
     expect(identity.lastCodeFor(session.owner.email)).toBeUndefined()
   })
 
   it('signs the judge in as the counter staff of their new shop when they start as Jonas', async () => {
     const { subject, session } = await started('staff')
 
-    expect((await findPerson(database, subject))?.shops).toEqual([{ shopId: session.shopId, name: 'Ribeira Bikes', role: 'counter_staff' }])
+    expect((await findPerson(database, subject))?.shops).toEqual([{ shopId: session.shopId, name: 'Ribeira Rentals', role: 'counter_staff' }])
   })
 
   it('starts fresh every time: a new shop and new accounts, never another judge’s', async () => {
@@ -141,7 +141,7 @@ describe('continuing a demo', () => {
 
     const staff = await subjectOf(await continueDemo(demo, session, 'staff', { network: 'judge' }))
 
-    expect((await findPerson(database, staff))?.shops).toEqual([{ shopId: session.shopId, name: 'Ribeira Bikes', role: 'counter_staff' }])
+    expect((await findPerson(database, staff))?.shops).toEqual([{ shopId: session.shopId, name: 'Ribeira Rentals', role: 'counter_staff' }])
   })
 
   it('says the demo is unavailable when its accounts no longer accept the sealed password', async () => {

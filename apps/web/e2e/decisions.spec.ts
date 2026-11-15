@@ -13,7 +13,7 @@ import { expect, test } from './support/test'
 async function startDemo(page: Page, as: 'Tomás, the owner' | 'Jonas, at the counter'): Promise<void> {
   await page.goto('/sign-in')
   await page.getByRole('region', { name: 'Try the demo shop' }).getByRole('button', { name: `Start a demo as ${as}` }).click()
-  await expectInShop(page, 'Ribeira Bikes')
+  await expectInShop(page, 'Ribeira Rentals')
 }
 
 async function openBoard(page: Page): Promise<void> {
@@ -36,10 +36,10 @@ test('an owner works through the morning by keyboard: grouped by kind, the late 
   // on the first of a month the sample claims are kept inside it, so the contested claim's promised date moves past the
   // agent's ending hold. Which of the two comes second is board.test.ts's to check, not this test's.
   await expect(groups(page)).toHaveCount(3)
-  await expect(groups(page).first()).toHaveText(/^Holds and returns\s*3 decisions · €335\.00 in all$/)
-  await expect(groups(page).filter({ hasText: /^Claims/ })).toHaveText(/^Claims\s*2 decisions · €80\.00 in all$/)
-  // The replacement hold's €300 and the €35 the renter disputes: an answer to a dispute shows the captured amount.
-  await expect(groups(page).filter({ hasText: /^From the agent/ })).toHaveText(/^From the agent\s*2 decisions · €335\.00 in all$/)
+  await expect(groups(page).first()).toHaveText(/^Holds and returns\s*3 decisions · €1,380\.00 in all$/)
+  await expect(groups(page).filter({ hasText: /^Claims/ })).toHaveText(/^Claims\s*2 decisions · €430\.00 in all$/)
+  // The replacement hold's €1,200 and the €180 the renter disputes: an answer to a dispute shows the captured amount.
+  await expect(groups(page).filter({ hasText: /^From the agent/ })).toHaveText(/^From the agent\s*2 decisions · €1,380\.00 in all$/)
   await expect(dataRows(page).first()).toContainText('Lea Fischer is late')
   await expect(dataRows(page).first()).toContainText('Overdue')
 
@@ -48,12 +48,12 @@ test('an owner works through the morning by keyboard: grouped by kind, the late 
   const claim = dataRows(page).filter({ hasText: 'Approve a claim' })
   for (let press = 0; press < 12 && (await claim.locator('.ag-cell-focus').count()) === 0; press += 1) await page.keyboard.press('ArrowDown')
   await page.keyboard.press('Enter')
-  const opened = evidence(page, 'Approve a claim of €35.00')
-  await expect(opened.getByRole('heading', { name: 'Approve a claim of €35.00' })).toBeFocused()
+  const opened = evidence(page, 'Approve a claim of €180.00')
+  await expect(opened.getByRole('heading', { name: 'Approve a claim of €180.00' })).toBeFocused()
   // The grid sizes the opened row to its evidence, never a sliver.
   await expect.poll(async () => (await opened.boundingBox())?.height ?? 0).toBeGreaterThan(400)
-  await expect(opened.getByRole('img', { name: 'At return: Scratch on the frame, through the paint' })).toBeVisible()
-  await expect(opened.getByTestId('split-release')).toHaveText('€215.00')
+  await expect(opened.getByRole('img', { name: 'At return: Scratch on the bodywork, through the paint' })).toBeVisible()
+  await expect(opened.getByTestId('split-release')).toHaveText('€620.00')
   await expect(claim.getByRole('button', { name: 'Close the evidence of Approve a claim' })).toHaveAttribute('aria-expanded', 'true')
   await opened.getByRole('link', { name: 'Review and approve on the claim page' }).click()
   await expect(page).toHaveURL(/\/shop\/rentals\/[0-9a-f-]{36}\/claim$/)
@@ -85,7 +85,7 @@ test('a demo owner decides the contested claim, and finds the agent’s sample p
   await dispute.getByRole('button', { name: 'Open the evidence of Send this answer to PayPal on the dispute' }).click()
   const opened = evidence(page, 'Send this answer to PayPal on the dispute')
   await expect(opened.getByText('A PayPal dispute is waiting for a response.')).toBeVisible()
-  await expect(opened.getByText(/^The renter returned the bike with a scratch/)).toBeVisible()
+  await expect(opened.getByText(/^The renter returned the car with a scratch/)).toBeVisible()
   await opened.getByRole('button', { name: 'Postpone until tomorrow' }).click()
   await expect(page.getByRole('button', { name: 'From the agent 1' })).toBeVisible()
 })
@@ -110,9 +110,9 @@ test('a contested claim opens on where the two sides differ, and the owner has t
   await openBoard(page)
   const row = dataRows(page).filter({ hasText: 'Decide a contested claim' })
   await row.getByRole('button', { name: 'Open the evidence of Decide a contested claim' }).click()
-  const summary = evidence(page, 'Decide a contested claim of €45.00').getByRole('region', { name: 'Where the two sides differ' })
+  const summary = evidence(page, 'Decide a contested claim of €250.00').getByRole('region', { name: 'Where the two sides differ' })
   await expect(summary.getByText('No summary has been written yet.', { exact: false })).toBeVisible()
-  await expect(summary.getByRole('blockquote')).toHaveText('The lock was in the bag when I handed it back.')
+  await expect(summary.getByRole('blockquote')).toHaveText('The key was never lost: it was in the glovebox when I handed the car back.')
   await summary.getByRole('button', { name: 'Write the summary' }).click()
   // Written by the stand-in in the test environment, which says so.
   await expect(summary.getByText('Simulated summary')).toBeVisible()
@@ -137,7 +137,7 @@ test('the board sorts by amount within each group, filters by group and finds a 
   await grid(page).getByRole('columnheader', { name: 'Amount' }).click()
   // Each group in amount order, the groups in the order the board shows them (see the first test).
   const byGroup: Record<string, RegExp[]> = {
-    'Holds and returns': [/Repair Hybrid bike 4/, /Check what Chloé Martin dropped off/, /Lea Fischer is late/],
+    'Holds and returns': [/Repair Hatchback 4/, /Check what Chloé Martin dropped off/, /Lea Fischer is late/],
     Claims: [/Approve a claim/, /Decide a contested claim/],
     'From the agent': [/Send this answer to PayPal/, /Ask the renter for a new hold/],
   }
@@ -158,7 +158,7 @@ test('the board sorts by amount within each group, filters by group and finds a 
   const cards = page.getByRole('list', { name: 'Decisions' }).getByRole('article')
   await expect(cards).toHaveCount(1)
   await cards.first().getByRole('button', { name: 'Evidence and actions' }).click()
-  await expect(cards.first().getByRole('blockquote')).toHaveText('The lock was in the bag when I handed it back.')
+  await expect(cards.first().getByRole('blockquote')).toHaveText('The key was never lost: it was in the glovebox when I handed the car back.')
   await expectFitsEveryWidth(page)
 })
 

@@ -92,7 +92,7 @@ describe('sample rentals', () => {
   it('give the day’s figures', async () => {
     const today = await inShop(database, shopA, (transaction) => shopToday(transaction, window))
     expect(today).toMatchObject({ rentalsOut: 5, itemsOut: 7, dueBackToday: 3 })
-    expect(today.activeHolds.reduce((sum, hold) => sum + hold.reservedCents, 0)).toBe(3550_00)
+    expect(today.activeHolds.reduce((sum, hold) => sum + hold.reservedCents, 0)).toBe(10_750_00)
     expect(today.activeHolds.map((hold) => holdStanding(hold, NOW)).sort()).toEqual(['assured', 'assured', 'assured', 'assured', 'ending', 'valid', 'valid', 'valid', 'valid', 'valid'])
   })
 
@@ -100,7 +100,7 @@ describe('sample rentals', () => {
     const { claimsWaiting } = await inShop(database, shopA, (transaction) => shopToday(transaction, window))
     expect(claimsWaiting).toEqual([
       expect.objectContaining({ renterName: 'Priya Natarajan', state: 'awaiting_approval', totalCents: 35_00, firstLine: 'Deep scratch on the frame', renterComment: null }),
-      expect.objectContaining({ renterName: 'Tom Becker', state: 'contested', totalCents: 45_00, renterComment: 'The lock was in the bag when I handed it back.' }),
+      expect.objectContaining({ renterName: 'Tom Becker', state: 'contested', totalCents: 45_00, renterComment: 'The key was never lost: it was in the glovebox when I handed the car back.' }),
     ])
   })
 
@@ -118,13 +118,13 @@ describe('sample rentals', () => {
       ['handover', 'Hannah Svensson', false],
       ['return', 'Ahmed Khan', false],
     ])
-    expect(counter[1]?.items).toEqual(['E-bike 1', 'E-bike 2'])
+    expect(counter[1]?.items).toEqual(['Saloon 1', 'Saloon 2'])
     expect(counter[3]?.hold).toMatchObject({ state: 'requested', assuredUntil: null })
   })
 
   it('add up the month from the money log and the claims', async () => {
     const { month } = await inShop(database, shopA, (transaction) => shopToday(transaction, window))
-    expect(month).toEqual({ feesCents: 578_00, releasedCents: 515_00, claimedCents: 150_00, recoveredCents: 35_00 })
+    expect(month).toEqual({ feesCents: 818_00, releasedCents: 1965_00, claimedCents: 150_00, recoveredCents: 35_00 })
   })
 
   it('show the latest activity first, with each sample line marked as simulated', async () => {

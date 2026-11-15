@@ -33,9 +33,9 @@ beforeAll(async () => {
 describe('the shop’s calendar', () => {
   it('lists every item as a row and every rental in the window as a bar on each item it took', async () => {
     const calendar = await inShop(database, shop, (transaction) => shopCalendar(transaction, WINDOW))
-    expect(calendar.items.map((item) => item.label)).toContain('E-bike 1')
+    expect(calendar.items.map((item) => item.label)).toContain('Saloon 1')
     const sofia = calendar.bookings.filter((booking) => booking.renterName === 'Sofia Marques')
-    expect(sofia.map((booking) => calendar.items.find((item) => item.id === booking.itemId)?.label).sort()).toEqual(['E-bike 1', 'E-bike 2'])
+    expect(sofia.map((booking) => calendar.items.find((item) => item.id === booking.itemId)?.label).sort()).toEqual(['Saloon 1', 'Saloon 2'])
     expect(sofia[0]).toMatchObject({ rentalState: 'out', holdState: 'placed', simulated: true })
   })
 

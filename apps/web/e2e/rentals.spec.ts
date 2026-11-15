@@ -162,7 +162,7 @@ test('the rental page shows each PayPal call with its ids and PayPal-Request-Id,
 test('the first tap on New rental answers at once, even while the server is slow', async ({ page }) => {
   await page.goto('/sign-in')
   await page.getByRole('region', { name: 'Try the demo shop' }).getByRole('button', { name: 'Start a demo as Jonas, at the counter' }).click()
-  await expectInShop(page, 'Ribeira Bikes')
+  await expectInShop(page, 'Ribeira Rentals')
   await page.route('**/shop/rentals/new**', async (route) => {
     // Long enough that the answer must show before the page arrives, even on a busy machine running the whole suite.
     if (route.request().headers()['rsc'] !== undefined) await new Promise((resolve) => setTimeout(resolve, 10_000))
@@ -187,7 +187,7 @@ test('on a phone, the first tap on the tab bar\'s New rental answers at once, ev
   })
   await page.goto('/sign-in')
   await page.getByRole('region', { name: 'Try the demo shop' }).getByRole('button', { name: 'Start a demo as Jonas, at the counter' }).click()
-  await expectInShop(page, 'Ribeira Bikes')
+  await expectInShop(page, 'Ribeira Rentals')
   await page.setViewportSize({ width: 390, height: 844 })
   await page.getByRole('navigation', { name: 'Quick links' }).getByRole('link', { name: 'New rental' }).click()
   await expect(page.getByRole('navigation', { name: 'Quick links' }).getByRole('status').filter({ hasText: 'Opening the page…' })).toBeAttached({ timeout: 2000 })

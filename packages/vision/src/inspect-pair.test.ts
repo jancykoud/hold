@@ -7,10 +7,10 @@ import type { Homography, Point } from './homography.ts'
 import { inspectPair } from './inspect-pair.ts'
 
 // A real bike frame on a dark background, 1600 by 685 pixels: the demonstration's handover photograph until 15 November
-// 2026, kept here because the limits below were set on it. The demonstration's own pair, a car's flank, is checked at
-// the end of this file.
-const SAMPLE = join(import.meta.dirname, 'testing/bike-frame.jpg')
+// 2026, still the sample of its one bike claim, and the photograph the limits below were set on. The demonstration's
+// pair of a car's flank is checked at the end of this file.
 const DEMONSTRATION = join(import.meta.dirname, '../../../apps/web/public/images')
+const SAMPLE = join(DEMONSTRATION, 'sample-bike-handover.jpg')
 const OTHER = join(import.meta.dirname, '../../../apps/web/public/images/renter.jpg')
 const WIDTH = 1600
 const HEIGHT = 685

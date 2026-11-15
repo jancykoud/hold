@@ -73,8 +73,8 @@ describe('the sample return a renter dropped off overnight', () => {
   it('waits for a person, sent before its end, with the chip the comparison found and where the renter left it', async () => {
     const rentalId = await rentalOf('Chloé Martin')
     const [waiting] = (await inShop(database, shop, dropOffsWaiting)).filter((entry) => entry.rentalId === rentalId)
-    expect(waiting).toMatchObject({ onTime: true, missingAt: null, simulated: true, holdCents: 300_00 })
-    expect(waiting?.items).toEqual([expect.objectContaining({ views: 1, findings: 1, comparison: 'findings', before: { view: expect.stringMatching(/^frame/) as unknown, displayKey: SAMPLE_PHOTOS.handover }, after: expect.objectContaining({ displayKey: SAMPLE_PHOTOS.damage }) as unknown, dropPoint: { view: 'drop-point', displayKey: SAMPLE_PHOTOS.dropPoint } })])
+    expect(waiting).toMatchObject({ onTime: true, missingAt: null, simulated: true, holdCents: 1200_00 })
+    expect(waiting?.items).toEqual([expect.objectContaining({ views: 1, findings: 1, comparison: 'findings', before: { view: expect.stringMatching(/^side-left/) as unknown, displayKey: SAMPLE_PHOTOS.handover }, after: expect.objectContaining({ displayKey: SAMPLE_PHOTOS.damage }) as unknown, dropPoint: { view: 'drop-point', displayKey: SAMPLE_PHOTOS.dropPoint } })])
     expect(waiting?.items[0]?.region?.width).toBeGreaterThan(0)
     // Sent at 21:40 on the shop's clock the evening before (Lisbon is UTC+1 on 13 October).
     expect(waiting?.droppedOffAt).toEqual(new Date('2026-10-13T20:40:00Z'))
@@ -86,7 +86,7 @@ describe('the sample contested claim', () => {
     const rentalId = await rentalOf('Tom Becker')
     const workspace = await inShop(database, shop, (transaction) => claimWorkspace(transaction, rentalId))
     expect(workspace?.lines.map((line) => line.description)).toEqual(['Lost lock'])
-    expect(workspace?.replies.map((reply) => reply.comment)).toEqual(['The lock was in the bag when I handed it back.'])
+    expect(workspace?.replies.map((reply) => reply.comment)).toEqual(['The key was never lost: it was in the glovebox when I handed the car back.'])
   })
 
   it('carries the shop’s promise to decide it, still open, and the words renter and shop wrote since', async () => {

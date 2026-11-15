@@ -98,11 +98,12 @@ signing in:
 [`/mcp`](https://p99faar3kp.us-east-1.awsapprunner.com/mcp).
 
 **About ten minutes: your own sandbox rental, as Jonas at the counter, with no passkey.** Jonas approves claims up to
-€100, and the shop sends claims above €150 to its owner. Keep the sandbox buyer login from [Testing
+€350, and the shop sends claims above €400 to its owner, limits set for a car's prices since the demo shop became a
+rental agency of cars and bikes on 15 November 2026. Keep the sandbox buyer login from [Testing
 instructions](#testing-instructions) and an email address of your own to hand.
 
 1. Open [sign in](https://p99faar3kp.us-east-1.awsapprunner.com/sign-in) and tap **Start a demo as Jonas, at the
-   counter**. You get a Ribeira Bikes in Lisbon of your own, with sample rentals marked **Sample** that move no money.
+   counter**. You get a Ribeira Rentals in Lisbon of your own, with sample rentals marked **Sample** that move no money.
    Nobody else sees your demo.
 2. Open **Rentals**, then **New rental**. Add one **City bike**, any name and **your own email**, and book. Tap **Show
    the link**, open it, and pay the fee with PayPal's button as the sandbox buyer. Back on the rental, tap **Ask for the

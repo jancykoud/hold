@@ -217,7 +217,7 @@
     },
     "demo": {
       "title": "Essayer la boutique de démonstration",
-      "lead": "Chaque démonstration est votre propre Ribeira Bikes, avec des locations déjà en cours. Un geste la lance : rien à saisir, aucun code à attendre.",
+      "lead": "Chaque démonstration est votre propre Ribeira Rentals, avec des locations déjà en cours. Un geste la lance : rien à saisir, aucun code à attendre.",
       "leadCurrent": "Ce téléphone garde votre démonstration. Revenez-y comme l'une ou l'autre personne, ou lancez-en une nouvelle.",
       "owner": {
         "start": "Lancer une démo en tant que Tomás, le propriétaire",

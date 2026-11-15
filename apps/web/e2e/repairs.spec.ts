@@ -10,7 +10,7 @@ import { expect, test } from './support/test'
 async function startDemo(page: Page): Promise<void> {
   await page.goto('/sign-in')
   await page.getByRole('region', { name: 'Try the demo shop' }).getByRole('button', { name: 'Start a demo as Jonas, at the counter' }).click()
-  await expectInShop(page, 'Ribeira Bikes')
+  await expectInShop(page, 'Ribeira Rentals')
 }
 
 test('staff photograph and close the repair a charge opened, and the passport shows it repaired', async ({ page }) => {

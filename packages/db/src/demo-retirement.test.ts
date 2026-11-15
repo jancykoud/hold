@@ -62,7 +62,7 @@ describe('retiring a demo', () => {
     expect(await retireDemoSession(database, { shopId: old.shopId, cutoff: CUTOFF, now: NOW })).toBe(true)
 
     const [shop] = await database.select({ retiredAt: shops.retiredAt, name: shops.name, slug: shops.slug }).from(shops).where(eq(shops.id, old.shopId))
-    expect(shop).toEqual({ retiredAt: NOW, name: 'Ribeira Bikes', slug: 'ribeira-bikes-old2' })
+    expect(shop).toEqual({ retiredAt: NOW, name: 'Ribeira Rentals', slug: 'ribeira-bikes-old2' })
     expect(await count(rentals, old.shopId)).toBe(before.rentals)
     expect(await count(staffRoles, old.shopId)).toBe(before.roles)
     expect(await count(auditLog, old.shopId)).toBe(before.audit + 1)

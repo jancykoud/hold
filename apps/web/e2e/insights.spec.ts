@@ -10,7 +10,7 @@ import { expect, test } from './support/test'
 async function openInsights(page: Page, as: 'Tomás, the owner' | 'Jonas, at the counter' = 'Tomás, the owner'): Promise<void> {
   await page.goto('/sign-in')
   await page.getByRole('region', { name: 'Try the demo shop' }).getByRole('button', { name: `Start a demo as ${as}` }).click()
-  await expectInShop(page, 'Ribeira Bikes')
+  await expectInShop(page, 'Ribeira Rentals')
   // The menu lists Insights only for those it opens for; counter staff can still follow a link to it.
   if (as === 'Tomás, the owner') await page.getByRole('navigation', { name: 'Shop pages' }).getByRole('link', { name: 'Insights' }).click()
   else await page.goto('/shop/insights')
@@ -22,10 +22,10 @@ const panel = (page: Page, title: string) => page.getByRole('region', { name: ti
 test('an owner opens the dashboard on the shop’s own figures, the same the money page shows', async ({ page }) => {
   await openInsights(page)
   await expect(page.getByText('Held on renters’ accounts now')).toBeVisible()
-  await expect(page.getByText('€3,550.00').first()).toBeVisible()
-  await expect(page.getByText('€613.00').first()).toBeVisible()
-  await expect(page.getByText('€515.00').first()).toBeVisible()
-  await expect(panel(page, 'Money by month').getByRole('listitem').first()).toContainText('To the shop €613.00')
+  await expect(page.getByText('€10,750.00').first()).toBeVisible()
+  await expect(page.getByText('€998.00').first()).toBeVisible()
+  await expect(page.getByText('€1,820.00').first()).toBeVisible()
+  await expect(panel(page, 'Money by month').getByRole('listitem').first()).toContainText('To the shop €998.00')
   await expect(panel(page, 'Damage priced and recovered, by item type').getByRole('listitem').first()).toContainText('Damage priced')
 })
 
@@ -36,7 +36,7 @@ test('each live hold is on its 29 days and the settlement steps down, beside hol
   const waterfall = panel(page, 'Reserved, captured, released')
   await expect(waterfall.getByText('Captured and released stay within what was reserved.')).toBeVisible()
   await expect(waterfall.getByText('Still held')).toBeVisible()
-  await expect(panel(page, 'Every item').getByRole('row', { name: /Hybrid bike 3/ })).toContainText('Yes')
+  await expect(panel(page, 'Every item').getByRole('row', { name: /Hatchback 3/ })).toContainText('Yes')
 })
 
 test('counter staff are not offered Insights in the menu, and are told only the owner or a manager opens it', async ({ page }) => {
@@ -48,7 +48,7 @@ test('counter staff are not offered Insights in the menu, and are told only the 
 
 test('the dashboard fits a phone, a tablet and a laptop, the table of items scrolling inside its own frame', async ({ page }) => {
   await openInsights(page)
-  await expect(page.getByText('€3,550.00').first()).toBeVisible()
+  await expect(page.getByText('€10,750.00').first()).toBeVisible()
   await expectFitsEveryWidth(page)
 })
 
@@ -56,7 +56,7 @@ for (const theme of ['light', 'dark'] as const) {
   test(`the insights page passes the accessibility checks in the ${theme} theme`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: theme, reducedMotion: 'reduce' })
     await openInsights(page)
-    await expect(page.getByText('€3,550.00').first()).toBeVisible()
+    await expect(page.getByText('€10,750.00').first()).toBeVisible()
     const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze()
     expect(results.violations.map((violation) => `${violation.id}: ${violation.nodes.map((node) => node.target.join(' ')).join(', ')}`)).toEqual([])
   })

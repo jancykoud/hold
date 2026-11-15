@@ -217,7 +217,7 @@
     },
     "demo": {
       "title": "Prueba la tienda de demostración",
-      "lead": "Cada demostración es una Ribeira Bikes solo tuya, con alquileres ya en curso. Un toque la inicia: nada que escribir, ningún código que esperar.",
+      "lead": "Cada demostración es una Ribeira Rentals solo tuya, con alquileres ya en curso. Un toque la inicia: nada que escribir, ningún código que esperar.",
       "leadCurrent": "Este teléfono guarda tu demostración. Vuelve a ella como cualquiera de las dos personas, o empieza una nueva.",
       "owner": {
         "start": "Empezar una demo como Tomás, el propietario",

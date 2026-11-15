@@ -50,7 +50,7 @@ describe('the sample return that waits for its comparison', () => {
     const rentalId = await rentalOf('Marco Rossi')
     const [returned] = await inShop(database, shop, (transaction) => rentalReturns(transaction, rentalId))
     const report = await inShop(database, shop, (transaction) => comparisonReport(transaction, returned?.comparisonId ?? ''))
-    expect(report?.viewLabels).toMatchObject({ 'frame-left': 'Frame left' })
+    expect(report?.viewLabels).toMatchObject({ 'side-left': 'Side left' })
   })
 
   it('is handed to the comparison worker once, and then no longer waits', async () => {

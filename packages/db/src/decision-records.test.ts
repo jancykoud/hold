@@ -67,7 +67,7 @@ describe('the records a decision board reads', () => {
 
   it('lists a contested claim with the renter’s latest words and a line a person wrote the reason for', async () => {
     const tom = (await read(shop)).claims.find((claim) => claim.renterName === 'Tom Becker')
-    expect(tom).toMatchObject({ state: 'contested', renterComment: 'The lock was in the bag when I handed it back.' })
+    expect(tom).toMatchObject({ state: 'contested', renterComment: 'The key was never lost: it was in the glovebox when I handed the car back.' })
     expect(tom?.lines).toEqual([expect.objectContaining({ description: 'Lost lock', source: 'person', beforeKey: null, afterKey: null, region: null })])
     expect(tom?.lines[0]?.reason).not.toBeNull()
   })

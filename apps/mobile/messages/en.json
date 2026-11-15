@@ -217,7 +217,7 @@
     },
     "demo": {
       "title": "Try the demo shop",
-      "lead": "Each demo is a Ribeira Bikes of your own, with rentals already under way. One tap starts it: nothing to type, no code to wait for.",
+      "lead": "Each demo is a Ribeira Rentals of your own, with rentals already under way. One tap starts it: nothing to type, no code to wait for.",
       "leadCurrent": "This phone has a demo of your own. Come back to it as either person, or start a fresh one.",
       "owner": {
         "start": "Start a demo as Tomás, the owner",

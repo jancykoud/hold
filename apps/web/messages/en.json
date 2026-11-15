@@ -216,7 +216,7 @@
     "renter": {
       "caption": "Priya, the renter",
       "context": "Your rental",
-      "shopName": "Ribeira Bikes",
+      "shopName": "Ribeira Rentals",
       "title": "The shop is asking for {amount}",
       "newNote": "From the price list you accepted",
       "oldNote": "Was there before you. Not charged.",
@@ -1547,7 +1547,7 @@
     "demo": {
       "title": "Try the demo shop",
       "tag": "Demo",
-      "lead": "Each demo is a Ribeira Bikes of your own, with rentals already under way. Nobody else sees it, and you see nobody else’s. One tap starts it: nothing to type, no code to wait for.",
+      "lead": "Each demo is a Ribeira Rentals of your own, with rentals already under way. Nobody else sees it, and you see nobody else’s. One tap starts it: nothing to type, no code to wait for.",
       "owner": {
         "start": "Start a demo as Tomás, the owner",
         "continue": "Continue as Tomás, the owner",

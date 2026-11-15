@@ -9,32 +9,36 @@ import { grantShopSettlement } from './settlement-mandate-repository.ts'
 import { staffRoles } from './schema/index.ts'
 import type { Transaction } from './scope.ts'
 
-// The shop every demo session starts with (architecture.md section 20.3): Tomás's bike shop in Lisbon, with Jonas at
+// The shop every demo session starts with (architecture.md section 20.3): Tomás's rental agency in Lisbon, cars first
+// and city bikes beside them, with Jonas at
 // the counter, a published price list, four real bikes and two cars to book, the twelve sample rentals and returns after hours. Every sample is marked simulated.
 export const DEMO_SHOP = {
-  name: 'Ribeira Bikes',
+  name: 'Ribeira Rentals',
   timeZone: 'Europe/Lisbon',
   currency: 'EUR',
   ownerName: 'Tomás',
   staffName: 'Jonas',
   // Above this a claim goes to the owner. Jonas's own limit is below it, so he approves small claims with no passkey.
-  ownerApprovalThresholdCents: 150_00,
-  staffApprovalLimitCents: 100_00,
+  // Set for a car's prices: the counter settles a scratch or a dent, and broken glass goes to the owner.
+  ownerApprovalThresholdCents: 400_00,
+  staffApprovalLimitCents: 350_00,
+  // The car's prices come first: a sample claim takes the first price of its kind. Damage is named by its type, and
+  // the dashboard is charged by the kilometre and the eighth of a tank (docs/vehicle-plan.md). The bikes' follow.
   priceList: [
-    { description: 'Scratch on the frame, through the paint', category: 'damage', amount: money(35_00, 'EUR'), damageType: 'scratch' },
-    { description: 'Bent rear derailleur hanger', category: 'damage', amount: money(25_00, 'EUR') },
-    { description: 'Cracked e-bike display', category: 'damage', amount: money(120_00, 'EUR') },
-    { description: 'Lost lock', category: 'loss', amount: money(45_00, 'EUR') },
-    { description: 'Lost front light', category: 'loss', amount: money(20_00, 'EUR') },
-    { description: 'Late return, per started day', category: 'lateness', amount: money(30_00, 'EUR') },
-    { description: 'Cleaning after a muddy ride', category: 'cleaning', amount: money(15_00, 'EUR') },
-    // The car's prices: damage named by its type, and what its dashboard is charged by (docs/vehicle-plan.md).
     { description: 'Scratch on the bodywork, through the paint', category: 'damage', amount: money(180_00, 'EUR'), damageType: 'scratch' },
     { description: 'Dent in a body panel', category: 'damage', amount: money(320_00, 'EUR'), damageType: 'dent' },
     { description: 'Stone chip in the windscreen', category: 'damage', amount: money(90_00, 'EUR'), damageType: 'impact' },
     { description: 'Cracked or broken glass', category: 'damage', amount: money(450_00, 'EUR'), damageType: 'broken_glass' },
+    { description: 'Lost key', category: 'loss', amount: money(250_00, 'EUR') },
+    { description: 'Late return, per started day', category: 'lateness', amount: money(60_00, 'EUR') },
+    { description: 'Valeting after a dirty return', category: 'cleaning', amount: money(45_00, 'EUR') },
     { description: 'Each kilometre beyond those included', category: 'mileage', amount: money(30, 'EUR') },
     { description: 'Each eighth of a tank missing', category: 'fuel', amount: money(12_00, 'EUR') },
+    { description: 'Scratch on the frame, through the paint', category: 'damage', amount: money(35_00, 'EUR'), damageType: 'scratch' },
+    { description: 'Bent rear derailleur hanger', category: 'damage', amount: money(25_00, 'EUR') },
+    { description: 'Lost lock', category: 'loss', amount: money(45_00, 'EUR') },
+    { description: 'Lost front light', category: 'loss', amount: money(20_00, 'EUR') },
+    { description: 'Cleaning after a muddy ride', category: 'cleaning', amount: money(15_00, 'EUR') },
   ] satisfies readonly PriceEntryDraft[],
   // Real bikes beside the samples, so a judge can book one at the counter, on the shop page or through an assistant
   // and take it through a live sandbox hold. Only the frame must be photographed: the sample photographs are of it.
@@ -85,14 +89,14 @@ export const DEMO_SHOP = {
     ],
   },
   // Returns with nobody at the counter (architecture.md section 6.13), in Tomás's words and hours.
-  dropPoint: 'The locked rack to the left of the shop door. Lock the bike with the code on its tag.',
-  // The shop advocate may agree down to half a claim of up to 200 euros, over six rounds, for 45 days: through the
+  dropPoint: 'Bay 4 behind the office, or the locked rack to the left of the door for a bike. Leave the key in the key box, with the code on your booking.',
+  // The shop advocate may agree down to half a claim of up to 200 euros, the limits the recorded run was argued in, over six rounds, for 45 days: through the
   // judging weeks for a demo started before submissions close.
   advocateLimits: { lowestSharePercent: 50, largestClaimCents: 200_00, rounds: 6, days: 45 },
   opensAt: '09:00',
   closesAt: '19:00',
   wearPolicy:
-    'Light scuffs on tyres, pedals and grips are ordinary wear and are never charged. A mark already recorded at the handover is never charged again.',
+    'Stone chips smaller than a coin, light scuffs on tyres and wheel trims, and ordinary wear of seats and pedals are never charged. A mark already recorded at the handover is never charged again.',
 } as const
 
 // A demo account as Cognito knows it.

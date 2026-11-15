@@ -140,7 +140,7 @@ for (const theme of ['light', 'dark'] as const) {
 test('counter staff read every version and the open rentals agreed to it, and cannot publish', async ({ page }) => {
   await page.goto('/sign-in')
   await page.getByRole('region', { name: 'Try the demo shop' }).getByRole('button', { name: 'Start a demo as Jonas, at the counter' }).click()
-  await expectInShop(page, 'Ribeira Bikes')
+  await expectInShop(page, 'Ribeira Rentals')
   await page.getByRole('navigation', { name: 'Shop pages' }).getByRole('link', { name: 'Prices' }).click()
   await expect(page.getByText('Only the owner or a manager can publish prices.')).toBeVisible()
   await expect(page.getByRole('region', { name: 'Versions' }).getByRole('listitem').first()).toContainText('11 open rentals agreed to it')

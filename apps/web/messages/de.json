@@ -216,7 +216,7 @@
     "renter": {
       "caption": "Priya, die Mieterin",
       "context": "Ihre Miete",
-      "shopName": "Ribeira Bikes",
+      "shopName": "Ribeira Rentals",
       "title": "Der Verleih fordert {amount}",
       "newNote": "Aus der Preisliste, der Sie zugestimmt haben",
       "oldNote": "War schon vor Ihnen da. Nicht berechnet.",
@@ -1547,7 +1547,7 @@
     "demo": {
       "title": "Den Demo-Laden ausprobieren",
       "tag": "Demo",
-      "lead": "Jede Demo ist Ihr eigenes Ribeira Bikes, mit laufenden Vermietungen. Niemand sonst sieht sie, und Sie sehen keine fremde. Ein Tippen startet sie: nichts eingeben, auf keinen Code warten.",
+      "lead": "Jede Demo ist Ihr eigenes Ribeira Rentals, mit laufenden Vermietungen. Niemand sonst sieht sie, und Sie sehen keine fremde. Ein Tippen startet sie: nichts eingeben, auf keinen Code warten.",
       "owner": {
         "start": "Demo als Tomás starten, der Inhaber",
         "continue": "Als Tomás weitermachen, der Inhaber",
